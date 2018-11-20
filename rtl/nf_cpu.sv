@@ -7,13 +7,17 @@
 *  Copyright(c)    :   2018 Vlasov D.V.
 */
 
+`include "nf_settings.svh"
+
 module nf_cpu
 (
-    `ifdef debug
-        ,
-        input   [4:0]   reg_addr,
-        output  [31:0]  reg_data
-    `endif
+    input           clk,
+    input           resetn
+`ifdef debug
+    ,
+    input   [4:0]   reg_addr,
+    output  [31:0]  reg_data
+`endif
 );
 
     logic   [31 : 0]    pc_i;
@@ -34,21 +38,32 @@ module nf_cpu
     logic   [31 : 0]    srcA;
     logic   [31 : 0]    srcB;
     logic   [4  : 0]    shamt;
-    logic   [31 : 0]    OpCode;
+    logic   [31 : 0]    ALU_Code;
     logic   [31 : 0]    result;
     logic   [31 : 0]    alu_flags;
 
-    logic               imm_src;
+    logic   [6  : 0]    opcode;
+    logic   [2  : 0]    funct3;
+    logic   [6  : 0]    funct7;
+
+    logic               srcBsel;
 
     assign ra1  = instr[15 +: 5];
     assign ra2  = instr[20 +: 5];
     assign wa3  = instr[7  +: 5];
     assign wd3  = result;
     assign srcA = rd1;
-    assign srcB = imm_src ? rd2 : ext_data;
+    assign srcB = srcBsel ? rd2 : ext_data;
+    assign shamt = instr[20  +: 5];
+
+    assign opcode = instr[0   +: 7];
+    assign funct3 = instr[12  +: 3];
+    assign funct7 = instr[25  +: 7];
     //for I-type
     assign imm_data = instr[20 +: 12];
-    assign ext_data = { 20 { imm_data[11] } , imm_data[0 +: 11] };
+    assign ext_data = { { 20 { imm_data[11] } } , imm_data[0 +: 12] };
+
+    assign pc_i = pc_o + 1;
 
 
     nf_register 
@@ -60,7 +75,7 @@ module nf_cpu
         .clk        ( clk       ),
         .resetn     ( resetn    ),
         .datai      ( pc_i      ),
-        .datao      ( pc_0      )
+        .datao      ( pc_o      )
     );
 
     nf_instr_mem 
@@ -75,7 +90,7 @@ module nf_cpu
 
     nf_reg_file reg_file_0
     (
-        .clk    ( clk       )
+        .clk    ( clk       ),
         .ra1    ( ra1       ),
         .rd1    ( rd1       ),
         .ra2    ( ra2       ),
@@ -95,9 +110,19 @@ module nf_cpu
         .srcA       ( srcA      ),
         .srcB       ( srcB      ),
         .shamt      ( shamt     ),
-        .OpCode     ( OpCode    ),
+        .ALU_Code   ( ALU_Code  ),
         .result     ( result    ),
         .alu_flags  ( alu_flags )
+    );
+
+    nf_control_unit nf_control_unit_0
+    (
+        .opcode     ( opcode    ),
+        .funct3     ( funct3    ),
+        .funct7     ( funct7    ),
+        .srcBsel    ( srcBsel   ),
+        .we         ( we3       ),
+        .ALU_Code   ( ALU_Code  )
     );
 
 endmodule : nf_cpu

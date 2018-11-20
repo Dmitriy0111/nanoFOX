@@ -1,5 +1,5 @@
 /*
-*  File            :   nf_instr_memory.sv
+*  File            :   nf_instr_mem.sv
 *  Autor           :   Vlasov D.V.
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
@@ -7,13 +7,13 @@
 *  Copyright(c)    :   2018 Vlasov D.V.
 */
 
-module nf_instr_memory
+module nf_instr_mem
 #(
     parameter                               depth = 64
 )(
-    input   logic   [$clog(depth)-1 : 0]    addr,
+    input   logic   [31 : 0]                addr,
     output  logic   [31 : 0]                instr
-)
+);
 
     logic   [31 : 0]    mem [depth-1 : 0];
 
@@ -21,7 +21,7 @@ module nf_instr_memory
 
     initial
     begin
-        $readmemh("program.hex",mem);
+        $readmemh("../rtl/program.hex",mem);
     end
 
-endmodule : nf_instr_memory
+endmodule : nf_instr_mem

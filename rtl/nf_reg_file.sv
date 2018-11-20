@@ -6,10 +6,11 @@
 *  Description     :   This is register file
 *  Copyright(c)    :   2018 Vlasov D.V.
 */
+`include "nf_settings.svh"
 
 module nf_reg_file
 (
-    input           clk
+    input           clk,
     input   [4:0]   ra1,
     output  [31:0]  rd1,
     input   [4:0]   ra2,
