@@ -35,7 +35,7 @@ begin
         { `C_ADDI , `F_ADDI } : begin we = '1; ALU_Code = `ALU_ADD;  srcBsel = '0; imm_src = `i_sel;                           end
         { `C_ADD  , `F_ADD  } : begin we = '1; ALU_Code = `ALU_ADD;  srcBsel = '1;                                             end
         { `C_OR   , `F_OR   } : begin we = '1; ALU_Code = `ALU_OR;   srcBsel = '1;                                             end
-        { `C_BEQ  , `F_BEQ  } : begin we = '1; ALU_Code = `C_ADD;    srcBsel = '1; imm_src = `b_sel; branch = '1; eq_neq = '1; end
+        { `C_BEQ  , `F_BEQ  } : begin we = '0; ALU_Code = `C_ADD;    srcBsel = '1; imm_src = `b_sel; branch = '1; eq_neq = '1; end
         { `C_LUI  , `F_ANY  } : begin we = '1; ALU_Code = `ALU_LUI;  srcBsel = '0; imm_src = `u_sel;                           end
     endcase
 end

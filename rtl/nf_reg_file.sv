@@ -25,18 +25,20 @@ module nf_reg_file
     `endif
 );
 
-    logic [31:0] int_reg_file [31:0];
+    logic [31:0] reg_file [31:0];
     
     `ifdef debug
-    assign  rd0 = int_reg_file[ra0];
+    assign  rd0 = reg_file[ra0];
     `endif
-    assign  rd1 = int_reg_file[ra1];
-    assign  rd2 = int_reg_file[ra2];
+    assign  rd1 = reg_file[ra1];
+    assign  rd2 = reg_file[ra2];
     
     always_ff @(posedge clk)
     begin
         if(we3)
-            int_reg_file[wa3] <= wd3;            
+        begin
+            reg_file[wa3] <= wd3;
+        end
     end
 
 endmodule : nf_reg_file

@@ -24,7 +24,7 @@ module nf_sign_ex
         case(imm_src)
             `i_sel    :   imm_ex = { { 20 { imm_data_i[11] } } , imm_data_i[0 +: 12] };
             `u_sel    :   imm_ex = { '0                        , imm_data_u[0 +: 20] };
-            `b_sel    :   imm_ex = { { 18 { imm_data_b[11] } } , imm_data_b[0 +: 12] };
+            `b_sel    :   imm_ex = { { 20 { imm_data_b[11] } } , imm_data_b[0 +: 12] };
         endcase
     end
 
