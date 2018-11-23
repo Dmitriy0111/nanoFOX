@@ -11,25 +11,25 @@
 
 module nf_alu
 (
-    input   logic   [31 : 0]    srcA,
-    input   logic   [31 : 0]    srcB,
-    input   logic   [4  : 0]    shamt,
-    input   logic   [31 : 0]    ALU_Code,
-    output  logic   [31 : 0]    result,
-    output  logic   [31 : 0]    alu_flags
+    input   logic   [31 : 0]    srcA,       // source A for ALU unit
+    input   logic   [31 : 0]    srcB,       // source B for ALU unit
+    input   logic   [4  : 0]    shamt,      // for shift operation
+    input   logic   [31 : 0]    ALU_Code,   // ALU code from control unit
+    output  logic   [31 : 0]    result,     // result of ALU operation
+    output  logic               zero        // zero flag
 );
+
+    assign zero = result == '0;
 
     always_comb
     begin
-        alu_flags = '0;
         result = 0;
         casex(ALU_Code)
-            `ALU_LUI    : begin result = srcB << 20 ;       end
-            `ALU_ADD    : begin result = srcA << shamt ;    end
-            `ALU_SLLI   : begin result = srcA + srcB ;      end
-            `ALU_OR     : begin result = srcA | srcB ;      end
+            `ALU_LUI    : begin result = srcB << 12 ;    end
+            `ALU_ADD    : begin result = srcA + srcB ;   end
+            `ALU_SLLI   : begin result = srcA << shamt ; end
+            `ALU_OR     : begin result = srcA | srcB ;   end
         endcase
-        alu_flags[0] = result == '0;
     end
 
 endmodule : nf_alu

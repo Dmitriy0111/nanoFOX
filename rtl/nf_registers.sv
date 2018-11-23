@@ -7,14 +7,15 @@
 *  Copyright(c)    :   2018 Vlasov D.V.
 */
 
+//simple register with reset and clock 
 module nf_register
 #(
-    parameter                       WIDTH = 1
+    parameter                       width = 1
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic   [WIDTH-1 : 0]   datai,
-    output  logic   [WIDTH-1 : 0]   datao
+    input   logic   [width-1 : 0]   datai,
+    output  logic   [width-1 : 0]   datao
 );
 
     always_ff @(posedge clk, negedge resetn)
@@ -26,3 +27,25 @@ module nf_register
     end
 
 endmodule : nf_register
+
+//register with write enable input
+module nf_register_we
+#(
+    parameter                       width = 1
+)(
+    input   logic                   clk,
+    input   logic                   resetn,
+    input   logic                   en,
+    input   logic   [width-1 : 0]   datai,
+    output  logic   [width-1 : 0]   datao
+);
+
+    always_ff @(posedge clk, negedge resetn)
+    begin
+        if( !resetn )
+            datao <= '0;
+        else if( en )
+            datao <= datai;
+    end
+
+endmodule : nf_register_we

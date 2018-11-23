@@ -27,6 +27,8 @@
                                 //         rd = rs1 | rs2
 `define C_BEQ       7'b1100011  // B-type, Branch if equal
                                 //         
+`define C_ANY       7'b???????  // U-type, Load Upper Immediate
+                                //         Rt = Immed << 12
 
 //instruction function field
 `define F_SLLI      3'b001      // I-type, Shift Right Logical
@@ -46,3 +48,8 @@
 `define ALU_OR      'b001
 `define ALU_LUI     'b010
 `define ALU_SLLI    'b011
+
+//sing imm select
+`define i_sel       'b00        // for i type instruction
+`define u_sel       'b01        // for u type instruction
+`define b_sel       'b10        // for b type instruction
