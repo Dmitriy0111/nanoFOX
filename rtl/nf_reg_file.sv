@@ -24,9 +24,8 @@ module nf_reg_file
     output  [31:0]  rd0
     `endif
 );
+    logic [31:0] reg_file [`reg_number-1:0];
 
-    logic [31:0] reg_file [31:0];
-    
     `ifdef debug
     assign  rd0 = reg_file[ra0];
     `endif

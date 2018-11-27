@@ -20,7 +20,7 @@ module nf_register
 
     always_ff @(posedge clk, negedge resetn)
     begin
-        if( !resetn )
+        if(!resetn)
             datao <= '0;
         else
             datao <= datai;
@@ -35,16 +35,16 @@ module nf_register_we
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic                   en,
+    input   logic                   we,
     input   logic   [width-1 : 0]   datai,
     output  logic   [width-1 : 0]   datao
 );
 
     always_ff @(posedge clk, negedge resetn)
     begin
-        if( !resetn )
+        if(!resetn)
             datao <= '0;
-        else if( en )
+        else if(we)
             datao <= datai;
     end
 

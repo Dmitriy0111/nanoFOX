@@ -22,7 +22,7 @@ module nf_clock_div
 
     always_ff @(posedge clk, negedge resetn)
     begin : name
-        if( !resetn )
+        if(!resetn)
         begin
             int_div <= '0;
             int_c   <= div;

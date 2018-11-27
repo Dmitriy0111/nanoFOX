@@ -8,3 +8,17 @@
 */
 
 `define debug 1
+
+`define RV32I
+
+`ifdef RV32I
+`define reg_number 32
+`endif
+
+`ifdef RV32E
+`define reg_number 16
+`endif
+
+`ifndef reg_number
+`define reg_number 32
+`endif
