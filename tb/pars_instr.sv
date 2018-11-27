@@ -57,10 +57,10 @@ class pars_instr;
                                     };
 
     function new();
-        $timeformat(-9, 5, " ns", 7);
+        $timeformat(-9, 2, " ns", 7);
     endfunction : new
 
-    task pars(bit [31 : 0] instr);
+    task pars(bit [31 : 0] instr, ref string intruction_s);
         ra1  = instr[15 +: 5];
         ra2  = instr[20 +: 5];
         wa3  = instr[7  +: 5];
@@ -71,15 +71,17 @@ class pars_instr;
         imm_data_i = instr[20 +: 12];
         imm_data_b = { instr[31] , instr[7] , instr[25 +: 6] , instr[8 +: 4] };
 
-        casex( { opcode , funct3 } )
-            { `C_SLLI , `F_SLLI } : $display(" %t SLLI rd = %s, rs1 =%s , Imm =%h",  $time, registers_list[wa3], registers_list[ra1], imm_data_i           );
-            { `C_ADDI , `F_ADDI } : $display(" %t ADDI rd = %s, rs1 =%s , Imm =%h",  $time, registers_list[wa3], registers_list[ra1], imm_data_i           );
-            { `C_ADD  , `F_ADD  } : $display(" %t ADD rd = %s , rs1 =%s , rs2 = %s", $time, registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
-            { `C_OR   , `F_OR   } : $display(" %t OR rd = %s , rs1 =%s , rs2 = %s",  $time, registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
-            { `C_BEQ  , `F_BEQ  } : $display(" %t BEQ rs1 =%s , rs2 = %s, Imm = %h", $time, registers_list[ra1], registers_list[ra2], imm_data_b           );
-            { `C_LUI  , `F_ANY  } : $display(" %t LUI rd = %s , Imm =%h",            $time, registers_list[wa3], imm_data_u                                );
-            { `C_ANY  , `F_ANY  } : $display(" %t Unknown instruction",              $time                                                                 );
+        casex( { opcode , funct3 , funct7 } )
+            { `C_SLLI , `F3_SLLI , `F7_ANY  } : intruction_s = $psprintf("SLLI rd  = %s, rs1 = %s, Imm = %h", registers_list[wa3], registers_list[ra1], imm_data_i           );
+            { `C_ADDI , `F3_ADDI , `F7_ANY  } : intruction_s = $psprintf("ADDI rd  = %s, rs1 = %s, Imm = %h", registers_list[wa3], registers_list[ra1], imm_data_i           );
+            { `C_ADD  , `F3_ADD  , `F7_ADD  } : intruction_s = $psprintf("ADD  rd  = %s, rs1 = %s, rs2 = %s", registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
+            { `C_SUB  , `F3_SUB  , `F7_SUB  } : intruction_s = $psprintf("SUB  rd  = %s, rs1 = %s, rs2 = %s", registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
+            { `C_OR   , `F3_OR   , `F7_ANY  } : intruction_s = $psprintf("OR   rd  = %s, rs1 = %s, rs2 = %s", registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
+            { `C_BEQ  , `F3_BEQ  , `F7_ANY  } : intruction_s = $psprintf("BEQ  rs1 = %s, rs2 = %s, Imm = %h", registers_list[ra1], registers_list[ra2], imm_data_b           );
+            { `C_LUI  , `F3_ANY  , `F7_ANY  } : intruction_s = $psprintf("LUI  rd  = %s, Imm =%h",             registers_list[wa3], imm_data_u                                );
+            { `C_ANY  , `F3_ANY  , `F7_ANY  } : intruction_s = $psprintf("Unknown instruction",                                                                               );
         endcase
+        $display("%t %s", $time, intruction_s);
     endtask : pars
 
 endclass : pars_instr
