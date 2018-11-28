@@ -72,14 +72,21 @@ class pars_instr;
         imm_data_b = { instr[31] , instr[7] , instr[25 +: 6] , instr[8 +: 4] };
 
         casex( { opcode , funct3 , funct7 } )
-            { `C_SLLI , `F3_SLLI , `F7_ANY  } : intruction_s = $psprintf("SLLI rd  = %s, rs1 = %s, Imm = %h", registers_list[wa3], registers_list[ra1], imm_data_i           );
-            { `C_ADDI , `F3_ADDI , `F7_ANY  } : intruction_s = $psprintf("ADDI rd  = %s, rs1 = %s, Imm = %h", registers_list[wa3], registers_list[ra1], imm_data_i           );
+            //  R - type command's
             { `C_ADD  , `F3_ADD  , `F7_ADD  } : intruction_s = $psprintf("ADD  rd  = %s, rs1 = %s, rs2 = %s", registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
             { `C_SUB  , `F3_SUB  , `F7_SUB  } : intruction_s = $psprintf("SUB  rd  = %s, rs1 = %s, rs2 = %s", registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
             { `C_OR   , `F3_OR   , `F7_ANY  } : intruction_s = $psprintf("OR   rd  = %s, rs1 = %s, rs2 = %s", registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
+            //  I - type command's
+            { `C_SLLI , `F3_SLLI , `F7_ANY  } : intruction_s = $psprintf("SLLI rd  = %s, rs1 = %s, Imm = %h", registers_list[wa3], registers_list[ra1], imm_data_i           );
+            { `C_ADDI , `F3_ADDI , `F7_ANY  } : intruction_s = $psprintf("ADDI rd  = %s, rs1 = %s, Imm = %h", registers_list[wa3], registers_list[ra1], imm_data_i           );
+            //  U - type command's
+            { `C_LUI  , `F3_ANY  , `F7_ANY  } : intruction_s = $psprintf("LUI  rd  = %s, Imm =%h",            registers_list[wa3], imm_data_u                                );
+            //  B - type command's
             { `C_BEQ  , `F3_BEQ  , `F7_ANY  } : intruction_s = $psprintf("BEQ  rs1 = %s, rs2 = %s, Imm = %h", registers_list[ra1], registers_list[ra2], imm_data_b           );
-            { `C_LUI  , `F3_ANY  , `F7_ANY  } : intruction_s = $psprintf("LUI  rd  = %s, Imm =%h",             registers_list[wa3], imm_data_u                                );
-            { `C_ANY  , `F3_ANY  , `F7_ANY  } : intruction_s = $psprintf("Unknown instruction",                                                                               );
+            //  S and J - type command's
+            //  in the future
+            //  Other's instructions
+            { `C_ANY  , `F3_ANY  , `F7_ANY  } : intruction_s = $psprintf("Unknown instruction",                                                                              );
         endcase
         $display("%t %s", $time, intruction_s);
     endtask : pars
