@@ -20,9 +20,14 @@ module nf_top
     output  logic   [31 : 0]    reg_data
 `endif
 );
-
+    //instruction memory
     logic   [31 : 0]    instr_addr;
     logic   [31 : 0]    instr;
+    //data memory and others's
+    logic   [31 : 0]    addr_dm;
+    logic               we_dm;
+    logic   [31 : 0]    wd_dm;
+    logic   [31 : 0]    rd_dm;
 
     nf_cpu nf_cpu_0
     (
@@ -30,7 +35,11 @@ module nf_top
         .resetn         ( resetn            ),
         .div            ( div               ),
         .instr_addr     ( instr_addr        ),
-        .instr          ( instr             )
+        .instr          ( instr             ),
+        .addr_dm        ( addr_dm           ),
+        .we_dm          ( we_dm             ),
+        .wd_dm          ( wd_dm             ),
+        .rd_dm          ( rd_dm             )
     `ifdef debug
         ,
         .reg_addr       ( reg_addr          ),
@@ -47,6 +56,19 @@ module nf_top
     (
         .addr           ( instr_addr >> 2   ),
         .instr          ( instr             )
+    );
+
+    nf_ram
+    #(
+        .depth          ( `ram_depth        )
+    )
+    nf_ram_0
+    (
+        .clk            ( clk               ),
+        .addr           ( addr_dm >> 2      ),
+        .we             ( we_dm             ),
+        .wd             ( wd_dm             ),
+        .rd             ( rd_dm             )
     );
 
 endmodule : nf_top

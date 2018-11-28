@@ -49,3 +49,26 @@ module nf_register_we
     end
 
 endmodule : nf_register_we
+
+//register with write enable input and not zero reset value
+module nf_register_we_r
+#(
+    parameter                       width = 1
+)(
+    input   logic                   clk,
+    input   logic                   resetn,
+    input   logic                   we,
+    input   logic   [width-1 : 0]   datar,
+    input   logic   [width-1 : 0]   datai,
+    output  logic   [width-1 : 0]   datao
+);
+
+    always_ff @(posedge clk, negedge resetn)
+    begin
+        if(!resetn)
+            datao <= datar;
+        else if(we)
+            datao <= datai;
+    end
+
+endmodule : nf_register_we_r

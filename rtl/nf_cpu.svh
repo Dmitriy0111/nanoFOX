@@ -44,7 +44,11 @@
 `define C_OR        7'b0110011  // R-type, Or with two register
                                 //         rd = rs1 | rs2
 `define C_BEQ       7'b1100011  // B-type, Branch if equal
-                                //         
+                                //     
+`define C_LW        7'b0000011  // I-type, Load word
+                                // 
+`define C_SW        7'b0100011  // S-type, Store word
+                                //     
 `define C_ANY       7'b???????  // for verification
 
 //instruction function3 field
@@ -59,7 +63,11 @@
 `define F3_OR       3'b110      // R-type, Or with two register
                                 //         rd = rs1 | rs2
 `define F3_BEQ      3'b000      // B-type, Branch if equal
-                                //         
+                                //
+`define F3_LW       3'b010      // I-type, Load word
+                                // 
+`define F3_SW       3'b010      // S-type, Store word
+                                //  
 `define F3_ANY      3'b???      // if instruction haven't function field
 
 //instruction function7 field
@@ -83,3 +91,4 @@
 `define i_sel       'b00        // for i type instruction
 `define u_sel       'b01        // for u type instruction
 `define b_sel       'b10        // for b type instruction
+`define s_sel       'b11        // for s type instruction
