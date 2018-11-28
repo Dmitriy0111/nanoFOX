@@ -37,6 +37,10 @@ module nf_tb();
     initial
         for(int i=0;i<32;i++)
             nf_top_0.nf_cpu_0.reg_file_0.reg_file[i] = '0;
+    //reset data memory
+    initial
+        for(int i=0;i<`ram_depth;i++)
+            nf_top_0.nf_ram_0.ram[i]='0;
     //generating clock
     initial
     begin
@@ -63,7 +67,7 @@ module nf_tb();
             if(resetn)
             begin
                 cycle_counter++;
-                $write("cycle = %h", cycle_counter);
+                $write("cycle = %h ", cycle_counter);
                 pars_instr_0.pars(nf_top_0.nf_cpu_0.instr,instruction);
             end
             if(cycle_counter == repeat_cycles)
