@@ -60,7 +60,7 @@ module nf_top
 
     nf_ram
     #(
-        .depth          ( 64                )
+        .depth          ( `ram_depth        )
     )
     nf_ram_0
     (

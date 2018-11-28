@@ -22,3 +22,5 @@
 `ifndef reg_number
 `define reg_number 32
 `endif
+
+`define ram_depth  64
