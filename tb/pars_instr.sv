@@ -127,7 +127,7 @@ class pars_instr;
         if( ( opcode == 'b0110111 ) || ( opcode == 'b0010111 ) )
             instr_sep = $psprintf("U-type : %b_%b_%b", instr[12 +: 20], wa3, opcode );
         if( opcode == 'b1101111 )
-            instr_sep = $psprintf("J-type : %b_%b_%b_%b_%b_%b", instr[31], instr[12 +: 20], instr[19], instr[12 +: 8], wa3, opcode );
+            instr_sep = $psprintf("J-type : %b_%b_%b_%b_%b_%b", instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode );
         if( instr_sep == "" )
             instr_sep = $psprintf("%b", instr );
 
