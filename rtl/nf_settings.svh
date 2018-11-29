@@ -24,3 +24,9 @@
 `endif
 
 `define ram_depth  64
+
+`define slave_number 4
+
+`define NF_RAM_ADDR_MATCH   2'b00
+`define NF_GPIO_ADDR_MATCH  12'h7f0
+`define NF_PWM_ADDR_MATCH   12'h7f1
