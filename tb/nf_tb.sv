@@ -21,10 +21,27 @@ module nf_tb();
     
     bit                 clk;
     bit                 resetn;
+    bit     [25 : 0]    div;
+    //pwm side
+    bit                 pwm;
+    //gpid side
+    logic   [7  : 0]    gpi;
+    logic   [7  : 0]    gpo;
+    logic   [7  : 0]    gpd;
+    logic   [7  : 0]    gpio;
+
     bit     [4  : 0]    reg_addr;
     bit     [31 : 0]    reg_data;
-    bit     [25 : 0]    div;
     bit     [31 : 0]    cycle_counter;
+
+    genvar gpio_i;
+    generate
+        for( gpio_i='0 ; gpio_i<8 ; gpio_i=gpio_i+1'b1 )
+        begin
+            assign  gpio[gpio_i] = gpd[gpio_i] ? gpo[gpio_i] : 'z;
+            assign  gpi[gpio_i]  = gpio[gpio_i];
+        end
+    endgenerate
 
     string              instruction;
 
@@ -74,6 +91,5 @@ module nf_tb();
                 $stop;
         end
     end
-
 
 endmodule : nf_tb
