@@ -22,11 +22,16 @@
 `ifndef reg_number
 `define reg_number 32
 `endif
-
+//depth of ram module
 `define ram_depth  64
-
+//number of slave device's
 `define slave_number 4
-
+//constant's for device's
 `define NF_RAM_ADDR_MATCH   2'b00
 `define NF_GPIO_ADDR_MATCH  12'h7f0
 `define NF_PWM_ADDR_MATCH   12'h7f1
+//constant's for gpio module
+`define NF_GPIO_GPI         'h0
+`define NF_GPIO_GPO         'h4
+`define NF_GPIO_DIR         'h8
+`define NF_GPIO_WIDTH       32

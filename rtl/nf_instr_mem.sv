@@ -9,10 +9,10 @@
 
 module nf_instr_mem
 #(
-    parameter                               depth = 64
+    parameter                   depth = 64
 )(
-    input   logic   [31 : 0]                addr,
-    output  logic   [31 : 0]                instr
+    input   logic   [31 : 0]    addr,
+    output  logic   [31 : 0]    instr
 );
 
     logic   [31 : 0]    mem [depth-1 : 0];

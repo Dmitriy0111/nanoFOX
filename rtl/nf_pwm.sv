@@ -17,7 +17,32 @@ module nf_pwm
     input   logic   [31 : 0]    wd,
     output  logic   [31 : 0]    rd,
     //pmw_side
+    input   logic               pwm_clk,
+    input   logic               pwm_resetn,
     output  logic               pwm
 );
+
+    logic   [15 : 0]  pwm_i;      //internal counter register
+    logic   [15 : 0]  pwm_c;      //internal compare register
+
+    assign pwm = (pwm_i >= pwm_c);
+    assign rd  = { '0 , pwm_c };
+
+    always_ff @(posedge pwm_clk, negedge pwm_resetn)
+    begin : work_with_counter_pwm
+        if(!pwm_resetn)
+            pwm_i <= '0;
+        else
+            pwm_i <= pwm_i + 1'b1;
+    end
+    
+    always_ff @(posedge clk, negedge resetn)
+    begin : work_with_compare_pwm
+        if(!resetn)
+            pwm_c <= '0;
+        else
+            if(we)
+                pwm_c <= wd;
+    end
 
 endmodule : nf_pwm

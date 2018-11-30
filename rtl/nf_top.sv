@@ -11,13 +11,19 @@
 
 module nf_top
 (
-    input   logic               clk,
-    input   logic               resetn,
-    input   logic   [25 : 0]    div
+    input   logic                           clk,
+    input   logic                           resetn,
+    input   logic   [25 : 0]                div,
+    //pwm side
+    output  logic                           pwm,
+    //gpio side
+    input   logic   [`NF_GPIO_WIDTH-1 : 0]  gpi,
+    output  logic   [`NF_GPIO_WIDTH-1 : 0]  gpo,
+    output  logic   [`NF_GPIO_WIDTH-1 : 0]  gpd
 `ifdef debug
     ,
-    input   logic   [4  : 0]    reg_addr,
-    output  logic   [31 : 0]    reg_data
+    input   logic   [4  : 0]                reg_addr,
+    output  logic   [31 : 0]                reg_data
 `endif
 );
     //instruction memory
@@ -36,6 +42,8 @@ module nf_top
     logic   [Slave_n-1 : 0]             we_dm_s;
     logic   [31 : 0]                    wd_dm_s;
     logic   [Slave_n-1 : 0][31 : 0]     rd_dm_s;
+
+    assign  rd_dm_s[3]  = '0;
 
     nf_cpu nf_cpu_0
     (
@@ -75,7 +83,7 @@ module nf_top
         .clk            ( clk               ),
         .resetn         ( resetn            ),
         //cpu side
-        .addr_dm_m      ( addr_dm >> 2      ),
+        .addr_dm_m      ( addr_dm           ),
         .we_dm_m        ( we_dm             ),
         .wd_dm_m        ( wd_dm             ),
         .rd_dm_m        ( rd_dm             ),
@@ -101,7 +109,11 @@ module nf_top
         .rd             ( rd_dm_s[0]        )
     );
 
-    nf_gpio nf_gpio_0
+    nf_gpio
+    #(
+        .gpio_w         ( `NF_GPIO_WIDTH    )
+    ) 
+    nf_gpio_0
     (
         .clk            ( clk_s             ),
         .resetn         ( resetn_s          ),
@@ -111,8 +123,9 @@ module nf_top
         .wd             ( wd_dm_s           ),
         .rd             ( rd_dm_s[1]        ),
         //gpio_side
-        .gpi            (                   ),
-        .gpo            (                   )
+        .gpi            ( gpi               ),
+        .gpo            ( gpo               ),
+        .gpd            ( gpd               )
     );
 
     nf_pwm nf_pwm_0
@@ -125,7 +138,9 @@ module nf_top
         .wd             ( wd_dm_s           ),
         .rd             ( rd_dm_s[2]        ),
         //pmw_side
-        .pwm            (                   )
+        .pwm_clk        ( clk_s             ),
+        .pwm_resetn     ( resetn_s          ),
+        .pwm            ( pwm               )
     );
 
 endmodule : nf_top

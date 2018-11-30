@@ -15,12 +15,12 @@ module nf_router
 )(
     input   logic                               clk,
     input   logic                               resetn, 
-    //cpu side
+    //cpu side (master)
     input   logic   [31 : 0]                    addr_dm_m,
     input   logic                               we_dm_m,
     input   logic   [31 : 0]                    wd_dm_m,
     output  logic   [31 : 0]                    rd_dm_m,
-    //devices side
+    //devices side (slave's)
     output  logic                               clk_s,
     output  logic                               resetn_s,
     output  logic   [31 : 0]                    addr_dm_s,

@@ -21,7 +21,7 @@ module nf_clock_div
     assign en = (int_div == int_c);
 
     always_ff @(posedge clk, negedge resetn)
-    begin : name
+    begin 
         if(!resetn)
         begin
             int_div <= '0;
