@@ -27,10 +27,10 @@ module nf_reg_file
     logic [31:0] reg_file [`reg_number-1:0];
 
     `ifdef debug
-    assign  rd0 = reg_file[ra0];
+    assign  rd0 = ra0 ? '0 : reg_file[ra0];
     `endif
-    assign  rd1 = reg_file[ra1];
-    assign  rd2 = reg_file[ra2];
+    assign  rd1 = ra1 ? '0 : reg_file[ra1];
+    assign  rd2 = ra2 ? '0 : reg_file[ra2];
     
     always_ff @(posedge clk)
     begin

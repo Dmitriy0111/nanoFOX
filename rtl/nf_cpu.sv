@@ -98,7 +98,7 @@ module nf_cpu
     //next program counter value for not branch command
     assign pc_nb = instr_addr + 4;
     //next program counter value for branch command
-    assign pc_b  = instr_addr + 4 + ( ext_data << 1 );
+    assign pc_b  = instr_addr + ( ext_data << 1 );
     //finding next program counter value
     assign pc_i  = next_pc_sel ? pc_b : pc_nb;
 

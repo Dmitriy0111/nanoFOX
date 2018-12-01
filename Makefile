@@ -77,7 +77,7 @@ VSIM_OPT_COMMON += -do $(RUN_DIR)/script_modelsim.tcl -onfinish final
 VSIM_OPT_CMD     = -c
 VSIM_OPT_CMD    += -onfinish exit
 
-VSIM_OPT_GUI     = -onfinish stop
+VSIM_OPT_GUI     = -gui -onfinish stop
 
 sim_clean:
 	rm -rfd $(VSIM_DIR)
