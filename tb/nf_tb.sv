@@ -80,7 +80,7 @@ module nf_tb();
         div = 3;
         forever
         begin
-            @(negedge nf_top_0.nf_cpu_0.pc_we);
+            @(posedge nf_top_0.nf_cpu_0.pc_we);
             if(resetn)
             begin
                 cycle_counter++;

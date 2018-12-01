@@ -34,4 +34,4 @@
 `define NF_GPIO_GPI         'h0
 `define NF_GPIO_GPO         'h4
 `define NF_GPIO_DIR         'h8
-`define NF_GPIO_WIDTH       32
+`define NF_GPIO_WIDTH       8
