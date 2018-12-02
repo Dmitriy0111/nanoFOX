@@ -47,13 +47,13 @@ module de10_lite
 
     nf_seven_seg_static 
     #(
-        .hn         ( 6         )      //number of seven segments unit
+        .hn         ( 6         )
     )
     nf_seven_seg_static_0
     (
-        .hex        ( reg_data  ),        //hexadecimal value input
-        .cc_ca      ( '0        ),      //common cathode or common anode
-        .seven_seg  ( hex       )   //seven segments output
+        .hex        ( reg_data  ),
+        .cc_ca      ( '0        ),
+        .seven_seg  ( hex       )
     );
 
 endmodule : de10_lite
