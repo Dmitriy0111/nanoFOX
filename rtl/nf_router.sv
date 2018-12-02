@@ -35,7 +35,7 @@ module nf_router
     assign resetn_s  = resetn;
     assign wd_dm_s   = wd_dm_m;
     assign addr_dm_s = addr_dm_m;
-    assign we_dm_s   = { `slave_number { wd_dm_m } } & slave_sel ;
+    assign we_dm_s   = { `slave_number { we_dm_m } } & slave_sel ;
 
     nf_router_dec
     #(

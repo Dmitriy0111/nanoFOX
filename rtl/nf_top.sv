@@ -103,7 +103,7 @@ module nf_top
     nf_ram_0
     (
         .clk            ( clk_s             ),
-        .addr           ( addr_dm_s         ),
+        .addr           ( addr_dm_s >> 2    ),
         .we             ( we_dm_s[0]        ),
         .wd             ( wd_dm_s           ),
         .rd             ( rd_dm_s[0]        )
