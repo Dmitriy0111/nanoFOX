@@ -17,17 +17,17 @@ module nf_seven_seg_dynamic
     output  logic   [3  : 0]    dig         //digital tube selector
 );
     
-    logic   [21 : 0]    counter;
+    logic   [17 : 0]    counter;
     logic   [1  : 0]    digit_enable;
 
     always_comb
     begin
         dig = '0;
         case(digit_enable)
-            'h0 :   dig = 'h1;
-            'h1 :   dig = 'h2;
-            'h2 :   dig = 'h4;
-            'h3 :   dig = 'h8;
+            'h0 :   dig = 'hE;
+            'h1 :   dig = 'hD;
+            'h2 :   dig = 'hB;
+            'h3 :   dig = 'h7;
         endcase
     end
 
@@ -37,7 +37,7 @@ module nf_seven_seg_dynamic
         else
         begin
             counter <= counter + 1'b1;
-            if(counter[21])
+            if(counter[17])
                 counter <= '0;
         end
     
@@ -46,7 +46,7 @@ module nf_seven_seg_dynamic
             digit_enable <= '0;
         else
         begin
-            if(counter[21])
+            if(counter[17])
                 digit_enable <= digit_enable + 1'b1;
         end
 
