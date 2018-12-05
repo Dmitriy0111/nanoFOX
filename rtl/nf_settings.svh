@@ -30,23 +30,30 @@
 /*  
     memory map for devices
 
-    0x0000_0000
-        RAM
-    0x0000_3fff
-        unused
-    0x0000_7f00
-        GPIO
-    0x0000_7fff
-        unused
-    0x0000_8f00
-        PWM
-    0x0000_8fff
-        unused
-    0xffff_ffff
+    0x0000_0000\
+                \
+                 RAM
+                /
+    0x0000_ffff/
+    0x0001_0000\
+                \
+                 GPIO
+                /
+    0x0001_ffff/
+    0x0002_0000\
+                \
+                 PWM
+                /
+    0x0002_ffff/
+    0x0003_0000\
+                \
+                 Unused
+                /
+    0xffff_ffff/
 */
-`define NF_RAM_ADDR_MATCH   18'h0000_0
-`define NF_GPIO_ADDR_MATCH  24'h0000_7f
-`define NF_PWM_ADDR_MATCH   24'h0000_8f
+`define NF_RAM_ADDR_MATCH   16'h0000
+`define NF_GPIO_ADDR_MATCH  16'h0001
+`define NF_PWM_ADDR_MATCH   16'h0002
 //constant's for gpio module
 `define NF_GPIO_GPI         'h0
 `define NF_GPIO_GPO         'h4

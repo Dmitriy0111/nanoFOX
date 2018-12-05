@@ -128,7 +128,11 @@ module nf_top
         .gpd            ( gpd               )
     );
 
-    nf_pwm nf_pwm_0
+    nf_pwm
+    #(
+        .pwm_width      ( 8                 )
+    )
+    nf_pwm_0
     (
         .clk            ( clk_s             ),
         .resetn         ( resetn_s          ),

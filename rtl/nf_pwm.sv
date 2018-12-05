@@ -8,7 +8,9 @@
 */
 
 module nf_pwm
-(
+#(
+    parameter                   pwm_width = 8
+)(
     input   logic               clk,
     input   logic               resetn,
     //nf_router side
@@ -22,8 +24,8 @@ module nf_pwm
     output  logic               pwm
 );
 
-    logic   [15 : 0]  pwm_i;      //internal counter register
-    logic   [15 : 0]  pwm_c;      //internal compare register
+    logic   [pwm_width-1 : 0]  pwm_i;      //internal counter register
+    logic   [pwm_width-1 : 0]  pwm_c;      //internal compare register
 
     assign pwm = (pwm_i >= pwm_c);
     assign rd  = { '0 , pwm_c };

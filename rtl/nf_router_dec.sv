@@ -17,14 +17,14 @@ module nf_router_dec
     output  logic   [Slave_n-1 : 0]     slave_sel
 );  
 
-    // RAM  address range  0x0000_0000 - 0x0000_3fff
-    assign slave_sel[0] = ( addr_m [ 14 +: 18 ] == `NF_RAM_ADDR_MATCH  );
+    // RAM  address range  0x0000_0000 - 0x0000_ffff
+    assign slave_sel[0] = ( addr_m [ 16 +: 16 ] == `NF_RAM_ADDR_MATCH  );
 
-    // GPIO address range  0x0000_7f00 - 0x0000_7fff
-    assign slave_sel[1] = ( addr_m [ 8  +: 24 ] == `NF_GPIO_ADDR_MATCH );
+    // GPIO address range  0x0001_0000 - 0x0001_ffff
+    assign slave_sel[1] = ( addr_m [ 16 +: 16 ] == `NF_GPIO_ADDR_MATCH );
 
-    // PWM  address range  0x0000_8f00 - 0x0000_8fff
-    assign slave_sel[2] = ( addr_m [ 8  +: 24 ] == `NF_PWM_ADDR_MATCH  );
+    // PWM  address range  0x0002_0000 - 0x0002_ffff
+    assign slave_sel[2] = ( addr_m [ 16 +: 16 ] == `NF_PWM_ADDR_MATCH  );
     
     // For future devices
     assign slave_sel[3] = '0;
