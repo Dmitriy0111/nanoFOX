@@ -42,18 +42,6 @@ set_global_assignment -name TOP_LEVEL_ENTITY de10_lite
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "11:25:04  DECEMBER 02, 2018"
 set_global_assignment -name LAST_QUARTUS_VERSION "17.1.0 Lite Edition"
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_sign_ex.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_registers.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_reg_file.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_instr_mem.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_cpu.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_control_unit.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_clock_div.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_alu.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg_static.sv
-set_global_assignment -name SYSTEMVERILOG_FILE de10_lite.sv
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -307,4 +295,25 @@ set_location_assignment PIN_Y3 -to gpio[33]
 set_location_assignment PIN_AB2 -to gpio[34]
 set_location_assignment PIN_AA2 -to gpio[35]
 
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg_static.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg_dynamic.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_sign_ex.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_router_mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_router_dec.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_router.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_registers.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_reg_file.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ram.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_instr_mem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_gpio.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_cpu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_control_unit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_clock_div.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_alu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE de10_lite.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
