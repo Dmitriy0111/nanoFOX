@@ -22,10 +22,10 @@ module nf_router_mux
     begin
         rd_m = rd_s[0];
         casez (slave_sel)
-            'b???1      : rd_m = rd_s[0];
-            'b??10      : rd_m = rd_s[1];
-            'b?100      : rd_m = rd_s[2];
-            'b1000      : rd_m = rd_s[2];
+            'b???1  : rd_m = rd_s[0];
+            'b??10  : rd_m = rd_s[1];
+            'b?100  : rd_m = rd_s[2];
+            'b1000  : rd_m = rd_s[2];
         endcase
     end
 
