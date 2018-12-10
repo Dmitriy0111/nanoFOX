@@ -2,4 +2,4 @@
 
 A small RISC-V CPU core.
 
-![cpu_system](doc/cpu_system.png) 
+![cpu_system](doc/cpu_system.jpg) 
