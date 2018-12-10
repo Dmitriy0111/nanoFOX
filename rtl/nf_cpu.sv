@@ -13,9 +13,9 @@ module nf_cpu
 (
     input   logic               clk,
     input   logic               resetn,
-    input   logic   [25 : 0]    div,
     output  logic   [31 : 0]    instr_addr,
-    input   logic   [31 : 0]    instr
+    input   logic   [31 : 0]    instr,
+    input   logic               cpu_en
 `ifdef debug
     ,
     input   logic   [4  : 0]    reg_addr,
@@ -26,7 +26,6 @@ module nf_cpu
     logic   [31 : 0]    pc_i;
     logic   [31 : 0]    pc_nb;
     logic   [31 : 0]    pc_b;
-    logic               pc_we;
     logic               next_pc_sel;
     // register file wires
     logic   [4  : 0]    ra1;
@@ -56,6 +55,7 @@ module nf_cpu
     logic               eq_neq;
     logic   [1  : 0]    imm_src;
     logic               srcBsel;
+    logic               pc_b_en;
 
     // register's address finding from instruction
     assign ra1  = instr[15 +: 5];
@@ -85,22 +85,12 @@ module nf_cpu
         .imm_src        ( imm_src       ),
         .imm_ex         ( ext_data      )
     );
-    //creating strob generating unit for "dividing" clock
-    nf_clock_div nf_clock_div_0
-    (
-        .clk            ( clk           ),
-        .resetn         ( resetn        ),
-        .div            ( div           ),
-        .en             ( pc_we         )
-    );
-    //finding source for next program counter value
-    assign next_pc_sel = branch && ( ~ ( zero ^ eq_neq ) );
     //next program counter value for not branch command
     assign pc_nb = instr_addr + 4;
     //next program counter value for branch command
     assign pc_b  = instr_addr + ( ext_data << 1 );
     //finding next program counter value
-    assign pc_i  = next_pc_sel ? pc_b : pc_nb;
+    assign pc_i  = pc_b_en ? pc_b : pc_nb;
 
     //creating program counter
     nf_register_we
@@ -113,9 +103,8 @@ module nf_cpu
         .resetn         ( resetn        ),
         .datai          ( pc_i          ),
         .datao          ( instr_addr    ),
-        .we             ( pc_we         )
+        .we             ( cpu_en        )
     );
-
     //creating register file
     nf_reg_file reg_file_0
     (
@@ -126,7 +115,7 @@ module nf_cpu
         .rd2            ( rd2           ),
         .wa3            ( wa3           ),
         .wd3            ( wd3           ),
-        .we3            ( we3 && pc_we  )
+        .we3            ( we3 && cpu_en )
         `ifdef debug
         ,
         .ra0            ( reg_addr      ),
@@ -155,6 +144,14 @@ module nf_cpu
         .we             ( we3           ),
         .imm_src        ( imm_src       ),
         .ALU_Code       ( ALU_Code      )
+    );
+    //creating branch unit
+    nf_branch_unit nf_branch_unit_0
+    (
+        .branch         ( branch        ),
+        .zero           ( zero          ),
+        .eq_neq         ( eq_neq        ),
+        .pc_b_en        ( pc_b_en       )
     );
 
 endmodule : nf_cpu

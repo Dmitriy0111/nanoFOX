@@ -23,14 +23,15 @@ module nf_top
 
     logic   [31 : 0]    instr_addr;
     logic   [31 : 0]    instr;
+    logic               cpu_en;
 
     nf_cpu nf_cpu_0
     (
         .clk            ( clk               ),
         .resetn         ( resetn            ),
-        .div            ( div               ),
         .instr_addr     ( instr_addr        ),
-        .instr          ( instr             )
+        .instr          ( instr             ),
+        .cpu_en         ( cpu_en            )
     `ifdef debug
         ,
         .reg_addr       ( reg_addr          ),
@@ -47,6 +48,15 @@ module nf_top
     (
         .addr           ( instr_addr >> 2   ),
         .instr          ( instr             )
+    );
+
+    //creating strob generating unit for "dividing" clock
+    nf_clock_div nf_clock_div_0
+    (
+        .clk            ( clk           ),
+        .resetn         ( resetn        ),
+        .div            ( div           ),
+        .en             ( cpu_en        )
     );
 
 endmodule : nf_top
