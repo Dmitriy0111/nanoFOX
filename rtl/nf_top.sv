@@ -39,7 +39,7 @@ module nf_top
     `endif
     );
 
-    //creating instruction memory 
+    // creating instruction memory 
     nf_instr_mem 
     #( 
         .depth          ( 64                ) 
@@ -50,7 +50,7 @@ module nf_top
         .instr          ( instr             )
     );
 
-    //creating strob generating unit for "dividing" clock
+    // creating strob generating unit for "dividing" clock
     nf_clock_div nf_clock_div_0
     (
         .clk            ( clk           ),

@@ -15,11 +15,8 @@ module nf_alu
     input   logic   [31 : 0]    srcB,       // source B for ALU unit
     input   logic   [4  : 0]    shamt,      // for shift operation
     input   logic   [31 : 0]    ALU_Code,   // ALU code from control unit
-    output  logic   [31 : 0]    result,     // result of ALU operation
-    output  logic               zero        // zero flag
+    output  logic   [31 : 0]    result      // result of ALU operation
 );
-
-    assign zero = result == '0;
 
     always_comb
     begin
@@ -28,7 +25,6 @@ module nf_alu
             `ALU_LUI    : begin result = srcB << 12;            end
             `ALU_ADD    : begin result = srcA + srcB;           end
             `ALU_SUB    : begin result = srcA - srcB;           end
-            `ALU_COMP   : begin result = ! ( srcA == srcB );    end
             `ALU_SLLI   : begin result = srcA << shamt;         end
             `ALU_OR     : begin result = srcA | srcB;           end
         endcase

@@ -46,7 +46,6 @@ module nf_cpu
     logic   [4  : 0]    shamt;
     logic   [31 : 0]    ALU_Code;
     logic   [31 : 0]    result;
-    logic               zero;
     // control unit wires
     logic   [6  : 0]    opcode;
     logic   [2  : 0]    funct3;
@@ -71,28 +70,18 @@ module nf_cpu
     assign imm_data_i = instr[20 +: 12];
     assign imm_data_u = instr[12 +: 20];
     assign imm_data_b = { instr[31] , instr[7] , instr[25 +: 6] , instr[8 +: 4] };
-
+    // ALU wire's
     assign wd3  = result;
     assign srcA = rd1;
     assign srcB = srcBsel ? rd2 : ext_data;
-
-    //creating sign extending unit
-    nf_sign_ex nf_sign_ex_0
-    (
-        .imm_data_i     ( imm_data_i    ),
-        .imm_data_u     ( imm_data_u    ),
-        .imm_data_b     ( imm_data_b    ),
-        .imm_src        ( imm_src       ),
-        .imm_ex         ( ext_data      )
-    );
-    //next program counter value for not branch command
+    // next program counter value for not branch command
     assign pc_nb = instr_addr + 4;
-    //next program counter value for branch command
+    // next program counter value for branch command
     assign pc_b  = instr_addr + ( ext_data << 1 );
-    //finding next program counter value
+    // finding next program counter value
     assign pc_i  = pc_b_en ? pc_b : pc_nb;
 
-    //creating program counter
+    // creating program counter
     nf_register_we
     #(
         .width          ( 32            )
@@ -105,7 +94,7 @@ module nf_cpu
         .datao          ( instr_addr    ),
         .we             ( cpu_en        )
     );
-    //creating register file
+    // creating register file
     nf_reg_file reg_file_0
     (
         .clk            ( clk           ),
@@ -122,17 +111,16 @@ module nf_cpu
         .rd0            ( reg_data      )
         `endif
     );
-    //creating ALU unit
+    // creating ALU unit
     nf_alu alu_0
     (
         .srcA           ( srcA          ),
         .srcB           ( srcB          ),
         .shamt          ( shamt         ),
         .ALU_Code       ( ALU_Code      ),
-        .result         ( result        ),
-        .zero           ( zero          )
+        .result         ( result        )
     );
-    //creating control unit for cpu
+    // creating control unit for cpu
     nf_control_unit nf_control_unit_0
     (
         .opcode         ( opcode        ),
@@ -145,13 +133,23 @@ module nf_cpu
         .imm_src        ( imm_src       ),
         .ALU_Code       ( ALU_Code      )
     );
-    //creating branch unit
+    // creating branch unit
     nf_branch_unit nf_branch_unit_0
     (
         .branch         ( branch        ),
-        .zero           ( zero          ),
+        .d0             ( rd1           ),
+        .d1             ( rd2           ),
         .eq_neq         ( eq_neq        ),
         .pc_b_en        ( pc_b_en       )
+    );
+    // creating sign extending unit
+    nf_sign_ex nf_sign_ex_0
+    (
+        .imm_data_i     ( imm_data_i    ),
+        .imm_data_u     ( imm_data_u    ),
+        .imm_data_b     ( imm_data_b    ),
+        .imm_src        ( imm_src       ),
+        .imm_ex         ( ext_data      )
     );
 
 endmodule : nf_cpu

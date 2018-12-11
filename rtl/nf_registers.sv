@@ -7,7 +7,7 @@
 *  Copyright(c)    :   2018 Vlasov D.V.
 */
 
-//simple register with reset and clock 
+// simple register with reset and clock 
 module nf_register
 #(
     parameter                       width = 1
@@ -28,7 +28,7 @@ module nf_register
 
 endmodule : nf_register
 
-//register with write enable input
+// register with write enable input
 module nf_register_we
 #(
     parameter                       width = 1

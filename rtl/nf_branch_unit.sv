@@ -11,12 +11,16 @@
 
 module nf_branch_unit
 (
-    input   logic       branch, //from control unit, '1 if branch instruction
-    input   logic       zero,   //from ALU unit
-    input   logic       eq_neq, //from control unit for beq and bne commands
-    output  logic       pc_b_en //next program counter
+    input   logic               branch, // from control unit, '1 if branch instruction
+    input   logic               eq_neq, // from control unit for beq and bne commands (equal and not equal)
+    input   logic   [31 : 0]    d0,     // from register file (rd1)
+    input   logic   [31 : 0]    d1,     // from register file (rd2)
+    output  logic               pc_b_en // next program counter
 );
 
-    assign pc_b_en = branch && ( ~ ( zero ^ eq_neq ) );
+    logic   equal;
+
+    assign  equal   = ( d0 == d1 ) ;
+    assign  pc_b_en = branch && ( ! ( equal ^ eq_neq ) );
 
 endmodule : nf_branch_unit

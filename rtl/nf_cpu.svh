@@ -60,14 +60,14 @@
                                 //         rd = rs1 | rs2
 `define F3_BEQ      3'b000      // B-type, Branch if equal
                                 //         
-`define F3_ANY      3'b???      // if instruction haven't function field
+`define F3_ANY      3'b???      // if instruction haven't function field and for verification
 
 //instruction function7 field
 `define F7_ADD      7'b0000000  // R-type, Adding with register
                                 //         rd = rs1 + rs2
 `define F7_SUB      7'b0100000  // R-type, Subtracting with register
                                 //         rd = rs1 - rs2        
-`define F7_ANY      7'b???????  // if instruction haven't function field
+`define F7_ANY      7'b???????  // if instruction haven't function field and for verification
 
 
 
@@ -76,8 +76,7 @@
 `define ALU_OR      'b001
 `define ALU_LUI     'b010
 `define ALU_SLLI    'b011
-`define ALU_COMP    'b100
-`define ALU_SUB     'b101
+`define ALU_SUB     'b100
 
 //sign imm select
 `define i_sel       'b00        // for i type instruction

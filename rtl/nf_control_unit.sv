@@ -11,15 +11,15 @@
 
 module nf_control_unit
 (
-    input   logic   [6 : 0]     opcode,     //operation code field in instruction code
-    input   logic   [2 : 0]     funct3,     //funct 3 field in instruction code
-    input   logic   [6 : 0]     funct7,     //funct 7 field in instruction code
-    output  logic   [1 : 0]     imm_src,    //for enable immediate data
-    output  logic               srcBsel,    //for selecting srcB ALU
-    output  logic               branch,     //for executing branch instructions
-    output  logic               eq_neq,     //equal and not equal control
-    output  logic               we,         //write enable signal for register file
-    output  logic   [31 : 0]    ALU_Code    //output code for ALU unit
+    input   logic   [6 : 0]     opcode,     // operation code field in instruction code
+    input   logic   [2 : 0]     funct3,     // funct 3 field in instruction code
+    input   logic   [6 : 0]     funct7,     // funct 7 field in instruction code
+    output  logic   [1 : 0]     imm_src,    // for enable immediate data
+    output  logic               srcBsel,    // for selecting srcB ALU
+    output  logic               branch,     // for executing branch instructions
+    output  logic               eq_neq,     // equal and not equal control
+    output  logic               we,         // write enable signal for register file
+    output  logic   [31 : 0]    ALU_Code    // output code for ALU unit
 );
 
 always_comb
@@ -41,7 +41,7 @@ begin
         //  U - type command's
         { `C_LUI  , `F3_ANY  , `F7_ANY } : begin we = '1; ALU_Code = `ALU_LUI;  srcBsel = '0; imm_src = `u_sel;                           end
         //  B - type command's
-        { `C_BEQ  , `F3_BEQ  , `F7_ANY } : begin we = '0; ALU_Code = `ALU_COMP; srcBsel = '1; imm_src = `b_sel; branch = '1; eq_neq = '1; end
+        { `C_BEQ  , `F3_BEQ  , `F7_ANY } : begin we = '0; ALU_Code = `ALU_ADD;  srcBsel = '1; imm_src = `b_sel; branch = '1; eq_neq = '1; end
         //  S - type command's
         //  in the future
         //  J - type command's
