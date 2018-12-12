@@ -11,17 +11,21 @@
 
 module nf_cpu
 (
+    // clock and reset
     input   logic               clk,
     input   logic               resetn,
+    input   logic               cpu_en,
+    // instruction memory
     output  logic   [31 : 0]    instr_addr,
-    input   logic   [31 : 0]    instr,
-    input   logic               cpu_en
+    input   logic   [31 : 0]    instr
 `ifdef debug
+    // for debug
     ,
     input   logic   [4  : 0]    reg_addr,
     output  logic   [31 : 0]    reg_data
 `endif
 );
+
     // program counter wires
     logic   [31 : 0]    pc_i;
     logic   [31 : 0]    pc_nb;

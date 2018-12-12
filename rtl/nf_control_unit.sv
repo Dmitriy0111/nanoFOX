@@ -46,6 +46,7 @@ begin
         //  in the future
         //  J - type command's
         //  in the future
+        default                          : ;
     endcase
 end
 
