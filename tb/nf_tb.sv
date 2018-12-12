@@ -80,11 +80,11 @@ module nf_tb();
         div = 3;
         forever
         begin
-            @(posedge nf_top_0.nf_cpu_0.pc_we);
+            @(posedge nf_top_0.cpu_en);
             if(resetn)
             begin
                 cycle_counter++;
-                $write("cycle = %h ", cycle_counter);
+                $write("cycle = %d, pc = %h ", cycle_counter,nf_top_0.nf_cpu_0.instr_addr);
                 pars_instr_0.pars(nf_top_0.nf_cpu_0.instr,instruction);
             end
             if(cycle_counter == repeat_cycles)
