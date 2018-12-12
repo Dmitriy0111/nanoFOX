@@ -84,8 +84,7 @@
 `define ALU_OR      'b001
 `define ALU_LUI     'b010
 `define ALU_SLLI    'b011
-`define ALU_COMP    'b100
-`define ALU_SUB     'b101
+`define ALU_SUB     'b100
 
 //sign imm select
 `define i_sel       'b00        // for i type instruction

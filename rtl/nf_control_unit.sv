@@ -46,11 +46,12 @@ begin
         //  U - type command's
         { `C_LUI  , `F3_ANY  , `F7_ANY } : begin we_rf = '1; ALU_Code = `ALU_LUI;  srcBsel = '0; imm_src = `u_sel;                                                    end
         //  B - type command's
-        { `C_BEQ  , `F3_BEQ  , `F7_ANY } : begin we_rf = '0; ALU_Code = `ALU_COMP; srcBsel = '1; imm_src = `b_sel; branch = '1; eq_neq = '1;                          end
+        { `C_BEQ  , `F3_BEQ  , `F7_ANY } : begin we_rf = '0; ALU_Code = `ALU_ADD;  srcBsel = '1; imm_src = `b_sel; branch = '1; eq_neq = '1;                          end
         //  S - type command's
         { `C_SW   , `F3_SW   , `F7_ANY } : begin we_rf = '0; ALU_Code = `ALU_ADD;  srcBsel = '0; imm_src = `s_sel;                           we_dm = '1;              end
         //  J - type command's
         //  in the future
+        default                          : ;
     endcase
 end
 

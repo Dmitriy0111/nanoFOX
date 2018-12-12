@@ -29,6 +29,7 @@ module nf_top
     //instruction memory
     logic   [31 : 0]    instr_addr;
     logic   [31 : 0]    instr;
+    logic               cpu_en;
     //data memory and others's
     logic   [31 : 0]    addr_dm;
     logic               we_dm;
@@ -49,9 +50,9 @@ module nf_top
     (
         .clk            ( clk               ),
         .resetn         ( resetn            ),
-        .div            ( div               ),
         .instr_addr     ( instr_addr        ),
         .instr          ( instr             ),
+        .cpu_en         ( cpu_en            ),
         .addr_dm        ( addr_dm           ),
         .we_dm          ( we_dm             ),
         .wd_dm          ( wd_dm             ),
@@ -72,6 +73,15 @@ module nf_top
     (
         .addr           ( instr_addr >> 2   ),
         .instr          ( instr             )
+    );
+
+    // creating strob generating unit for "dividing" clock
+    nf_clock_div nf_clock_div_0
+    (
+        .clk            ( clk               ),
+        .resetn         ( resetn            ),
+        .div            ( div               ),
+        .en             ( cpu_en            )
     );
 
     nf_router
