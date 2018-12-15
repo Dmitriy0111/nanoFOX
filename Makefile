@@ -1,21 +1,20 @@
 
 help:
-	$(info make help         - show this message)
-	$(info make clean        - delete synth and simulation folders)
-	$(info make sim          - the same as sim_gui)
-	$(info make icarus       - the same as icarus_cmd)
-	$(info make synth        - clean, create the board project and run the synthesis (for default board))
-	$(info make open         - the same as synth_gui)
-	$(info make load         - the same as synth_load)
-	$(info make sim_cmd      - run simulation in Modelsim (console mode))
-	$(info make sim_gui      - run simulation in Modelsim (gui mode))
-	$(info make icarus_cmd   - run simulation in Icarus Verilog (console mode))
-	$(info make icarus_gui   - run simulation in Icarus Verilog (gui mode))
-	$(info make synth_create - create the board project)
-	$(info make synth_build  - build the board project)
-	$(info make synth_gui    - open the board project)
-	$(info make synth_load   - program the default FPGA board)
-	$(info make board_all    - run synthesis for all the supported boards)
+	$(info make help           - show this message)
+	$(info make clean          - delete synth and simulation folders)
+	$(info make sim            - the same as sim_gui)
+	$(info make synth          - clean, create the board project and run the synthesis (for default board))
+	$(info make open           - the same as synth_gui)
+	$(info make load           - the same as synth_load)
+	$(info make sim_cmd        - run simulation in Modelsim (console mode))
+	$(info make sim_gui        - run simulation in Modelsim (gui mode))
+	$(info make synth_create   - create the board project)
+	$(info make synth_build_q  - build the board project with quartus)
+	$(info make synth_gui_q    - open the board project with quartus)
+	$(info make synth_load_q   - program the default FPGA board with quartus)
+	$(info make board_all      - run synthesis for all the supported boards)
+	$(info make prog_comp_win  - compile program on windows and copy program.hex to program_file)
+	$(info make prog_comp_lin  - compile program on linux and copy program.hex to program_file)
 	$(info Open and read the Makefile for details)
 	@true
 
@@ -25,8 +24,8 @@ RUN_DIR  = $(PWD)/run
 RTL_DIR  = $(PWD)/rtl
 TB_DIR   = $(PWD)/tb
 
-BOARDS_SUPPORTED ?= de0_nano
-BOARD            ?= de0_nano
+BOARDS_SUPPORTED ?= de10_lite
+BOARD            ?= de10_lite
 
 ########################################################
 # common make targets
@@ -38,30 +37,22 @@ clean: \
 	sim_clean \
 	board_clean \
 	log_clean
-	icarus_clean \
-	xsim_clean \
 
 sim_all: \
-	sim_cmd \
-	xsim_cmd \
-	icarus_cmd
+	sim_cmd 
 
 sim: sim_gui
 
-xsim: xsim_cmd
-
-icarus: icarus_cmd
-
 create: synth_create
 
-synth: \
+synth_q: \
 	synth_clean \
 	synth_create \
-	synth_build
+	synth_build_q
 
-load: synth_load
+load_q: synth_load_q
 
-open: synth_gui
+open_q: synth_gui_q
 
 ########################################################
 # simulation - Modelsim
@@ -91,87 +82,51 @@ sim_cmd: sim_dir
 sim_gui: sim_dir
 	$(VSIM_BIN) $(VSIM_OPT_COMMON) $(VSIM_OPT_GUI) &
 
-
 ########################################################
-# simulation - Xilinx Vivado Simulator
-#
-#XSIM_DIR = $(PWD)/sim_xsim
-#
-#XVLOG_BIN = cd $(XSIM_DIR) && xvlog
-#XELAB_BIN = cd $(XSIM_DIR) && xelab
-#XSIM_BIN  = cd $(XSIM_DIR) && xsim
-#
-#xsim_clean:
-#	rm -rfd $(XSIM_DIR)
-#
-#xsim_dir: xsim_clean
-#	mkdir $(XSIM_DIR)
-#
-#xsim_compile: xsim_dir
-#	$(XVLOG_BIN)    $(RTL_DIR)/*.v
-#ifneq (,$(wildcard $(RTL_DIR)/*.sv))
-#	$(XVLOG_BIN) --sv $(RTL_DIR)/*.sv
-#endif
-#	$(XVLOG_BIN) --sv $(TB_DIR)/*.sv
-#	$(XELAB_BIN) --incr --debug typical --relax --mt 2 testbench -s tb_sim
-#
-#xsim_cmd: xsim_compile
-#	$(XSIM_BIN) --runall tb_sim
-#
-#xsim_gui: xsim_compile
-#	$(XSIM_BIN) --gui --tl tb_sim
+# compiling  - program
 
-########################################################
-# simulation - Icarus Verilog
+PROG_NAME ?= 00_counter
 
-ISIM_DIR = $(PWD)/sim_icarus
+prog_comp_win:
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv64ima -mabi=lp64
+	riscv-none-embed-objdump -D -z program/$(PROG_NAME)/main > program/$(PROG_NAME)/main.elf
+	rm -rfd program/$(PROG_NAME)/main
+	mkdir -p program_file
+	echo @00000000 > program_file/program.hex
+	cat program/$(PROG_NAME)/main.elf | sed -rn 's/\s+[a-f0-9]+:\s+([a-f0-9]*)\s+.*/\1/p' >> program_file/program.hex
+	rm -rfd program/$(PROG_NAME)/main.elf
 
-IVER_BIN = cd $(ISIM_DIR) && iverilog
-VVP_BIN  = cd $(ISIM_DIR) && vvp
-GTK_BIN  = cd $(ISIM_DIR) && gtkwave
-
-IVER_OPT  = -s testbench
-IVER_OPT += -g2005-sv
-IVER_OPT += -I $(RTL_DIR)
-IVER_OPT += $(RTL_DIR)/*.v
-IVER_OPT += $(TB_DIR)/*.sv
-ifneq (,$(wildcard $(RTL_DIR)/*.sv))
-	IVER_OPT += $(RTL_DIR)/*.sv
-endif
-
-icarus_clean:
-	rm -rfd $(ISIM_DIR)
-
-icarus_cmd: icarus_clean
-	mkdir $(ISIM_DIR)
-	$(IVER_BIN) $(IVER_OPT)
-	$(VVP_BIN) -la.lst -n a.out -vcd
-
-icarus_gui: icarus_cmd
-	$(GTK_BIN) dump.vcd
+prog_comp_lin:
+	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv64ima -mabi=lp64
+	riscv64-unknown-elf-objdump -D -z program/$(PROG_NAME)/main > program/$(PROG_NAME)/main.elf
+	rm -rfd program/$(PROG_NAME)/main
+	mkdir program_file
+	echo @00000000 > program_file/program.hex
+	cat program/$(PROG_NAME)/main.elf | sed -rn 's/\s+[a-f0-9]+:\s+([a-f0-9]*)\s+.*/\1/p' >> program_file/program.hex
+	rm -rfd program/$(PROG_NAME)/main.elf
 
 ########################################################
 # synthesis - default board only
 
-MAKEFILE_PATH = $(PWD)/board
-SYNTH_DIR      = $(PWD)/synth_$(BOARD)
-SYNTH_TEMPLATE = $(BRD_DIR)/$(BOARD)
+MAKEFILE_PATH   = $(PWD)/board
+SYNTH_DIR       = $(PWD)/synth_$(BOARD)
+SYNTH_TEMPLATE  = $(BRD_DIR)/$(BOARD)
+CABLE_NAME 	   ?= "USB-Blaster"
 
 synth_clean:
 	rm -rfd $(SYNTH_DIR)
 
 synth_create: synth_clean
 	cp -r  $(SYNTH_TEMPLATE) $(SYNTH_DIR)
-	make -C $(MAKEFILE_PATH) create
 
-synth_build:
-	make -C $(MAKEFILE_PATH) build
+synth_build_q:
+	quartus_sh --flow compile $(PWD)/synth_$(BOARD)/$(BOARD)
 
-synth_gui:
-	make -C $(MAKEFILE_PATH) open
+synth_gui_q:
+	quartus $(PWD)/synth_$(BOARD)/$(BOARD).qpf &
 
-synth_load:
-	make -C $(MAKEFILE_PATH) load
+synth_load_q:
+	quartus_pgm -c $(CABLE_NAME) -m JTAG -o "p;synth_$(BOARD)/output_files/$(BOARD).sof"
 
 ########################################################
 # synthesis - all the supported boards
