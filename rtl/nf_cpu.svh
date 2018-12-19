@@ -29,13 +29,13 @@
 //  rs1 and rs2 are sources register's, rd are destination register. 
 //  imm is immediate data. 
 //  opcode is operation code for instruction
-//  funct3 and funct7 help's for encode more instraction's with same opcode field
+//  funct3 and funct7 help's for encode more instruction's with same opcode field
 
-`define C_LUI       7'b0110111  // U-type, Load Upper Immediate
+`define C_LUI       7'b0110111  // U-type, Load upper immediate
                                 //         Rt = Immed << 12
-`define C_SLLI      7'b0010011  // I-type, Shift Right Logical
+`define C_SLLI      7'b0010011  // I-type, Shift right logical
                                 //         rd = rs1 << shamt
-`define C_ADDI      7'b0010011  // I-type, Adding with immidiate
+`define C_ADDI      7'b0010011  // I-type, Adding with immediate
                                 //         rd = rs1 + Immed
 `define C_ADD       7'b0110011  // R-type, Adding with register
                                 //         rd = rs1 + rs2
@@ -48,9 +48,9 @@
 `define C_ANY       7'b???????  // for verification
 
 //instruction function3 field
-`define F3_SLLI     3'b001      // I-type, Shift Right Logical
+`define F3_SLLI     3'b001      // I-type, Shift right logical
                                 //         rd = rs1 << shamt
-`define F3_ADDI     3'b000      // I-type, Adding with immidiate
+`define F3_ADDI     3'b000      // I-type, Adding with immediate
                                 //         rd = rs1 + Immed
 `define F3_ADD      3'b000      // R-type, Adding with register
                                 //         rd = rs1 + rs2
