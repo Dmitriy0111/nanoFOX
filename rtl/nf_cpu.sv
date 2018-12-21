@@ -68,29 +68,7 @@ module nf_cpu
     // data memory and other's
     logic               we_dm_en;
 
-    // register's address finding from instruction
-    assign ra1  = instr[15 +: 5];
-    assign ra2  = instr[20 +: 5];
-    assign wa3  = instr[7  +: 5];
-    // shamt value in instruction
-    assign shamt = instr[20  +: 5];
-    // operation code, funct3 and funct7 field's in instruction
-    assign opcode = instr[0   +: 7];
-    assign funct3 = instr[12  +: 3];
-    assign funct7 = instr[25  +: 7];
-    // immediate data in instruction
-    assign imm_data_i = instr[20 +: 12];
-    assign imm_data_u = instr[12 +: 20];
-    assign imm_data_b = { instr[31] , instr[7] , instr[25 +: 6] , instr[8 +: 4] };
-    assign imm_data_s = { instr[25 +: 7] , instr[7 +: 5] };
-    // ALU assign's
-    assign wd3  = rf_src ? rd_dm : result;
-    assign srcA = rd1;
-    assign srcB = srcBsel ? rd2 : ext_data;
-    // data memory assign's and other's
-    assign addr_dm  = result;
-    assign wd_dm    = rd2;
-    assign we_dm    = we_dm_en && cpu_en;
+    
     // next program counter value for not branch command
     assign pc_nb = instr_addr + 4;
     // next program counter value for branch command
@@ -98,6 +76,8 @@ module nf_cpu
     // finding next program counter value
     assign pc_i  = pc_b_en ? pc_b : pc_nb;
 
+
+    
     // creating program counter
     nf_register_we_r
     #(
@@ -113,6 +93,30 @@ module nf_cpu
         .we             ( cpu_en            )
     );
 
+    // Instruction Fetch stage
+    logic   [31 : 0]    instr_if;
+    logic   [31 : 0]    instr_id;
+    assign  instr_if = instr;
+
+    nf_register #( 32 ) instr_if_id ( clk, resetn, instr_if, instr_id );
+
+    // Instruction Decode stage
+    // register's address finding from instruction
+    assign ra1  = instr_id[15 +: 5];
+    assign ra2  = instr_id[20 +: 5];
+    assign wa3  = instr[7  +: 5];
+    // shamt value in instruction
+    assign shamt = instr_id[20  +: 5];
+    // operation code, funct3 and funct7 field's in instruction
+    assign opcode = instr_id[0   +: 7];
+    assign funct3 = instr_id[12  +: 3];
+    assign funct7 = instr_id[25  +: 7];
+    // immediate data in instruction
+    assign imm_data_i = instr_id[20 +: 12];
+    assign imm_data_u = instr_id[12 +: 20];
+    assign imm_data_b = { instr_id[31] , instr_id[7] , instr_id[25 +: 6] , instr_id[8 +: 4] };
+    assign imm_data_s = { instr_id[25 +: 7] , instr_id[7 +: 5] };
+
     // creating register file
     nf_reg_file reg_file_0
     (
@@ -121,24 +125,16 @@ module nf_cpu
         .rd1            ( rd1               ),
         .ra2            ( ra2               ),
         .rd2            ( rd2               ),
-        .wa3            ( wa3               ),
+        .wa3            ( wa3_iwb           ),
         .wd3            ( wd3               ),
-        .we3            ( we_rf && cpu_en   )
+        .we3            ( we_rf_iwb && cpu_en   )
         `ifdef debug
         ,
         .ra0            ( reg_addr          ),
         .rd0            ( reg_data          )
         `endif
     );
-    // creating ALU unit
-    nf_alu alu_0
-    (
-        .srcA           ( srcA              ),
-        .srcB           ( srcB              ),
-        .shamt          ( shamt             ),
-        .ALU_Code       ( ALU_Code          ),
-        .result         ( result            )
-    );
+
     // creating control unit for cpu
     nf_control_unit nf_control_unit_0
     (
@@ -154,15 +150,7 @@ module nf_cpu
         .imm_src        ( imm_src           ),
         .ALU_Code       ( ALU_Code          )
     );
-    // creating branch unit
-    nf_branch_unit nf_branch_unit_0
-    (
-        .branch         ( branch            ),
-        .d0             ( rd1               ),
-        .d1             ( rd2               ),
-        .eq_neq         ( eq_neq            ),
-        .pc_b_en        ( pc_b_en           )
-    );
+
     // creating sign extending unit
     nf_sign_ex nf_sign_ex_0
     (
@@ -174,4 +162,155 @@ module nf_cpu
         .imm_ex         ( ext_data          )
     );
 
+    logic   [31 : 0]    ext_data_id;
+    logic   [31 : 0]    ext_data_iexe;
+    assign  ext_data_id = ext_data;
+
+    nf_register #( 32 ) sign_ex_id_iexe ( clk, resetn, ext_data_id, ext_data_iexe );
+
+    logic   [31 : 0]    rd1_id;
+    logic   [31 : 0]    rd1_iexe;
+    assign  rd1_id = rd1;
+
+    nf_register #( 32 ) rd1_id_iexe ( clk, resetn, rd1_id, rd1_iexe );
+
+    logic   [31 : 0]    rd2_id;
+    logic   [31 : 0]    rd2_iexe;
+    assign  rd2_id = rd2;
+
+    nf_register #( 32 ) rd2_id_iexe ( clk, resetn, rd2_id, rd2_iexe );
+
+    logic   [4  : 0]    wa3_id;
+    logic   [4  : 0]    wa3_iexe;
+    assign  wa3_id = wa3;
+
+    nf_register #( 5 )  wa3_id_iexe ( clk, resetn, wa3_id, wa3_iexe );
+
+    logic   [0  : 0]    srcBsel_id;
+    logic   [0  : 0]    srcBsel_iexe;
+    assign  srcBsel_id = srcBsel;
+
+    nf_register #( 1 )  srcBsel_id_iexe ( clk, resetn, srcBsel_id, srcBsel_iexe );
+
+    logic   [0  : 0]    branch_id;
+    logic   [0  : 0]    branch_iexe;
+    assign  branch_id = branch;
+
+    nf_register #( 1 )  branch_id_iexe ( clk, resetn, branch_id, branch_iexe );
+
+    logic   [0  : 0]    eq_neq_id;
+    logic   [0  : 0]    eq_neq_iexe;
+    assign  eq_neq_id = eq_neq;
+
+    nf_register #( 1 )  eq_neq_id_iexe ( clk, resetn, eq_neq_id, eq_neq_iexe );
+
+    logic   [0  : 0]    we_rf_id;
+    logic   [0  : 0]    we_rf_iexe;
+    assign  we_rf_id = we_rf;
+
+    nf_register #( 1 )  we_rf_id_iexe ( clk, resetn, we_rf_id, we_rf_iexe );
+
+    logic   [0  : 0]    we_dm_id;
+    logic   [0  : 0]    we_dm_iexe;
+    assign  we_dm_id = we_dm_en;
+
+    nf_register #( 1 )  we_dm_id_iexe ( clk, resetn, we_dm_id, we_dm_iexe );
+
+    logic   [0  : 0]    rf_src_id;
+    logic   [0  : 0]    rf_src_iexe;
+    assign  rf_src_id = rf_src;
+
+    nf_register #( 1 )  rf_src_id_iexe ( clk, resetn, rf_src_id, rf_src_iexe );
+
+    logic   [31  : 0]    ALU_Code_id;
+    logic   [31  : 0]    ALU_Code_iexe;
+    assign  ALU_Code_id = ALU_Code;
+
+    nf_register #( 32 ) ALU_Code_id_iexe ( clk, resetn, ALU_Code_id, ALU_Code_iexe );
+
+    logic   [4  : 0]    shamt_id;
+    logic   [4  : 0]    shamt_iexe;
+    assign  shamt_id = shamt;
+
+    nf_register #( 5 ) shamt_id_iexe ( clk, resetn, shamt_id, shamt_iexe );
+
+    //Instruction execution stage
+    // ALU assign's
+    
+    assign srcA = rd1_iexe;
+    assign srcB = srcBsel_iexe ? rd2_iexe : ext_data_iexe;
+    // creating ALU unit
+    nf_alu alu_0
+    (
+        .srcA           ( srcA              ),
+        .srcB           ( srcB              ),
+        .shamt          ( shamt_iexe        ),
+        .ALU_Code       ( ALU_Code_iexe     ),
+        .result         ( result            )
+    );
+
+    // creating branch unit
+    nf_branch_unit nf_branch_unit_0
+    (
+        .branch         ( branch_iexe            ),
+        .d0             ( rd1_iexe               ),
+        .d1             ( rd2_iexe               ),
+        .eq_neq         ( eq_neq_iexe            ),
+        .pc_b_en        ( pc_b_en           )
+    );
+
+    // Instruction memory stage
+    // data memory assign's and other's
+
+    logic   [31  : 0]    result_iexe;
+    logic   [31  : 0]    result_imem;
+    assign  result_iexe = result;
+
+    nf_register #( 32 ) result_iexe_imem ( clk, resetn, result_iexe, result_imem );
+
+    logic   [0  : 0]    we_dm_imem;
+
+    nf_register #( 1 )  we_dm_iexe_imem ( clk, resetn, we_dm_iexe, we_dm_imem );
+
+    logic   [31  : 0]    rd2_imem;
+
+    nf_register #( 32 ) rd2_iexe_imem ( clk, resetn, rd2_iexe, rd2_imem );
+
+    logic   [0  : 0]    rf_src_imem;
+
+    nf_register #( 1 )  rf_src_iexe_imem ( clk, resetn, rf_src_iexe, rf_src_imem );
+
+    logic   [4  : 0]    wa3_imem;
+
+    nf_register #( 5 )  wa3_iexe_imem ( clk, resetn, wa3_iexe, wa3_imem );
+
+    logic   [0  : 0]    we_rf_imem;
+
+    nf_register #( 1 )  we_rf_iexe_imem ( clk, resetn, we_rf_iexe, we_rf_imem );
+
+    assign addr_dm  = result_imem;
+    assign wd_dm    = rd2_imem;
+    assign we_dm    = we_dm_imem && cpu_en;
+
+    // Instruction write back stage
+
+    logic   [4  : 0]    wa3_iwb;
+
+    nf_register #( 5 )  wa3_imem_iwb ( clk, resetn, wa3_imem, wa3_iwb );
+    
+    logic   [0  : 0]    we_rf_iwb;
+
+    nf_register #( 1 )  we_rf_imem_iwb ( clk, resetn, we_rf_imem, we_rf_iwb );
+
+    logic   [0  : 0]    rf_src_iwb;
+
+    nf_register #( 1 )  rf_src_imem_iwb ( clk, resetn, rf_src_imem, rf_src_iwb );
+
+    logic   [31  : 0]    result_iwb;
+    assign  result_iexe = result;
+
+    nf_register #( 32 ) result_imem_iwb ( clk, resetn, result_imem, result_iwb );
+
+    assign wd3  = rf_src_iwb ? rd_dm : result_iwb;
+    
 endmodule : nf_cpu
