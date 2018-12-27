@@ -9,20 +9,20 @@
 
 module nf_clock_div
 (
-    input   logic               clk,
-    input   logic               resetn, 
+    input   logic               clk,    // clock
+    input   logic               resetn, // reset
     input   logic   [25:0]      div,    // div_number
     output  logic               en      // enable strobe
 );
 
-    logic   [25:0]  int_div;    //internal divider register
-    logic   [25:0]  int_c;      //internal compare register
+    logic   [25 : 0]  int_div;  //internal divider register
+    logic   [25 : 0]  int_c;    //internal compare register
 
-    assign en = (int_div == int_c);
+    assign en = ( int_div == int_c );
 
     always_ff @(posedge clk, negedge resetn)
     begin : name
-        if(!resetn)
+        if( !resetn )
         begin
             int_div <= '0;
             int_c   <= div;
@@ -30,7 +30,7 @@ module nf_clock_div
         else
         begin
             int_div <= int_div + 1'b1;
-            if(int_div == int_c)
+            if( int_div == int_c )
             begin
                 int_div <= '0;
                 int_c   <= div;

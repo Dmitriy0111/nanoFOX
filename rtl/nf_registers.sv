@@ -20,7 +20,7 @@ module nf_register
 
     always_ff @(posedge clk, negedge resetn)
     begin
-        if(!resetn)
+        if( !resetn )
             datao <= '0;
         else
             datao <= datai;
@@ -42,9 +42,9 @@ module nf_register_we
 
     always_ff @(posedge clk, negedge resetn)
     begin
-        if(!resetn)
+        if( !resetn )
             datao <= '0;
-        else if(we)
+        else if( we )
             datao <= datai;
     end
 
