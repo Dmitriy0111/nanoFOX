@@ -21,7 +21,7 @@ module nf_alu
     always_comb
     begin
         result = 0;
-        casex(ALU_Code)
+        casex( ALU_Code )
             `ALU_LUI    : begin result = srcB << 12;        end
             `ALU_ADD    : begin result = srcA + srcB;       end
             `ALU_SUB    : begin result = srcA - srcB;       end

@@ -7,7 +7,7 @@
 *  Copyright(c)    :   2018 Vlasov D.V.
 */
 
-`define debug 1
+//`define debug 1
 
 `define RV32I
 

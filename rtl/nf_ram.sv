@@ -24,7 +24,7 @@ module nf_ram
 
     always_ff @(posedge clk)
     begin
-        if(we)
+        if( we )
             ram[addr] <= wd;  
     end
 

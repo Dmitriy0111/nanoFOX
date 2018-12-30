@@ -42,8 +42,11 @@ module nf_tb();
             assign  gpi[gpio_i]  = gpio[gpio_i];
         end
     endgenerate
-
-    string              instruction;
+    //instructions
+    string  instruction_id_stage;
+    string  instruction_iexe_stage;
+    string  instruction_imem_stage;
+    string  instruction_iwb_stage;
 
     nf_top nf_top_0
     (
@@ -52,12 +55,8 @@ module nf_tb();
 
     //reset all register's in '0
     initial
-        for(int i=0;i<32;i++)
+        for( int i=0 ; i<32 ; i++ )
             nf_top_0.nf_cpu_0.reg_file_0.reg_file[i] = '0;
-    //reset data memory
-    initial
-        for(int i=0;i<`ram_depth;i++)
-            nf_top_0.nf_ram_0.ram[i]='0;
     //generating clock
     initial
     begin
@@ -77,17 +76,24 @@ module nf_tb();
     //parsing instruction
     initial
     begin
-        div = 3;
+        div = 0;
         forever
         begin
-            @(posedge nf_top_0.cpu_en);
-            if(resetn)
+            @( posedge nf_top_0.clk );
+            if( resetn )
             begin
                 cycle_counter++;
-                $write("cycle = %d, pc = %h ", cycle_counter,nf_top_0.nf_cpu_0.instr_addr);
-                pars_instr_0.pars(nf_top_0.nf_cpu_0.instr,instruction);
+                $write("cycle = %d, pc = %h \n", cycle_counter,nf_top_0.nf_cpu_0.instr_addr);
+                $write("Instruction decode stage        : ");
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage      );
+                $write("Instruction execute stage       : ");
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage    );
+                $write("Instruction memory stage        : ");
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage    );
+                $write("Instruction write back stage    : ");
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage     );
             end
-            if(cycle_counter == repeat_cycles)
+            if( cycle_counter == repeat_cycles )
                 $stop;
         end
     end

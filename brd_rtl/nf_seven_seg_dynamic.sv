@@ -9,12 +9,12 @@
 
 module nf_seven_seg_dynamic
 (
-    input   logic               clk,
-    input   logic               resetn,
-    input   logic   [31 : 0]    hex,        //hexadecimal value input
-    input   logic               cc_ca,      //common cathode or common anode
-    output  logic   [7  : 0]    seven_seg,  //seven segments output
-    output  logic   [3  : 0]    dig         //digital tube selector
+    input   logic               clk,        // clock
+    input   logic               resetn,     // reset
+    input   logic   [31 : 0]    hex,        // hexadecimal value input
+    input   logic               cc_ca,      // common cathode or common anode
+    output  logic   [7  : 0]    seven_seg,  // seven segments output
+    output  logic   [3  : 0]    dig         // digital tube selector
 );
     
     logic   [17 : 0]    counter;
@@ -23,30 +23,31 @@ module nf_seven_seg_dynamic
     always_comb
     begin
         dig = '0;
-        case(digit_enable)
-            'h0 :   dig = 'hE;
-            'h1 :   dig = 'hD;
-            'h2 :   dig = 'hB;
-            'h3 :   dig = 'h7;
+        case( digit_enable )
+            'h0     :   dig = 'hE;
+            'h1     :   dig = 'hD;
+            'h2     :   dig = 'hB;
+            'h3     :   dig = 'h7;
+            default : ;
         endcase
     end
 
     always_ff @(posedge clk, negedge resetn)
-        if(!resetn)
+        if( !resetn )
             counter <= '0;
         else
         begin
             counter <= counter + 1'b1;
-            if(counter[17])
+            if( counter[17] )
                 counter <= '0;
         end
     
     always_ff @(posedge clk, negedge resetn)
-        if(!resetn)
+        if( !resetn )
             digit_enable <= '0;
         else
         begin
-            if(counter[17])
+            if( counter[17] )
                 digit_enable <= digit_enable + 1'b1;
         end
 

@@ -20,7 +20,7 @@ module nf_branch_unit
 
     logic   equal;
 
-    assign  equal   = ( d0 == d1 ) ;
+    assign  equal   = ( d0 == d1 );
     assign  pc_b_en = branch && ( ! ( equal ^ eq_neq ) );
 
 endmodule : nf_branch_unit

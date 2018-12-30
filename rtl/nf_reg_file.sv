@@ -34,7 +34,7 @@ module nf_reg_file
     
     always_ff @(posedge clk)
     begin
-        if(we3)
+        if( we3 )
         begin
             reg_file[wa3] <= wd3;
         end
