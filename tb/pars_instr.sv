@@ -4,7 +4,7 @@
 *  Data            :   2018.11.23
 *  Language        :   SystemVerilog
 *  Description     :   This is class for parsing instruction from instruction memory
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 `include "nf_cpu.svh"

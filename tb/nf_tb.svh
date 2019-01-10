@@ -4,7 +4,7 @@
 *  Data            :   2018.11.28
 *  Language        :   SystemVerilog
 *  Description     :   This is testbench header for cpu unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 //`define debug_lev0

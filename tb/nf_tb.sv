@@ -4,7 +4,7 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is testbench for cpu unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 `include "nf_settings.svh"
@@ -22,26 +22,11 @@ module nf_tb();
     bit                 clk;
     bit                 resetn;
     bit     [25 : 0]    div;
-    //pwm side
-    bit                 pwm;
-    //gpid side
-    logic   [7  : 0]    gpi;
-    logic   [7  : 0]    gpo;
-    logic   [7  : 0]    gpd;
-    logic   [7  : 0]    gpio;
 
     bit     [4  : 0]    reg_addr;
     bit     [31 : 0]    reg_data;
     bit     [31 : 0]    cycle_counter;
 
-    genvar gpio_i;
-    generate
-        for( gpio_i='0 ; gpio_i<8 ; gpio_i=gpio_i+1'b1 )
-        begin
-            assign  gpio[gpio_i] = gpd[gpio_i] ? gpo[gpio_i] : 'z;
-            assign  gpi[gpio_i]  = gpio[gpio_i];
-        end
-    endgenerate
     //instructions
     string  instruction_id_stage;
     string  instruction_iexe_stage;
@@ -83,7 +68,7 @@ module nf_tb();
             if( resetn )
             begin
                 cycle_counter++;
-                $write("cycle = %d, pc = %h \n", cycle_counter,nf_top_0.nf_cpu_0.instr_addr);
+                $write("cycle = %d, pc = %h \n", cycle_counter,nf_top_0.nf_cpu_0.instr_addr );
                 $write("Instruction decode stage        : ");
                 pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage      );
                 $write("Instruction execute stage       : ");
