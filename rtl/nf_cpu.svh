@@ -4,7 +4,7 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is cpu unit commands
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 //  Base Instruction Formats for ISA

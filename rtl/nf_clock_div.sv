@@ -4,7 +4,7 @@
 *  Data            :   2018.11.23
 *  Language        :   SystemVerilog
 *  Description     :   This is unit for creating clock enable strobe
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_clock_div

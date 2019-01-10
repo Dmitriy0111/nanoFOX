@@ -4,7 +4,7 @@
 *  Data            :   2018.11.29
 *  Language        :   SystemVerilog
 *  Description     :   This is PWM module
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_pwm

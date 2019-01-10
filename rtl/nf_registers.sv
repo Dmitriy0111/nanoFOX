@@ -4,7 +4,7 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is file with registers modules
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 //simple register with reset and clock 
@@ -72,3 +72,25 @@ module nf_register_we_r
     end
 
 endmodule : nf_register_we_r
+
+//register with clr input
+module nf_register_clr
+#(
+    parameter                       width = 1
+)(
+    input   logic                   clk,
+    input   logic                   resetn,
+    input   logic                   clr,
+    input   logic   [width-1 : 0]   datai,
+    output  logic   [width-1 : 0]   datao
+);
+
+    always_ff @(posedge clk, negedge resetn)
+    begin
+        if( !resetn )
+            datao <= '0;
+        else
+            datao <= clr ? datai : '0;
+    end
+
+endmodule : nf_register_clr

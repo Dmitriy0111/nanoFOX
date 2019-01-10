@@ -4,7 +4,7 @@
 *  Data            :   2018.11.28
 *  Language        :   SystemVerilog
 *  Description     :   This is dual port ram memory
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_dp_ram
@@ -12,30 +12,40 @@ module nf_dp_ram
     parameter                   depth = 64
 )(
     input   logic               clk,
-    input   logic   [31 : 0]    addr_p1,
-    input   logic               we_p1,
-    input   logic   [31 : 0]    wd_p1,
-    output  logic   [31 : 0]    rd_p1,
-    input   logic   [31 : 0]    addr_p2,
-    input   logic               we_p2,
-    input   logic   [31 : 0]    wd_p2,
-    output  logic   [31 : 0]    rd_p2
+    input   logic   [31 : 0]    addr_p1,    // Port-1 addr
+    input   logic   [0  : 0]    we_p1,      // Port-1 write enable
+    input   logic   [0  : 0]    re_p1,      // Port-1 read enable
+    input   logic   [31 : 0]    wd_p1,      // Port-1 write data
+    output  logic   [31 : 0]    rd_p1,      // Port-1 read data
+    input   logic   [31 : 0]    addr_p2,    // Port-2 addr
+    input   logic   [0  : 0]    we_p2,      // Port-2 write enable
+    input   logic   [0  : 0]    re_p2,      // Port-2 read enable
+    input   logic   [31 : 0]    wd_p2,      // Port-2 write data
+    output  logic   [31 : 0]    rd_p2       // Port-2 read data
 );
 
     logic [31 : 0] ram [depth-1 : 0];
 
-    assign rd_p1 = ram[addr_p1];
+    always_ff @(posedge clk)
+    begin : read_from_mem_p1
+        if( re_p1 )
+            rd_p1 = ram[addr_p1];  
+    end
 
     always_ff @(posedge clk)
-    begin
+    begin : write_in_mem_p1
         if( we_p1 )
             ram[addr_p1] <= wd_p1;  
     end
 
-    assign rd_p2 = ram[addr_p2];
+    always_ff @(posedge clk)
+    begin : read_from_mem_p2
+        if( re_p2 )
+            rd_p2 = ram[addr_p2];  
+    end
 
     always_ff @(posedge clk)
-    begin
+    begin : write_in_mem_p2
         if( we_p2 )
             ram[addr_p2] <= wd_p2;  
     end

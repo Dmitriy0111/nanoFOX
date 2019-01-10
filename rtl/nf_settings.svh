@@ -4,10 +4,10 @@
 *  Data            :   2018.11.20
 *  Language        :   SystemVerilog
 *  Description     :   This is file with common settings
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-//`define debug 1
+`define debug 1
 
 `define RV32I
 

@@ -4,17 +4,17 @@
 *  Data            :   2018.11.20
 *  Language        :   SystemVerilog
 *  Description     :   This is controll unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 `include "nf_cpu.svh"
 
 module nf_control_unit
 (
-    input   logic   [6 : 0]     opcode,     //operation code field in instruction code
-    input   logic   [2 : 0]     funct3,     //funct 3 field in instruction code
-    input   logic   [6 : 0]     funct7,     //funct 7 field in instruction code
-    output  logic   [1 : 0]     imm_src,    //for enable immediate data
+    input   logic   [6  : 0]    opcode,     //operation code field in instruction code
+    input   logic   [2  : 0]    funct3,     //funct 3 field in instruction code
+    input   logic   [6  : 0]    funct7,     //funct 7 field in instruction code
+    output  logic   [1  : 0]    imm_src,    //for enable immediate data
     output  logic               srcBsel,    //for selecting srcB ALU
     output  logic               branch,     //for executing branch instructions
     output  logic               eq_neq,     //equal and not equal control

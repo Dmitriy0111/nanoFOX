@@ -4,7 +4,7 @@
 *  Data            :   2018.11.27
 *  Language        :   SystemVerilog
 *  Description     :   This is top unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 `include "nf_settings.svh"
@@ -13,13 +13,7 @@ module nf_top
 (
     input   logic                           clk,
     input   logic                           resetn,
-    input   logic   [25 : 0]                div,
-    //pwm side
-    output  logic                           pwm,
-    //gpio side
-    input   logic   [`NF_GPIO_WIDTH-1 : 0]  gpi,
-    output  logic   [`NF_GPIO_WIDTH-1 : 0]  gpo,
-    output  logic   [`NF_GPIO_WIDTH-1 : 0]  gpd
+    input   logic   [25 : 0]                div
 `ifdef debug
     ,
     input   logic   [4  : 0]                reg_addr,
@@ -29,7 +23,6 @@ module nf_top
     //instruction memory
     logic   [31 : 0]    instr_addr;
     logic   [31 : 0]    instr;
-    logic               cpu_en;
     //data memory and others's
     logic   [31 : 0]    addr_dm;
     logic               we_dm;
@@ -42,7 +35,6 @@ module nf_top
         .resetn     ( resetn            ),
         .instr_addr ( instr_addr        ),
         .instr      ( instr             ),
-        .cpu_en     ( '1                ),
         .addr_dm    ( addr_dm           ),
         .we_dm      ( we_dm             ),
         .wd_dm      ( wd_dm             ),
@@ -63,10 +55,12 @@ module nf_top
         .clk        ( clk               ),
         .addr_p1    ( instr_addr >> 2   ),
         .we_p1      ( '0                ),
+        .re_p1      ( '1                ),
         .wd_p1      ( '0                ),
         .rd_p1      ( instr             ),
         .addr_p2    ( addr_dm >> 2      ),
         .we_p2      ( we_dm             ),
+        .re_p2      ( '1                ),
         .wd_p2      ( wd_dm             ),
         .rd_p2      ( rd_dm             )
     );
