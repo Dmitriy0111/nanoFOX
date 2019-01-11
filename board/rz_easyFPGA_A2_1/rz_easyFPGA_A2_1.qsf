@@ -43,9 +43,9 @@ set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:28:51  DECEMBER 02, 2018"
 set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_branch_unit.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg_static.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg_dynamic.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_static.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_dynamic.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_sign_ex.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_registers.sv

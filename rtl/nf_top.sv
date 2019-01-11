@@ -48,7 +48,7 @@ module nf_top
     //creating one instruction/data memory
     nf_dp_ram
     #(
-        .depth      ( 64                ) 
+        .depth      ( 256                ) 
     )
     nf_dp_ram_0
     (

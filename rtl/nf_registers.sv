@@ -90,7 +90,30 @@ module nf_register_clr
         if( !resetn )
             datao <= '0;
         else
-            datao <= clr ? datai : '0;
+            datao <= clr ? '0 : datai;
     end
 
 endmodule : nf_register_clr
+
+//register with clr and we input's
+module nf_register_we_clr
+#(
+    parameter                       width = 1
+)(
+    input   logic                   clk,
+    input   logic                   resetn,
+    input   logic                   we,
+    input   logic                   clr,
+    input   logic   [width-1 : 0]   datai,
+    output  logic   [width-1 : 0]   datao
+);
+
+    always_ff @(posedge clk, negedge resetn)
+    begin
+        if( !resetn )
+            datao <= '0;
+        else if( we )
+            datao <= clr ? '0 : datai;
+    end
+
+endmodule : nf_register_we_clr

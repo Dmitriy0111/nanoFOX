@@ -46,6 +46,7 @@ module nf_cpu
     logic   [0  : 0]    stall_if;
     logic   [0  : 0]    stall_id;
     logic   [0  : 0]    flush_iexe;
+    logic   [0  : 0]    flush_id;
 
     logic   [31 : 0]    rd1_i_exu;
     logic   [31 : 0]    rd2_i_exu;
@@ -66,7 +67,7 @@ module nf_cpu
         .datai          ( pc_i              ),
         .datar          ( '0                ),
         .datao          ( instr_addr        ),
-        .we             ( stall_if          )
+        .we             ( ~ stall_if        )
     );
     /*********************************************
     **          Instruction Fetch stage         **
@@ -76,12 +77,13 @@ module nf_cpu
 
     assign  instr_if = instr;
     assign  pc_if = instr_addr;
+    assign  flush_id = pc_b_en;
 
     logic   [31 : 0]    instr_id;
     logic   [31 : 0]    pc_id;
 
-    nf_register #( 32 ) instr_if_id ( clk, resetn, instr_if, instr_id );
-    nf_register #( 32 ) pc_if_id    ( clk, resetn, pc_if,    pc_id    );
+    nf_register_we_clr #( 32 ) instr_if_id ( clk, resetn, ~ stall_id, flush_id, instr_if, instr_id );
+    nf_register_we_clr #( 32 ) pc_if_id    ( clk, resetn, ~ stall_id, flush_id, pc_if,    pc_id    );
 
     /*********************************************
     **         Instruction Decode stage         **
@@ -123,20 +125,20 @@ module nf_cpu
     // creating instruction decode unit
     nf_i_du nf_i_du_0
     (
-        .instr          ( instr_id          ),  // Instruction
-        .ext_data       ( ext_data_id       ),  // Extended data
-        .srcB_sel       ( srcB_sel_id       ),  // For ALU
-        .ALU_Code       ( ALU_Code_id       ),
-        .shamt          ( shamt_id          ),
-        .ra1            ( ra1_id            ),
-        .rd1            ( rd1_id            ),
-        .ra2            ( ra2_id            ),
-        .rd2            ( rd2_id            ),
-        .wa3            ( wa3_id            ),
-        .pc_b_en        ( pc_b_en           ),
-        .we_rf          ( we_rf_id          ),
-        .we_dm_en       ( we_dm_id          ),
-        .rf_src         ( rf_src_id         )
+        .instr          ( instr_id          ),  // Instruction input
+        .ext_data       ( ext_data_id       ),  // decoded extended data
+        .srcB_sel       ( srcB_sel_id       ),  // decoded source B selection for ALU
+        .ALU_Code       ( ALU_Code_id       ),  // decoded ALU code
+        .shamt          ( shamt_id          ),  // decoded for shift command's
+        .ra1            ( ra1_id            ),  // decoded read address 1 for register file
+        .rd1            ( rd1_id            ),  // read data 1 from register file
+        .ra2            ( ra2_id            ),  // decoded read address 2 for register file
+        .rd2            ( rd2_id            ),  // read data 2 from register file
+        .wa3            ( wa3_id            ),  // decoded write address 2 for register file
+        .pc_b_en        ( pc_b_en           ),  // decoded next program counter value enable
+        .we_rf          ( we_rf_id          ),  // decoded write register file
+        .we_dm_en       ( we_dm_id          ),  // decoded write data memory
+        .rf_src         ( rf_src_id         )   // decoded source register file signal
     );
 
     // for debug
@@ -231,7 +233,7 @@ module nf_cpu
     assign wa3   = wa3_iwb;
     assign wd3   = rf_src_iwb ? rd_dm : result_iwb;
     assign we_rf = we_rf_iwb;
-
+    // creating hazard unit
     nf_hazard_unit nf_hazard_unit_0
     (
         // forwarding/bypassing
@@ -246,6 +248,7 @@ module nf_cpu
         // lw hazard stall and flush
         .wa3_iexe       ( wa3_iexe      ),
         .we_rf_iexe     ( we_rf_iexe    ),
+        .rf_src_iexe    ( rf_src_iexe   ),
         .ra1_id         ( ra1_id        ),
         .ra2_id         ( ra2_id        ),
         .stall_if       ( stall_if      ),

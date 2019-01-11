@@ -11,20 +11,20 @@
 
 module nf_i_du
 (
-    input   logic   [31 : 0]    instr,      // Instruction
-    output  logic   [31 : 0]    ext_data,   // Extended data
-    output  logic   [0  : 0]    srcB_sel,   // For ALU
-    output  logic   [31 : 0]    ALU_Code,
-    output  logic   [4  : 0]    shamt,
-    output  logic   [4  : 0]    ra1,
-    input   logic   [31 : 0]    rd1,
-    output  logic   [4  : 0]    ra2,
-    input   logic   [31 : 0]    rd2,
-    output  logic   [4  : 0]    wa3,
-    output  logic   [0  : 0]    pc_b_en,
-    output  logic   [0  : 0]    we_rf,
-    output  logic   [0  : 0]    we_dm_en,
-    output  logic   [0  : 0]    rf_src
+    input   logic   [31 : 0]    instr,      // Instruction input
+    output  logic   [31 : 0]    ext_data,   // decoded extended data
+    output  logic   [0  : 0]    srcB_sel,   // decoded source B selection for ALU
+    output  logic   [31 : 0]    ALU_Code,   // decoded ALU code
+    output  logic   [4  : 0]    shamt,      // decoded for shift command's
+    output  logic   [4  : 0]    ra1,        // decoded read address 1 for register file
+    input   logic   [31 : 0]    rd1,        // read data 1 from register file
+    output  logic   [4  : 0]    ra2,        // decoded read address 2 for register file
+    input   logic   [31 : 0]    rd2,        // read data 2 from register file
+    output  logic   [4  : 0]    wa3,        // decoded write address 2 for register file
+    output  logic   [0  : 0]    pc_b_en,    // decoded next program counter value enable
+    output  logic   [0  : 0]    we_rf,      // decoded write register file
+    output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
+    output  logic   [0  : 0]    rf_src      // decoded source register file signal
 );
 
     // sign extend wires

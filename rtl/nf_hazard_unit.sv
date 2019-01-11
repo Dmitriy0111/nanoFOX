@@ -24,6 +24,7 @@ module nf_hazard_unit
     // lw hazard stall and flush
     input   logic   [4 : 0]     wa3_iexe,
     input   logic   [0 : 0]     we_rf_iexe,
+    input   logic   [0 : 0]     rf_src_iexe,
     input   logic   [4 : 0]     ra1_id,
     input   logic   [4 : 0]     ra2_id,
     output  logic   [0 : 0]     stall_if,
@@ -47,8 +48,8 @@ module nf_hazard_unit
         endcase
     end
 
-    assign stall_if   = ~ ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe );
-    assign stall_id   =   ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe );
-    assign flush_iexe =   ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe );
+    assign stall_if   = ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe && rf_src_iexe );
+    assign stall_id   = ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe && rf_src_iexe );
+    assign flush_iexe = ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe && rf_src_iexe );
     
 endmodule : nf_hazard_unit
