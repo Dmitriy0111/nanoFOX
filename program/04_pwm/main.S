@@ -14,3 +14,4 @@ pwm_load:   sw      t0, 0x00 (t1)           # mem[ 0x00 + t1 ] = t0;
             addi    t0, t0, 1               # t0 = t0 + 1;
             beq     t0, t2, clean_t0        # go to clean_t0;
             beq     zero, zero, pwm_load    # go to pwm_load;
+            

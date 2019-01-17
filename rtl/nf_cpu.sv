@@ -32,10 +32,8 @@ module nf_cpu
 );
 
     // program counter wires
-    logic   [31 : 0]    pc_i;
-    logic   [31 : 0]    pc_nb;
-    logic   [31 : 0]    pc_b;
-    logic               pc_b_en;
+    logic   [31 : 0]    pc_branch;
+    logic               pc_src;
     // register file wires
     logic   [4  : 0]    wa3;
     logic   [31 : 0]    wd3;
@@ -43,6 +41,10 @@ module nf_cpu
     //hazard's wires
     logic   [1  : 0]    rd1_bypass;
     logic   [1  : 0]    rd2_bypass;
+    logic   [1  : 0]    cmp_d1_bypass;
+    logic   [1  : 0]    cmp_d2_bypass;
+    logic   [31 : 0]    cmp_d1;
+    logic   [31 : 0]    cmp_d2;
     logic   [0  : 0]    stall_if;
     logic   [0  : 0]    stall_id;
     logic   [0  : 0]    flush_iexe;
@@ -50,40 +52,40 @@ module nf_cpu
 
     logic   [31 : 0]    rd1_i_exu;
     logic   [31 : 0]    rd2_i_exu;
-    // next program counter value for not branch command
-    assign pc_nb = instr_addr + 4;
-    // finding next program counter value
-    assign pc_i  = pc_b_en ? pc_b : pc_nb;
     
-    // creating program counter
-    nf_register_we_r
-    #(
-        .width          ( 32                )
-    )
-    register_pc
+    /*********************************************
+    **         Instruction Fetch  stage         **
+    *********************************************/
+    // instruction fetch 1 stage
+    logic   [31 : 0]    pc_if1;
+    // instruction fetch 2 stage
+    logic   [31 : 0]    pc_if2;
+    logic   [31 : 0]    instr_if2;
+    // creating one instruction fetch unit
+    nf_i_fu nf_i_fu_0
     (
+        // clock and reset
         .clk            ( clk               ),
         .resetn         ( resetn            ),
-        .datai          ( pc_i              ),
-        .datar          ( '0                ),
-        .datao          ( instr_addr        ),
-        .we             ( ~ stall_if        )
+        // instruction fetch 1 stage
+        .pc_if1         ( pc_if1            ),  // program counter from fetch 1 stage
+        // instruction fetch 2 stage
+        .pc_if2         ( pc_if2            ),  // program counter from fetch 2 stage
+        // program counter inputs
+        .pc_branch      ( pc_branch         ),  // program counter branch value from decode stage
+        .pc_src         ( pc_src            ),  // next program counter source
+        .stall_if       ( stall_if          ),  // for stalling instruction fetch 1 and 2 stage
+        .flush_id       ( flush_id          )   // for flushing instruction decode stage
     );
-    /*********************************************
-    **          Instruction Fetch stage         **
-    *********************************************/
-    logic   [31 : 0]    instr_if;
-    logic   [31 : 0]    pc_if;
 
-    assign  instr_if = instr;
-    assign  pc_if = instr_addr;
-    assign  flush_id = pc_b_en;
+    assign  instr_addr = pc_if1; // from fetch 1 stage
+    assign  instr_if2  = instr;  // from fetch 2 stage
 
     logic   [31 : 0]    instr_id;
     logic   [31 : 0]    pc_id;
 
-    nf_register_we_clr #( 32 ) instr_if_id ( clk, resetn, ~ stall_id, flush_id, instr_if, instr_id );
-    nf_register_we_clr #( 32 ) pc_if_id    ( clk, resetn, ~ stall_id, flush_id, pc_if,    pc_id    );
+    nf_register_we_clr #( 32 ) instr_if2_id ( clk, resetn, ~ stall_id, flush_id, instr_if2, instr_id );
+    nf_register_we_clr #( 32 ) pc_if2_id    ( clk, resetn, ~ stall_id, flush_id, pc_if2,    pc_id    );
 
     /*********************************************
     **         Instruction Decode stage         **
@@ -103,7 +105,7 @@ module nf_cpu
     logic   [4  : 0]    shamt_id;
 
     // next program counter value for branch command
-    assign pc_b  = pc_id + ( ext_data_id << 1 );
+    assign pc_branch  = pc_id + ( ext_data_id << 1 );
 
     // creating register file
     nf_reg_file reg_file_0
@@ -131,11 +133,11 @@ module nf_cpu
         .ALU_Code       ( ALU_Code_id       ),  // decoded ALU code
         .shamt          ( shamt_id          ),  // decoded for shift command's
         .ra1            ( ra1_id            ),  // decoded read address 1 for register file
-        .rd1            ( rd1_id            ),  // read data 1 from register file
+        .rd1            ( cmp_d1            ),  // read data 1 from register file
         .ra2            ( ra2_id            ),  // decoded read address 2 for register file
-        .rd2            ( rd2_id            ),  // read data 2 from register file
+        .rd2            ( cmp_d2            ),  // read data 2 from register file
         .wa3            ( wa3_id            ),  // decoded write address 2 for register file
-        .pc_b_en        ( pc_b_en           ),  // decoded next program counter value enable
+        .pc_src         ( pc_src            ),  // decoded next program counter value enable
         .we_rf          ( we_rf_id          ),  // decoded write register file
         .we_dm_en       ( we_dm_id          ),  // decoded write data memory
         .rf_src         ( rf_src_id         )   // decoded source register file signal
@@ -253,8 +255,14 @@ module nf_cpu
         .ra2_id         ( ra2_id        ),
         .stall_if       ( stall_if      ),
         .stall_id       ( stall_id      ),
-        .flush_iexe     ( flush_iexe    )
+        .flush_iexe     ( flush_iexe    ),
+        // 
+        .cmp_d1_bypass  ( cmp_d1_bypass ),
+        .cmp_d2_bypass  ( cmp_d2_bypass )
     );
+
+    assign cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;
+    assign cmp_d2 = cmp_d2_bypass ? result_imem : rd2_id;
 
     always_comb
     begin

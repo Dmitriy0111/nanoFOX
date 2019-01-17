@@ -19,7 +19,7 @@ module nf_control_unit
     output  logic               branch,     //for executing branch instructions
     output  logic               eq_neq,     //equal and not equal control
     output  logic               we_rf,      //write enable signal for register file
-    output  logic               we_dm,      //write enable signal for data memory and other's
+    output  logic               we_dm,      //write enable signal for data memory and others
     output  logic               rf_src,     //write data select for register file
     output  logic   [31 : 0]    ALU_Code    //output code for ALU unit
 );

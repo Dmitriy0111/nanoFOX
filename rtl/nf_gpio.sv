@@ -37,7 +37,7 @@ module nf_gpio
     assign gpo    = gpio_o;
     assign gpd    = gpio_d;
     assign gpio_i = gpi;
-    // assign write enable signal's
+    // assign write enable signals
     assign gpo_we = we && ( addr[0 +: 4] == `NF_GPIO_GPO ); 
     assign gpd_we = we && ( addr[0 +: 4] == `NF_GPIO_DIR ); 
     // mux for routing one register value

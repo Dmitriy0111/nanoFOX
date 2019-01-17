@@ -12,7 +12,6 @@
 module nf_hazard_unit
 (
     // forwarding/bypassing
-
     input   logic   [4 : 0]     wa3_imem,
     input   logic   [0 : 0]     we_rf_imem,
     input   logic   [4 : 0]     wa3_iwb,
@@ -29,8 +28,14 @@ module nf_hazard_unit
     input   logic   [4 : 0]     ra2_id,
     output  logic   [0 : 0]     stall_if,
     output  logic   [0 : 0]     stall_id,
-    output  logic   [0 : 0]     flush_iexe
+    output  logic   [0 : 0]     flush_iexe,
+    // 
+    output  logic               cmp_d1_bypass,
+    output  logic               cmp_d2_bypass
 );
+
+    assign cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem;
+    assign cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem;
 
     always_comb
     begin

@@ -1,5 +1,9 @@
 # this is program example for working with ram
 
+.equ NF_RAM_ADDR ,  0x00000
+.equ NF_GPIO_ADDR,  0x00010
+.equ NF_PWM_ADDR ,  0x00020
+
 .section    .text
 
 _start:     lui     t0, 0                   # t0 = 0 ; clear t0

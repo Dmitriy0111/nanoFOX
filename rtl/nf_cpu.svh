@@ -26,10 +26,10 @@
 //  fields          31          31 30           21 20         20 19            12 11           7 6         0
 //  instr J-type    |  imm[20]   | |  imm[10:1]  | |  imm[11]  | |  imm[19:12]  | |      rd    | | opcode  |
 //                  ---------------------------------------------------------------------------------------
-//  rs1 and rs2 are sources register's, rd are destination register. 
+//  rs1 and rs2 are sources registers, rd are destination register. 
 //  imm is immediate data. 
 //  opcode is operation code for instruction
-//  funct3 and funct7 help's for encode more instraction's with same opcode field
+//  funct3 and funct7 help's for encode more instructions with same opcode field
 
 `define C_LUI       7'b0110111  // U-type, Load Upper Immediate
                                 //         Rt = Immed << 12

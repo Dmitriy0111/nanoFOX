@@ -21,7 +21,7 @@ module nf_i_du
     output  logic   [4  : 0]    ra2,        // decoded read address 2 for register file
     input   logic   [31 : 0]    rd2,        // read data 2 from register file
     output  logic   [4  : 0]    wa3,        // decoded write address 2 for register file
-    output  logic   [0  : 0]    pc_b_en,    // decoded next program counter value enable
+    output  logic   [0  : 0]    pc_src,    // decoded next program counter value enable
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
     output  logic   [0  : 0]    rf_src      // decoded source register file signal
@@ -91,7 +91,7 @@ module nf_i_du
         .d0             ( rd1                   ),
         .d1             ( rd2                   ),
         .eq_neq         ( eq_neq                ),
-        .pc_b_en        ( pc_b_en               )
+        .pc_src         ( pc_src                )
     );
 
 endmodule : nf_i_du
