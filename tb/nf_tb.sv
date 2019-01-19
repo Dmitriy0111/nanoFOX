@@ -21,7 +21,6 @@ module nf_tb();
     
     bit                 clk;
     bit                 resetn;
-    bit     [25 : 0]    div;
 
     bit     [4  : 0]    reg_addr;
     bit     [31 : 0]    reg_data;
@@ -61,14 +60,13 @@ module nf_tb();
     //parsing instruction
     initial
     begin
-        div = 0;
         forever
         begin
             @( posedge nf_top_0.clk );
             if( resetn )
             begin
                 cycle_counter++;
-                $write("cycle = %d, pc = %h \n", cycle_counter,nf_top_0.nf_cpu_0.instr_addr );
+                $write("cycle = %d, pc = %h \n", cycle_counter,nf_top_0.nf_cpu_0.addr_i );
                 $write("Instruction decode stage        : ");
                 pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage      );
                 $write("Instruction execute stage       : ");

@@ -91,3 +91,7 @@
 `define u_sel       'b01        // for u type instruction
 `define b_sel       'b10        // for b type instruction
 `define s_sel       'b11        // for s type instruction
+
+//branch type constants
+`define B_NONE      'b0
+`define B_EQ_NEQ    'b1

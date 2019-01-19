@@ -16,13 +16,15 @@ module nf_cpu
     input   logic               clk,
     input   logic               resetn,
     // instruction memory (IF)
-    output  logic   [31 : 0]    instr_addr,
-    input   logic   [31 : 0]    instr,
+    output  logic   [31 : 0]    addr_i,     // instruction address
+    input   logic   [31 : 0]    rd_i,       // read instruction
     // data memory and other's
-    output  logic   [31 : 0]    addr_dm,
-    output  logic               we_dm,
-    output  logic   [31 : 0]    wd_dm,
-    input   logic   [31 : 0]    rd_dm
+    output  logic   [31 : 0]    addr_dm,    // address data memory
+    output  logic   [0  : 0]    we_dm,      // write enable signal
+    output  logic   [31 : 0]    wd_dm,      // write data memory
+    input   logic   [31 : 0]    rd_dm,      // read data memory
+    output  logic   [0  : 0]    req_dm,     // request data memory signal
+    input   logic   [0  : 0]    req_ack_dm  // request acknowledge data memory signal
 `ifdef debug
     // for debug
     ,
@@ -47,6 +49,9 @@ module nf_cpu
     logic   [31 : 0]    cmp_d2;
     logic   [0  : 0]    stall_if;
     logic   [0  : 0]    stall_id;
+    logic   [0  : 0]    stall_iexe;
+    logic   [0  : 0]    stall_imem;
+    logic   [0  : 0]    stall_iwb;
     logic   [0  : 0]    flush_iexe;
     logic   [0  : 0]    flush_id;
 
@@ -78,14 +83,14 @@ module nf_cpu
         .flush_id       ( flush_id          )   // for flushing instruction decode stage
     );
 
-    assign  instr_addr = pc_if1; // from fetch 1 stage
-    assign  instr_if2  = instr;  // from fetch 2 stage
+    assign  addr_i     = pc_if1; // from fetch 1 stage
+    assign  instr_if2  = rd_i;   // from fetch 2 stage
 
     logic   [31 : 0]    instr_id;
     logic   [31 : 0]    pc_id;
 
-    nf_register_we_clr #( 32 ) instr_if2_id ( clk, resetn, ~ stall_id, flush_id, instr_if2, instr_id );
-    nf_register_we_clr #( 32 ) pc_if2_id    ( clk, resetn, ~ stall_id, flush_id, pc_if2,    pc_id    );
+    nf_register_we_clr #( 32 ) instr_if2_id ( clk , resetn , ~ stall_id , flush_id , instr_if2 , instr_id );
+    nf_register_we_clr #( 32 ) pc_if2_id    ( clk , resetn , ~ stall_id , flush_id , pc_if2    , pc_id    );
 
     /*********************************************
     **         Instruction Decode stage         **
@@ -111,17 +116,17 @@ module nf_cpu
     nf_reg_file reg_file_0
     (
         .clk            ( clk               ),
-        .ra1            ( ra1_id            ),
-        .rd1            ( rd1_id            ),
-        .ra2            ( ra2_id            ),
-        .rd2            ( rd2_id            ),
-        .wa3            ( wa3               ),
-        .wd3            ( wd3               ),
-        .we3            ( we_rf             )
+        .ra1            ( ra1_id            ),  // read address 1
+        .rd1            ( rd1_id            ),  // read data 1
+        .ra2            ( ra2_id            ),  // read address 2
+        .rd2            ( rd2_id            ),  // read data 2
+        .wa3            ( wa3               ),  // write address 
+        .wd3            ( wd3               ),  // write data
+        .we3            ( we_rf             )   // write enable signal
         `ifdef debug
         ,
-        .ra0            ( reg_addr          ),
-        .rd0            ( reg_data          )
+        .ra0            ( reg_addr          ),  // read address 0
+        .rd0            ( reg_data          )   // read data 0
         `endif
     );
     // creating instruction decode unit
@@ -145,7 +150,7 @@ module nf_cpu
 
     // for debug
     logic   [31 : 0]    instr_iexe;
-    nf_register_clr #( 32 ) instr_id_iexe ( clk, resetn, flush_iexe, instr_id, instr_iexe );
+    nf_register_we_clr  #( 32 ) instr_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , instr_id    , instr_iexe    );
 
     logic   [4  : 0]    wa3_iexe;
     logic   [4  : 0]    ra1_iexe;
@@ -161,18 +166,20 @@ module nf_cpu
     logic   [4  : 0]    shamt_iexe;
     logic   [31 : 0]    result_iexe;
 
-    nf_register_clr #( 5  ) wa3_id_iexe         ( clk, resetn, flush_iexe, wa3_id       , wa3_iexe      );
-    nf_register_clr #( 5  ) ra1_id_iexe         ( clk, resetn, flush_iexe, ra1_id       , ra1_iexe      );
-    nf_register_clr #( 5  ) ra2_id_iexe         ( clk, resetn, flush_iexe, ra2_id       , ra2_iexe      );
-    nf_register_clr #( 32 ) sign_ex_id_iexe     ( clk, resetn, flush_iexe, ext_data_id  , ext_data_iexe );
-    nf_register_clr #( 32 ) rd1_id_iexe         ( clk, resetn, flush_iexe, rd1_id       , rd1_iexe      );
-    nf_register_clr #( 32 ) rd2_id_iexe         ( clk, resetn, flush_iexe, rd2_id       , rd2_iexe      );
-    nf_register_clr #( 1  ) srcB_sel_id_iexe    ( clk, resetn, flush_iexe, srcB_sel_id  , srcB_sel_iexe );
-    nf_register_clr #( 1  ) we_rf_id_iexe       ( clk, resetn, flush_iexe, we_rf_id     , we_rf_iexe    );
-    nf_register_clr #( 1  ) we_dm_id_iexe       ( clk, resetn, flush_iexe, we_dm_id     , we_dm_iexe    );
-    nf_register_clr #( 1  ) rf_src_id_iexe      ( clk, resetn, flush_iexe, rf_src_id    , rf_src_iexe   );
-    nf_register_clr #( 32 ) ALU_Code_id_iexe    ( clk, resetn, flush_iexe, ALU_Code_id  , ALU_Code_iexe );
-    nf_register_clr #( 5  ) shamt_id_iexe       ( clk, resetn, flush_iexe, shamt_id     , shamt_iexe    );
+    // data and address wires (not flushed)
+    nf_register_we_clr  #( 5  ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , wa3_id      , wa3_iexe      );
+    nf_register_we_clr  #( 5  ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , ra1_id      , ra1_iexe      );
+    nf_register_we_clr  #( 5  ) ra2_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , ra2_id      , ra2_iexe      );
+    nf_register_we_clr  #( 5  ) shamt_id_iexe       ( clk , resetn , ~ stall_iexe , '0         , shamt_id    , shamt_iexe    );
+    nf_register_we_clr  #( 32 ) sign_ex_id_iexe     ( clk , resetn , ~ stall_iexe , '0         , ext_data_id , ext_data_iexe );
+    nf_register_we_clr  #( 32 ) rd1_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , rd1_id      , rd1_iexe      );
+    nf_register_we_clr  #( 32 ) rd2_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , rd2_id      , rd2_iexe      );
+    // control wires (flushed)
+    nf_register_we_clr  #( 1  ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id , srcB_sel_iexe );
+    nf_register_we_clr  #( 1  ) we_rf_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_rf_id    , we_rf_iexe    );
+    nf_register_we_clr  #( 1  ) we_dm_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_dm_id    , we_dm_iexe    );
+    nf_register_we_clr  #( 1  ) rf_src_id_iexe      ( clk , resetn , ~ stall_iexe , flush_iexe , rf_src_id   , rf_src_iexe   );
+    nf_register_we_clr  #( 32 ) ALU_Code_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , ALU_Code_id , ALU_Code_iexe );
 
     /*********************************************
     **       Instruction execution stage        **
@@ -180,13 +187,13 @@ module nf_cpu
     // creating instruction execution unit
     nf_i_exu nf_i_exu_0
     (
-        .rd1            ( rd1_i_exu         ),
-        .rd2            ( rd2_i_exu         ),
-        .ext_data       ( ext_data_iexe     ),
-        .srcB_sel       ( srcB_sel_iexe     ),
-        .shamt          ( shamt_iexe        ),
-        .ALU_Code       ( ALU_Code_iexe     ),
-        .result         ( result_iexe       )
+        .rd1            ( rd1_i_exu         ),  // read data from reg file (port1)
+        .rd2            ( rd2_i_exu         ),  // read data from reg file (port2)
+        .ext_data       ( ext_data_iexe     ),  // sign extended immediate data
+        .srcB_sel       ( srcB_sel_iexe     ),  // source enable signal for ALU
+        .shamt          ( shamt_iexe        ),  // for shift operations
+        .ALU_Code       ( ALU_Code_iexe     ),  // code for ALU
+        .result         ( result_iexe       )   // result of ALU operation
     );
 
     /*********************************************
@@ -194,7 +201,7 @@ module nf_cpu
     *********************************************/
     //for debug
     logic   [31 : 0]    instr_imem;
-    nf_register #( 32 ) instr_iexe_imem ( clk, resetn, instr_iexe, instr_imem );
+    nf_register_we  #( 32 ) instr_iexe_imem     ( clk , resetn , ~ stall_imem , instr_iexe , instr_imem  );
 
     logic   [31 : 0]    result_imem;
     logic   [0  : 0]    we_dm_imem;
@@ -203,16 +210,17 @@ module nf_cpu
     logic   [4  : 0]    wa3_imem;
     logic   [0  : 0]    we_rf_imem;
 
-    nf_register #( 32 ) result_iexe_imem    ( clk, resetn, result_iexe, result_imem );
-    nf_register #( 1  ) we_dm_iexe_imem     ( clk, resetn, we_dm_iexe,  we_dm_imem  );
-    nf_register #( 32 ) rd2_iexe_imem       ( clk, resetn, rd2_iexe,    rd2_imem    );
-    nf_register #( 1  ) rf_src_iexe_imem    ( clk, resetn, rf_src_iexe, rf_src_imem );
-    nf_register #( 5  ) wa3_iexe_imem       ( clk, resetn, wa3_iexe,    wa3_imem    );
-    nf_register #( 1  ) we_rf_iexe_imem     ( clk, resetn, we_rf_iexe,  we_rf_imem  );
+    nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe , result_imem );
+    nf_register_we  #( 1  ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , we_dm_iexe  , we_dm_imem  );
+    nf_register_we  #( 32 ) rd2_iexe_imem       ( clk , resetn , ~ stall_imem , rd2_iexe    , rd2_imem    );
+    nf_register_we  #( 1  ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem , rf_src_iexe , rf_src_imem );
+    nf_register_we  #( 5  ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem , wa3_iexe    , wa3_imem    );
+    nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe  , we_rf_imem  );
 
     assign addr_dm  = result_imem;
     assign wd_dm    = rd2_imem;
     assign we_dm    = we_dm_imem;
+    assign req_dm   = we_dm_imem || rf_src_iexe;
 
     /*********************************************
     **       Instruction write back stage       **
@@ -220,17 +228,17 @@ module nf_cpu
 
     // for debug
     logic   [31 : 0]    instr_iwb;
-    nf_register #( 32 ) instr_imem_iwb ( clk, resetn, instr_imem, instr_iwb );
+    nf_register_we  #( 32 ) instr_imem_iwb  ( clk , resetn , ~ stall_iwb , instr_imem  , instr_iwb  );
 
     logic   [4  : 0]    wa3_iwb;
     logic   [0  : 0]    we_rf_iwb;
     logic   [0  : 0]    rf_src_iwb;
     logic   [31 : 0]    result_iwb;
 
-    nf_register #( 5  ) wa3_imem_iwb    ( clk, resetn, wa3_imem,    wa3_iwb     );
-    nf_register #( 1  ) we_rf_imem_iwb  ( clk, resetn, we_rf_imem,  we_rf_iwb   );
-    nf_register #( 1  ) rf_src_imem_iwb ( clk, resetn, rf_src_imem, rf_src_iwb  );
-    nf_register #( 32 ) result_imem_iwb ( clk, resetn, result_imem, result_iwb  );
+    nf_register_we  #( 5  ) wa3_imem_iwb    ( clk , resetn , ~ stall_iwb , wa3_imem    , wa3_iwb    );
+    nf_register_we  #( 1  ) we_rf_imem_iwb  ( clk , resetn , ~ stall_iwb , we_rf_imem  , we_rf_iwb  );
+    nf_register_we  #( 1  ) rf_src_imem_iwb ( clk , resetn , ~ stall_iwb , rf_src_imem , rf_src_iwb );
+    nf_register_we  #( 32 ) result_imem_iwb ( clk , resetn , ~ stall_iwb , result_imem , result_iwb );
 
     assign wa3   = wa3_iwb;
     assign wd3   = rf_src_iwb ? rd_dm : result_iwb;
@@ -247,7 +255,10 @@ module nf_cpu
         .ra2_iexe       ( ra2_iexe      ),
         .rd1_bypass     ( rd1_bypass    ),
         .rd2_bypass     ( rd2_bypass    ),
+        .cmp_d1_bypass  ( cmp_d1_bypass ),
+        .cmp_d2_bypass  ( cmp_d2_bypass ),
         // lw hazard stall and flush
+        .req_ack_dm     ( req_ack_dm    ),
         .wa3_iexe       ( wa3_iexe      ),
         .we_rf_iexe     ( we_rf_iexe    ),
         .rf_src_iexe    ( rf_src_iexe   ),
@@ -255,10 +266,10 @@ module nf_cpu
         .ra2_id         ( ra2_id        ),
         .stall_if       ( stall_if      ),
         .stall_id       ( stall_id      ),
-        .flush_iexe     ( flush_iexe    ),
-        // 
-        .cmp_d1_bypass  ( cmp_d1_bypass ),
-        .cmp_d2_bypass  ( cmp_d2_bypass )
+        .stall_iexe     ( stall_iexe    ),
+        .stall_imem     ( stall_imem    ),
+        .stall_iwb      ( stall_iwb     ),
+        .flush_iexe     ( flush_iexe    )
     );
 
     assign cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;

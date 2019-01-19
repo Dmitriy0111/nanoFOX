@@ -45,6 +45,6 @@ module nf_i_fu
     // creating program counter
     nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ~ stall_if, '0, pc_i, pc_if1      );
     // fetch 1 stage
-    nf_register_we     #( 32 ) pc_if1_if2           ( clk, resetn, ~ stall_if, pc_if1, pc_if2        );
+    nf_register_we     #( 32 ) pc_if1_if2           ( clk, resetn, ~ stall_if, pc_if1,   pc_if2      );
 
 endmodule : nf_i_fu

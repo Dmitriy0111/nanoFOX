@@ -12,14 +12,14 @@ module nf_dp_ram
     parameter                   depth = 64
 )(
     input   logic               clk,
+    // Port 1
     input   logic   [31 : 0]    addr_p1,    // Port-1 addr
     input   logic   [0  : 0]    we_p1,      // Port-1 write enable
-    input   logic   [0  : 0]    re_p1,      // Port-1 read enable
     input   logic   [31 : 0]    wd_p1,      // Port-1 write data
     output  logic   [31 : 0]    rd_p1,      // Port-1 read data
+    // Port 2
     input   logic   [31 : 0]    addr_p2,    // Port-2 addr
     input   logic   [0  : 0]    we_p2,      // Port-2 write enable
-    input   logic   [0  : 0]    re_p2,      // Port-2 read enable
     input   logic   [31 : 0]    wd_p2,      // Port-2 write data
     output  logic   [31 : 0]    rd_p2       // Port-2 read data
 );
