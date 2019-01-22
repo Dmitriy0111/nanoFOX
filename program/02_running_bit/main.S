@@ -2,7 +2,8 @@
 
 .section    .text
 
-_start:     lui     t0, 1                   # t0 = 0 ; clear t0         
-counter:    slli    t0, t0, 1               # t0 = t0 + 1 ; addition t0 with 1
-            beq     t0, zero, _start        # go to counter label
-            beq     zero, zero, counter     # go to _start label
+_start:     lui     t0, 0                   # t0 = 0 ; clear t0
+            addi    t0, t0, 1               # t0 = t0 + 1 ; addition t0 with 1         
+counter:    slli    t0, t0, 1               # t0 = t0 << 1 ; left shift t0
+            beq     t0, zero, _start        # go to _start label
+            beq     zero, zero, counter     # go to counter label

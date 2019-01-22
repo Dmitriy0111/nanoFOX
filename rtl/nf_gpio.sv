@@ -4,10 +4,10 @@
 *  Data            :   2018.11.29
 *  Language        :   SystemVerilog
 *  Description     :   This is GPIO module
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
+`include "../inc/nf_settings.svh"
 
 module nf_gpio
 #(
@@ -16,14 +16,14 @@ module nf_gpio
     input   logic                   clk,
     input   logic                   resetn,
     //nf_router side
-    input   logic   [31 : 0]        addr,
-    input   logic                   we,
-    input   logic   [31 : 0]        wd,
-    output  logic   [31 : 0]        rd,
+    input   logic   [31        : 0] addr,   // address
+    input   logic                   we,     // write enable
+    input   logic   [31        : 0] wd,     // write data
+    output  logic   [31        : 0] rd,     // read data
     //gpio_side
-    input   logic   [gpio_w-1  : 0] gpi,
-    output  logic   [gpio_w-1  : 0] gpo,
-    output  logic   [gpio_w-1  : 0] gpd
+    input   logic   [gpio_w-1  : 0] gpi,    // GPIO input
+    output  logic   [gpio_w-1  : 0] gpo,    // GPIO output
+    output  logic   [gpio_w-1  : 0] gpd     // GPIO direction
 );
     // gpio input
     logic   [gpio_w-1 : 0]  gpio_i;
@@ -31,6 +31,7 @@ module nf_gpio
     logic   [gpio_w-1 : 0]  gpio_o;
     // gpio direction
     logic   [gpio_w-1 : 0]  gpio_d;
+    // write enable signals 
     logic                   gpo_we;
     logic                   gpd_we;
     // assign inputs/outputs
@@ -44,7 +45,7 @@ module nf_gpio
     always_comb
     begin
         rd = gpio_i;
-        casex(addr[0 +: 4])
+        casex( addr[0 +: 4] )
             `NF_GPIO_GPI :  rd = gpio_i;
             `NF_GPIO_GPO :  rd = gpio_o;
             `NF_GPIO_DIR :  rd = gpio_d;
@@ -53,19 +54,19 @@ module nf_gpio
 
     always_ff @(posedge clk, negedge resetn)
     begin : load_gpo
-        if(!resetn)
+        if( !resetn )
             gpio_o <= '0;
         else
-            if(gpo_we)
+            if( gpo_we )
                 gpio_o <= wd;
     end
 
     always_ff @(posedge clk, negedge resetn)
     begin : load_gpd
-        if(!resetn)
+        if( !resetn )
             gpio_d <= '0;
         else
-            if(gpd_we)
+            if( gpd_we )
                 gpio_d <= wd;
     end
 

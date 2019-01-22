@@ -4,7 +4,7 @@
 *  Data            :   2018.11.28
 *  Language        :   SystemVerilog
 *  Description     :   This is common ram memory
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_ram
@@ -12,10 +12,10 @@ module nf_ram
     parameter                   depth = 64
 )(
     input   logic               clk,
-    input   logic   [31 : 0]    addr,
-    input   logic               we,
-    input   logic   [31 : 0]    wd,
-    output  logic   [31 : 0]    rd
+    input   logic   [31 : 0]    addr,   // address
+    input   logic               we,     // write enable
+    input   logic   [31 : 0]    wd,     // write data
+    output  logic   [31 : 0]    rd      // read data
 );
 
     logic [31 : 0] ram [depth-1 : 0];
@@ -24,7 +24,7 @@ module nf_ram
 
     always_ff @(posedge clk)
     begin
-        if(we)
+        if( we )
             ram[addr] <= wd;  
     end
 

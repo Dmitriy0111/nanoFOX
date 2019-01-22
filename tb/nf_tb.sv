@@ -4,10 +4,10 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is testbench for cpu unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
+`include "../inc/nf_settings.svh"
 `include "../tb/pars_instr.sv"
 
 module nf_tb();
@@ -34,6 +34,8 @@ module nf_tb();
     bit     [31 : 0]    reg_data;
     bit     [31 : 0]    cycle_counter;
 
+    integer             log;
+
     genvar gpio_i;
     generate
         for( gpio_i='0 ; gpio_i<8 ; gpio_i=gpio_i+1'b1 )
@@ -44,6 +46,7 @@ module nf_tb();
     endgenerate
 
     string              instruction;
+    string              instr_sep;
 
     nf_top nf_top_0
     (
@@ -52,11 +55,11 @@ module nf_tb();
 
     //reset all register's in '0
     initial
-        for(int i=0;i<32;i++)
+        for( int i=0 ; i<32 ; i++ )
             nf_top_0.nf_cpu_0.reg_file_0.reg_file[i] = '0;
     //reset data memory
     initial
-        for(int i=0;i<`ram_depth;i++)
+        for( int i=0 ; i<`ram_depth ; i++ )
             nf_top_0.nf_ram_0.ram[i]='0;
     //generating clock
     initial
@@ -78,14 +81,23 @@ module nf_tb();
     initial
     begin
         div = 3;
+        if( `log_en )
+            log = $fopen("../log/.log","w");
         forever
         begin
             @(posedge nf_top_0.cpu_en);
             if(resetn)
             begin
-                cycle_counter++;
                 $write("cycle = %d, pc = %h ", cycle_counter,nf_top_0.nf_cpu_0.instr_addr);
-                pars_instr_0.pars(nf_top_0.nf_cpu_0.instr,instruction);
+                pars_instr_0.pars(nf_top_0.nf_cpu_0.instr, instruction, instr_sep);
+                if( `log_en )
+                begin
+                    $fwrite(log,"cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.instr_addr);
+                    $fwrite(log,"%s\n", instruction);
+                    if( `debug_lev0)
+                        $fwrite(log,"                    %s\n", instr_sep);
+                end
+                cycle_counter++;
             end
             if(cycle_counter == repeat_cycles)
                 $stop;

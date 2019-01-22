@@ -4,10 +4,10 @@
 *  Data            :   2018.11.23
 *  Language        :   SystemVerilog
 *  Description     :   This is class for parsing instruction from instruction memory
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_cpu.svh"
+`include "../inc/nf_cpu.svh"
 `include "nf_tb.svh"
 
 class pars_instr;
@@ -62,9 +62,9 @@ class pars_instr;
         $timeformat(-9, 2, " ns", 7);
     endfunction : new
 
-    task pars(bit [31 : 0] instr, ref string intruction_s);
+    task pars(bit [31 : 0] instr, ref string intruction_s,ref string instr_sep);
 
-        string instr_sep;
+        instr_sep = "";
 
         ra1        = instr[15 +: 5];
         ra2        = instr[20 +: 5];
@@ -99,10 +99,11 @@ class pars_instr;
         endcase
 
         $display("%t %s", $time, intruction_s);
-        `ifdef debug_lev0
-        instr_separation(instr,instr_sep);
-        $display("%s", instr_sep);
-        `endif
+        if( `debug_lev0 )
+        begin
+            instr_separation(instr,instr_sep);
+            $display("%s", instr_sep);
+        end
     endtask : pars
 
     task instr_separation(bit [31 : 0] instr, ref string instr_sep);

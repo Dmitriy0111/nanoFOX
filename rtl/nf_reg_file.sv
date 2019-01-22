@@ -4,24 +4,25 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is register file
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
-`include "nf_settings.svh"
+
+`include "../inc/nf_settings.svh"
 
 module nf_reg_file
 (
     input   logic               clk,
-    input   logic   [4  : 0]    ra1,
-    output  logic   [31 : 0]    rd1,
-    input   logic   [4  : 0]    ra2,
-    output  logic   [31 : 0]    rd2,
-    input   logic   [4  : 0]    wa3,
-    input   logic   [31 : 0]    wd3,
-    input   logic               we3
+    input   logic   [4  : 0]    ra1,    // read address 1
+    output  logic   [31 : 0]    rd1,    // read data 1
+    input   logic   [4  : 0]    ra2,    // read address 2
+    output  logic   [31 : 0]    rd2,    // read data 2
+    input   logic   [4  : 0]    wa3,    // write address 
+    input   logic   [31 : 0]    wd3,    // write data
+    input   logic               we3     // write enable signal
     `ifdef debug
     ,
-    input   logic   [4  : 0]    ra0,
-    output  logic   [31 : 0]    rd0
+    input   logic   [4  : 0]    ra0,    // read address 0
+    output  logic   [31 : 0]    rd0     // read data 0
     `endif
 );
     logic [31:0] reg_file [`reg_number-1:0];
@@ -34,7 +35,7 @@ module nf_reg_file
     
     always_ff @(posedge clk)
     begin
-        if(we3)
+        if( we3 )
         begin
             reg_file[wa3] <= wd3;
         end

@@ -4,10 +4,10 @@
 *  Data            :   2018.11.27
 *  Language        :   SystemVerilog
 *  Description     :   This is top unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
+`include "../inc/nf_settings.svh"
 
 module nf_top
 (
@@ -50,17 +50,17 @@ module nf_top
     (
         .clk            ( clk               ),
         .resetn         ( resetn            ),
-        .instr_addr     ( instr_addr        ),
-        .instr          ( instr             ),
-        .cpu_en         ( cpu_en            ),
-        .addr_dm        ( addr_dm           ),
-        .we_dm          ( we_dm             ),
-        .wd_dm          ( wd_dm             ),
-        .rd_dm          ( rd_dm             )
+        .instr_addr     ( instr_addr        ),  // cpu enable signal
+        .instr          ( instr             ),  // instruction address
+        .cpu_en         ( cpu_en            ),  // instruction data
+        .addr_dm        ( addr_dm           ),  // data memory address
+        .we_dm          ( we_dm             ),  // data memory write enable
+        .wd_dm          ( wd_dm             ),  // data memory write data
+        .rd_dm          ( rd_dm             )   // data memory read data
     `ifdef debug
         ,
-        .reg_addr       ( reg_addr          ),
-        .reg_data       ( reg_data          )
+        .reg_addr       ( reg_addr          ),  // register address
+        .reg_data       ( reg_data          )   // register data
     `endif
     );
 
@@ -71,8 +71,8 @@ module nf_top
     )
     instr_mem_0
     (
-        .addr           ( instr_addr >> 2   ),
-        .instr          ( instr             )
+        .addr           ( instr_addr >> 2   ),  // instruction address
+        .instr          ( instr             )   // instruction data
     );
 
     // creating strob generating unit for "dividing" clock
@@ -80,8 +80,8 @@ module nf_top
     (
         .clk            ( clk               ),
         .resetn         ( resetn            ),
-        .div            ( div               ),
-        .en             ( cpu_en            )
+        .div            ( div               ),  // div_number
+        .en             ( cpu_en            )   // enable strobe
     );
 
     nf_router
@@ -93,17 +93,17 @@ module nf_top
         .clk            ( clk               ),
         .resetn         ( resetn            ),
         //cpu side
-        .addr_dm_m      ( addr_dm           ),
-        .we_dm_m        ( we_dm             ),
-        .wd_dm_m        ( wd_dm             ),
-        .rd_dm_m        ( rd_dm             ),
+        .addr_dm_m      ( addr_dm           ),  // master address
+        .we_dm_m        ( we_dm             ),  // master write enable
+        .wd_dm_m        ( wd_dm             ),  // master write data
+        .rd_dm_m        ( rd_dm             ),  // master read data
         //devices side
-        .clk_s          ( clk_s             ),
-        .resetn_s       ( resetn_s          ),
-        .addr_dm_s      ( addr_dm_s         ),
-        .we_dm_s        ( we_dm_s           ),
-        .wd_dm_s        ( wd_dm_s           ),
-        .rd_dm_s        ( rd_dm_s           )
+        .clk_s          ( clk_s             ),  // slave clock
+        .resetn_s       ( resetn_s          ),  // slave reset
+        .addr_dm_s      ( addr_dm_s         ),  // slave address
+        .we_dm_s        ( we_dm_s           ),  // slave write enable
+        .wd_dm_s        ( wd_dm_s           ),  // slave write data
+        .rd_dm_s        ( rd_dm_s           )   // slave read data
     );
 
     nf_ram
@@ -113,10 +113,10 @@ module nf_top
     nf_ram_0
     (
         .clk            ( clk_s             ),
-        .addr           ( addr_dm_s >> 2    ),
-        .we             ( we_dm_s[0]        ),
-        .wd             ( wd_dm_s           ),
-        .rd             ( rd_dm_s[0]        )
+        .addr           ( addr_dm_s >> 2    ),  // address
+        .we             ( we_dm_s[0]        ),  // write enable
+        .wd             ( wd_dm_s           ),  // write data
+        .rd             ( rd_dm_s[0]        )   // read data
     );
 
     nf_gpio
@@ -128,14 +128,14 @@ module nf_top
         .clk            ( clk_s             ),
         .resetn         ( resetn_s          ),
         //nf_router side
-        .addr           ( addr_dm_s         ),
-        .we             ( we_dm_s[1]        ),
-        .wd             ( wd_dm_s           ),
-        .rd             ( rd_dm_s[1]        ),
+        .addr           ( addr_dm_s         ),  // address
+        .we             ( we_dm_s[1]        ),  // write enable
+        .wd             ( wd_dm_s           ),  // write data
+        .rd             ( rd_dm_s[1]        ),  // read data
         //gpio_side
-        .gpi            ( gpi               ),
-        .gpo            ( gpo               ),
-        .gpd            ( gpd               )
+        .gpi            ( gpi               ),  // GPIO input
+        .gpo            ( gpo               ),  // GPIO output
+        .gpd            ( gpd               )   // GPIO direction
     );
 
     nf_pwm
@@ -147,14 +147,14 @@ module nf_top
         .clk            ( clk_s             ),
         .resetn         ( resetn_s          ),
         //nf_router side
-        .addr           ( addr_dm_s         ),
-        .we             ( we_dm_s[2]        ),
-        .wd             ( wd_dm_s           ),
-        .rd             ( rd_dm_s[2]        ),
+        .addr           ( addr_dm_s         ),  // address
+        .we             ( we_dm_s[2]        ),  // write enable
+        .wd             ( wd_dm_s           ),  // write data
+        .rd             ( rd_dm_s[2]        ),  // read data
         //pmw_side
-        .pwm_clk        ( clk_s             ),
-        .pwm_resetn     ( resetn_s          ),
-        .pwm            ( pwm               )
+        .pwm_clk        ( clk_s             ),  // PWM clock input
+        .pwm_resetn     ( resetn_s          ),  // PWM reset input
+        .pwm            ( pwm               )   // PWM output signal
     );
 
 endmodule : nf_top

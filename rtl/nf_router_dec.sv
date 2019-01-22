@@ -4,17 +4,17 @@
 *  Data            :   2018.11.29
 *  Language        :   SystemVerilog
 *  Description     :   This is decoder unit for routing lw sw command's
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
+`include "../inc/nf_settings.svh"
 
 module nf_router_dec
 #(
     parameter                           Slave_n = `slave_number
 )(
-    input   logic   [31        : 0]     addr_m,
-    output  logic   [Slave_n-1 : 0]     slave_sel
+    input   logic   [31        : 0]     addr_m,     // master address
+    output  logic   [Slave_n-1 : 0]     slave_sel   // slave select
 );  
 
     // RAM  address range  0x0000_0000 - 0x0000_ffff
