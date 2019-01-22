@@ -12,10 +12,10 @@ module nf_ram
     parameter                   depth = 64
 )(
     input   logic               clk,
-    input   logic   [31 : 0]    addr,
-    input   logic               we,
-    input   logic   [31 : 0]    wd,
-    output  logic   [31 : 0]    rd
+    input   logic   [31 : 0]    addr,   // address
+    input   logic               we,     // write enable
+    input   logic   [31 : 0]    wd,     // write data
+    output  logic   [31 : 0]    rd      // read data
 );
 
     logic [31 : 0] ram [depth-1 : 0];

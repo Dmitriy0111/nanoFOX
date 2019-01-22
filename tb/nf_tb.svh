@@ -7,4 +7,4 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-//`define debug_lev0
+`define debug_lev0  1

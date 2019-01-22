@@ -7,7 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_hazard_unit.svh"
+`include "../inc/nf_hazard_unit.svh"
 
 module nf_hazard_unit
 (

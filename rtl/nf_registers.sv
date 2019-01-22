@@ -14,8 +14,8 @@ module nf_register
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic   [width-1 : 0]   datai,
-    output  logic   [width-1 : 0]   datao
+    input   logic   [width-1 : 0]   datai,  // input data
+    output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)
@@ -35,9 +35,9 @@ module nf_register_we
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic                   we,
-    input   logic   [width-1 : 0]   datai,
-    output  logic   [width-1 : 0]   datao
+    input   logic                   we,     // write enable
+    input   logic   [width-1 : 0]   datai,  // input data
+    output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)
@@ -57,10 +57,10 @@ module nf_register_we_r
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic                   we,
-    input   logic   [width-1 : 0]   datar,
-    input   logic   [width-1 : 0]   datai,
-    output  logic   [width-1 : 0]   datao
+    input   logic                   we,     // write enable
+    input   logic   [width-1 : 0]   datar,  // reset value
+    input   logic   [width-1 : 0]   datai,  // input data
+    output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)
@@ -80,9 +80,9 @@ module nf_register_clr
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic                   clr,
-    input   logic   [width-1 : 0]   datai,
-    output  logic   [width-1 : 0]   datao
+    input   logic                   clr,    // clear register
+    input   logic   [width-1 : 0]   datai,  // input data
+    output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)
@@ -102,10 +102,10 @@ module nf_register_we_clr
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic                   we,
-    input   logic                   clr,
-    input   logic   [width-1 : 0]   datai,
-    output  logic   [width-1 : 0]   datao
+    input   logic                   we,     // write enable
+    input   logic                   clr,    // clear register
+    input   logic   [width-1 : 0]   datai,  // input data
+    output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)

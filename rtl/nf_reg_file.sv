@@ -6,7 +6,8 @@
 *  Description     :   This is register file
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
-`include "nf_settings.svh"
+
+`include "../inc/nf_settings.svh"
 
 module nf_reg_file
 (

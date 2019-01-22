@@ -7,8 +7,8 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
-`include "nf_hazard_unit.svh"
+`include "../inc/nf_settings.svh"
+`include "../inc/nf_hazard_unit.svh"
 
 module nf_cpu
 (
@@ -28,8 +28,8 @@ module nf_cpu
 `ifdef debug
     // for debug
     ,
-    input   logic   [4  : 0]    reg_addr,
-    output  logic   [31 : 0]    reg_data
+    input   logic   [4  : 0]    reg_addr,   // register address
+    output  logic   [31 : 0]    reg_data    // register data
 `endif
 );
 

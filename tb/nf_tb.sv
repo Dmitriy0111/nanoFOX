@@ -7,8 +7,9 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
+`include "../inc/nf_settings.svh"
 `include "../tb/pars_instr.sv"
+`include "../tb/nf_tb.svh"
 
 module nf_tb();
 
@@ -31,6 +32,11 @@ module nf_tb();
     string  instruction_iexe_stage;
     string  instruction_imem_stage;
     string  instruction_iwb_stage;
+
+    string  instr_sep_s_id_stage;
+    string  instr_sep_s_iexe_stage;
+    string  instr_sep_s_imem_stage;
+    string  instr_sep_s_iwb_stage;
 
     nf_top nf_top_0
     (
@@ -68,13 +74,20 @@ module nf_tb();
                 cycle_counter++;
                 $write("cycle = %d, pc = %h \n", cycle_counter,nf_top_0.nf_cpu_0.addr_i );
                 $write("Instruction decode stage        : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage      );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage     );
                 $write("Instruction execute stage       : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage    );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage   );
                 $write("Instruction memory stage        : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage    );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage   );
                 $write("Instruction write back stage    : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage     );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage  , instr_sep_s_iwb_stage    );
+                if( `debug_lev0 )
+                begin
+                    $write("DL0 : Instruction decode stage        : %s \n" , instr_sep_s_id_stage     );
+                    $write("DL0 : Instruction execute stage       : %s \n" , instr_sep_s_iexe_stage   );
+                    $write("DL0 : Instruction memory stage        : %s \n" , instr_sep_s_imem_stage   );
+                    $write("DL0 : Instruction write back stage    : %s \n" , instr_sep_s_iwb_stage    );
+                end
             end
             if( cycle_counter == repeat_cycles )
                 $stop;

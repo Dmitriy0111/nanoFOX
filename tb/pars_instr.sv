@@ -7,8 +7,8 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_cpu.svh"
 `include "nf_tb.svh"
+`include "../inc/nf_cpu.svh"
 
 class pars_instr;
 
@@ -62,7 +62,7 @@ class pars_instr;
         $timeformat(-9, 2, " ns", 7);
     endfunction : new
 
-    task pars(bit [31 : 0] instr, ref string instruction_s);
+    task pars(bit [31 : 0] instr, ref string instruction_s, ref string instr_sep_s);
 
         string instr_sep;
 
@@ -101,10 +101,10 @@ class pars_instr;
         endcase
 
         $display("%t %s", $time, instruction_s);
-        `ifdef debug_lev0
-        instr_separation(instr,instr_sep);
-        $display("%s", instr_sep);
-        `endif
+        if( `debug_lev0 )
+        begin
+            instr_separation(instr,instr_sep_s);
+        end
     endtask : pars
 
     task instr_separation(bit [31 : 0] instr, ref string instr_sep);
@@ -119,20 +119,21 @@ class pars_instr;
         funct7 = instr[25 +: 7];
 
         if( opcode == 'b0110011 )
-            instr_sep = $psprintf("R-type : %b_%b_%b_%b_%b_%b", funct7, ra2, ra1, funct3, wa3, opcode );
+            instr_sep = $psprintf("R-type  : %b_%b_%b_%b_%b_%b", funct7, ra2, ra1, funct3, wa3, opcode );
         if( ( opcode == 'b0010011 ) || ( opcode == 'b0000011 ) || ( opcode == 'b1100111 ) )
-            instr_sep = $psprintf("I-type : %b_%b_%b_%b_%b", instr[20 +: 12], ra1, funct3, wa3, opcode );
+            instr_sep = $psprintf("I-type  : %b_%b_%b_%b_%b", instr[20 +: 12], ra1, funct3, wa3, opcode );
         if( opcode == 'b0100011 )
-            instr_sep = $psprintf("S-type : %b_%b_%b_%b_%b_%b", instr[25 +: 7], ra2, ra1, funct3, instr[7  +: 5], opcode );
+            instr_sep = $psprintf("S-type  : %b_%b_%b_%b_%b_%b", instr[25 +: 7], ra2, ra1, funct3, instr[7  +: 5], opcode );
         if( opcode == 'b1100011 )
-            instr_sep = $psprintf("B-type : %b_%b_%b_%b_%b_%b_%b_%b", instr[31], instr[25 +: 6], ra2, ra1, funct3, instr[8  +: 5], instr[7], opcode );
+            instr_sep = $psprintf("B-type  : %b_%b_%b_%b_%b_%b_%b_%b", instr[31], instr[25 +: 6], ra2, ra1, funct3, instr[8  +: 5], instr[7], opcode );
         if( ( opcode == 'b0110111 ) || ( opcode == 'b0010111 ) )
-            instr_sep = $psprintf("U-type : %b_%b_%b", instr[12 +: 20], wa3, opcode );
+            instr_sep = $psprintf("U-type  : %b_%b_%b", instr[12 +: 20], wa3, opcode );
         if( opcode == 'b1101111 )
-            instr_sep = $psprintf("J-type : %b_%b_%b_%b_%b_%b", instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode );
+            instr_sep = $psprintf("J-type  : %b_%b_%b_%b_%b_%b", instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode );
+        if( instr == '0 )
+            instr_sep = $psprintf("Flushed : %b", instr );
         if( instr_sep == "" )
             instr_sep = $psprintf("%b", instr );
-
     endtask : instr_separation
 
 endclass : pars_instr

@@ -87,11 +87,19 @@
 `define ALU_SUB     'b100
 
 //sign imm select
-`define i_sel       'b00        // for i type instruction
-`define u_sel       'b01        // for u type instruction
-`define b_sel       'b10        // for b type instruction
-`define s_sel       'b11        // for s type instruction
+`define I_SEL       'b00        // for i type instruction
+`define U_SEL       'b01        // for u type instruction
+`define B_SEL       'b10        // for b type instruction
+`define S_SEL       'b11        // for s type instruction
 
 //branch type constants
 `define B_NONE      'b0
 `define B_EQ_NEQ    'b1
+
+//srcB select constants
+`define SRCB_IMM    'b0
+`define SRCB_RD1    'b1
+
+//RF src constants
+`define RF_ALUR     'b0         // RF write data is ALU result
+`define RF_DMEM     'b1         // RF write data is data memory read data

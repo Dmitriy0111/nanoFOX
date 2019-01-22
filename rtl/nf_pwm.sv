@@ -14,14 +14,14 @@ module nf_pwm
     input   logic               clk,
     input   logic               resetn,
     //nf_router side
-    input   logic   [31 : 0]    addr,
-    input   logic               we,
-    input   logic   [31 : 0]    wd,
-    output  logic   [31 : 0]    rd,
+    input   logic   [31 : 0]    addr,       // address
+    input   logic               we,         // write enable
+    input   logic   [31 : 0]    wd,         // write data
+    output  logic   [31 : 0]    rd,         // read data
     //pmw_side
-    input   logic               pwm_clk,
-    input   logic               pwm_resetn,
-    output  logic               pwm
+    input   logic               pwm_clk,    // PWM clock input
+    input   logic               pwm_resetn, // PWM reset input
+    output  logic               pwm         // PWM output signal
 );
 
     logic   [pwm_width-1 : 0]  pwm_i;      //internal counter register

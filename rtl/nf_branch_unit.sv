@@ -7,15 +7,15 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_cpu.svh"
+`include "../inc/nf_cpu.svh"
 
 module nf_branch_unit
 (
     input   logic   [0  : 0]    branch_type,    // from control unit, '1 if branch instruction
-    input   logic               eq_neq,         // from control unit for beq and bne commands (equal and not equal)
+    input   logic   [0  : 0]    eq_neq,         // from control unit for beq and bne commands (equal and not equal)
     input   logic   [31 : 0]    d0,             // from register file (rd1)
     input   logic   [31 : 0]    d1,             // from register file (rd2)
-    output  logic               pc_src          // next program counter
+    output  logic   [0  : 0]    pc_src          // next program counter
 );
 
     logic   equal;

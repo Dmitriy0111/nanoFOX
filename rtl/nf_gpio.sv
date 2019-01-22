@@ -7,7 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
+`include "../inc/nf_settings.svh"
 
 module nf_gpio
 #(
@@ -16,14 +16,14 @@ module nf_gpio
     input   logic                   clk,
     input   logic                   resetn,
     //nf_router side
-    input   logic   [31       : 0]  addr,
-    input   logic                   we,
-    input   logic   [31       : 0]  wd,
-    output  logic   [31       : 0]  rd,
+    input   logic   [31       : 0]  addr,   // address
+    input   logic                   we,     // write enable
+    input   logic   [31       : 0]  wd,     // write data
+    output  logic   [31       : 0]  rd,     // read data
     //gpio_side
-    input   logic   [gpio_w-1 : 0]  gpi,
-    output  logic   [gpio_w-1 : 0]  gpo,
-    output  logic   [gpio_w-1 : 0]  gpd
+    input   logic   [gpio_w-1 : 0]  gpi,    // GPIO input
+    output  logic   [gpio_w-1 : 0]  gpo,    // GPIO output
+    output  logic   [gpio_w-1 : 0]  gpd     // GPIO direction
 );
     // gpio input
     logic   [gpio_w-1 : 0]  gpio_i;
@@ -31,6 +31,7 @@ module nf_gpio
     logic   [gpio_w-1 : 0]  gpio_o;
     // gpio direction
     logic   [gpio_w-1 : 0]  gpio_d;
+    // write enable signals 
     logic                   gpo_we;
     logic                   gpd_we;
     // assign inputs/outputs
