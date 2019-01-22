@@ -4,7 +4,7 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is file with registers modules
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 // simple register with reset and clock 
@@ -14,8 +14,8 @@ module nf_register
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic   [width-1 : 0]   datai,
-    output  logic   [width-1 : 0]   datao
+    input   logic   [width-1 : 0]   datai,  // input data
+    output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)
@@ -35,9 +35,9 @@ module nf_register_we
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    input   logic                   we,
-    input   logic   [width-1 : 0]   datai,
-    output  logic   [width-1 : 0]   datao
+    input   logic                   we,     // write enable
+    input   logic   [width-1 : 0]   datai,  // input data
+    output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)

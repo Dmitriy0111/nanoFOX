@@ -4,7 +4,7 @@
 *  Data            :   2018.12.02
 *  Language        :   SystemVerilog
 *  Description     :   This is static seven seg converter
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_seven_seg_static

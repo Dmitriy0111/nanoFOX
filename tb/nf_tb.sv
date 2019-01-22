@@ -4,10 +4,10 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is testbench for cpu unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_settings.svh"
+`include "../inc/nf_settings.svh"
 `include "../tb/pars_instr.sv"
 
 module nf_tb();

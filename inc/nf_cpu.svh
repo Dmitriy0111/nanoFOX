@@ -4,7 +4,7 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is cpu unit commands
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 //  Base Instruction Formats for ISA
@@ -79,6 +79,14 @@
 `define ALU_SUB     'b100
 
 //sign imm select
-`define i_sel       'b00        // for i type instruction
-`define u_sel       'b01        // for u type instruction
-`define b_sel       'b10        // for b type instruction
+`define I_SEL       'b00        // for i type instruction
+`define U_SEL       'b01        // for u type instruction
+`define B_SEL       'b10        // for b type instruction
+
+//branch type constants
+`define B_NONE      'b0
+`define B_EQ_NEQ    'b1
+
+//srcB select constants
+`define SRCB_IMM    'b0
+`define SRCB_RD1    'b1

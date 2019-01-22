@@ -4,10 +4,11 @@
 *  Data            :   2018.11.23
 *  Language        :   SystemVerilog
 *  Description     :   This is class for parsing instruction from instruction memory
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_cpu.svh"
+`include "nf_tb.svh"
+`include "../inc/nf_cpu.svh"
 
 class pars_instr;
 
@@ -61,6 +62,9 @@ class pars_instr;
     endfunction : new
 
     task pars(bit [31 : 0] instr, ref string intruction_s);
+
+        string instr_sep;
+
         ra1  = instr[15 +: 5];
         ra2  = instr[20 +: 5];
         wa3  = instr[7  +: 5];
@@ -88,7 +92,43 @@ class pars_instr;
             //  Other's instructions
             { `C_ANY  , `F3_ANY  , `F7_ANY  } : intruction_s = $psprintf("Unknown instruction",                                                                              );
         endcase
+
         $display("%t %s", $time, intruction_s);
+
+        if( `debug_lev0 )
+        begin
+            instr_separation(instr,instr_sep);
+            $display("%s", instr_sep);
+        end
+
     endtask : pars
+
+    task instr_separation(bit [31 : 0] instr, ref string instr_sep);
+
+        instr_sep= "";
+
+        ra1    = instr[15 +: 5];
+        ra2    = instr[20 +: 5];
+        wa3    = instr[7  +: 5];
+        opcode = instr[0  +: 7];
+        funct3 = instr[12 +: 3];
+        funct7 = instr[25 +: 7];
+
+        if( opcode == 'b0110011 )
+            instr_sep = $psprintf("R-type : %b_%b_%b_%b_%b_%b", funct7, ra2, ra1, funct3, wa3, opcode );
+        if( ( opcode == 'b0010011 ) || ( opcode == 'b0000011 ) || ( opcode == 'b1100111 ) )
+            instr_sep = $psprintf("I-type : %b_%b_%b_%b_%b", instr[20 +: 12], ra1, funct3, wa3, opcode );
+        if( opcode == 'b0100011 )
+            instr_sep = $psprintf("S-type : %b_%b_%b_%b_%b_%b", instr[25 +: 7], ra2, ra1, funct3, instr[7  +: 5], opcode );
+        if( opcode == 'b1100011 )
+            instr_sep = $psprintf("B-type : %b_%b_%b_%b_%b_%b_%b_%b", instr[31], instr[25 +: 6], ra2, ra1, funct3, instr[8  +: 5], instr[7], opcode );
+        if( ( opcode == 'b0110111 ) || ( opcode == 'b0010111 ) )
+            instr_sep = $psprintf("U-type : %b_%b_%b", instr[12 +: 20], wa3, opcode );
+        if( opcode == 'b1101111 )
+            instr_sep = $psprintf("J-type : %b_%b_%b_%b_%b_%b", instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode );
+        if( instr_sep == "" )
+            instr_sep = $psprintf("%b", instr );
+
+    endtask : instr_separation
 
 endclass : pars_instr

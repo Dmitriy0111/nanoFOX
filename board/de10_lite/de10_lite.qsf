@@ -305,8 +305,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_control_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_clock_div.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/nf_seven_seg_static.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_static.sv
 set_global_assignment -name SYSTEMVERILOG_FILE de10_lite.sv
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"

@@ -4,15 +4,15 @@
 *  Data            :   2018.11.23
 *  Language        :   SystemVerilog
 *  Description     :   This is unit for creating clock enable strobe
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_clock_div
 (
-    input   logic               clk,    // clock
-    input   logic               resetn, // reset
-    input   logic   [25:0]      div,    // div_number
-    output  logic               en      // enable strobe
+    input   logic               clk,   
+    input   logic               resetn,
+    input   logic   [25 : 0]    div,    // div_number
+    output  logic   [0  : 0]    en      // enable strobe
 );
 
     logic   [25 : 0]  int_div;  //internal divider register

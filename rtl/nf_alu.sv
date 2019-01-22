@@ -4,10 +4,10 @@
 *  Data            :   2018.11.19
 *  Language        :   SystemVerilog
 *  Description     :   This is ALU unit
-*  Copyright(c)    :   2018 Vlasov D.V.
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_cpu.svh"
+`include "../inc/nf_cpu.svh"
 
 module nf_alu
 (
