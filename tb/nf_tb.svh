@@ -7,4 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
+// enable debug instruction messages
 `define debug_lev0  0
+// enable logging
+`define log_en      1
