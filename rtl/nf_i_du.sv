@@ -24,7 +24,8 @@ module nf_i_du
     output  logic   [0  : 0]    pc_src,     // decoded next program counter value enable
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
-    output  logic   [0  : 0]    rf_src      // decoded source register file signal
+    output  logic   [0  : 0]    rf_src,     // decoded source register file signal
+    output  logic   [0  : 0]    branch_type // branch type
 );
 
     // sign extend wires
@@ -36,7 +37,6 @@ module nf_i_du
     logic   [6  : 0]    opcode;
     logic   [2  : 0]    funct3;
     logic   [6  : 0]    funct7;
-    logic   [0  : 0]    branch_type;
     logic   [0  : 0]    eq_neq;
     logic   [1  : 0]    imm_src;
     // immediate data in instruction

@@ -72,9 +72,11 @@ VSIM_OPT_GUI     = -gui -onfinish stop
 
 sim_clean:
 	rm -rfd $(VSIM_DIR)
+	rm -rfd log
 
 sim_dir: sim_clean
 	mkdir $(VSIM_DIR)
+	mkdir log
 
 sim_cmd: sim_dir
 	$(VSIM_BIN) $(VSIM_OPT_COMMON) $(VSIM_OPT_CMD)

@@ -8,6 +8,7 @@
 */
 
 `include "../inc/nf_hazard_unit.svh"
+`include "../inc/nf_cpu.svh"
 
 module nf_hazard_unit
 (
@@ -34,13 +35,15 @@ module nf_hazard_unit
     output  logic   [0 : 0]     stall_iexe,
     output  logic   [0 : 0]     stall_imem,
     output  logic   [0 : 0]     stall_iwb,
-    output  logic   [0 : 0]     flush_iexe
+    output  logic   [0 : 0]     flush_iexe,
+    input   logic   [0 : 0]     branch_type
 );
 
-    logic  lw_stall;
+    logic   lw_stall;
+    logic   branch_exe_id_stall;
 
-    assign cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem;
-    assign cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem;
+    assign  cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem;
+    assign  cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem;
 
     always_comb
     begin
@@ -59,6 +62,7 @@ module nf_hazard_unit
     end
 
     assign lw_stall = ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe && rf_src_iexe );
+    assign branch_exe_id_stall = ( branch_type != `B_NONE ) && we_rf_iexe && ( ( wa3_iexe == ra1_id ) || ( wa3_iexe == ra2_id ) );
 
     assign stall_if   = lw_stall || ( ~ req_ack_dm );
     assign stall_id   = lw_stall || ( ~ req_ack_dm );

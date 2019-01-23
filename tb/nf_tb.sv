@@ -27,6 +27,8 @@ module nf_tb();
     bit     [31 : 0]    reg_data;
     bit     [31 : 0]    cycle_counter;
 
+    integer             log;
+
     //instructions
     string  instruction_id_stage;
     string  instruction_iexe_stage;
@@ -66,28 +68,61 @@ module nf_tb();
     //parsing instruction
     initial
     begin
+        if( `log_en )
+        begin
+            log = $fopen("../log/.log","w");
+            if( !log )
+                begin
+                    $display("Error! File not open.");
+                    $stop;
+                end
+        end
         forever
         begin
             @( posedge nf_top_0.clk );
             if( resetn )
             begin
-                cycle_counter++;
-                $write("cycle = %d, pc = %h \n", cycle_counter,nf_top_0.nf_cpu_0.addr_i );
+                $display("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                $write("cycle = %d, pc = %h ", cycle_counter,nf_top_0.nf_cpu_0.addr_i );
+                $display("%t", $time);
                 $write("Instruction decode stage        : ");
                 pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage     );
+                if( `debug_lev0 )
+                    $write("                                  %s \n" , instr_sep_s_id_stage     );
                 $write("Instruction execute stage       : ");
                 pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage   );
+                if( `debug_lev0 )
+                    $write("                                  %s \n" , instr_sep_s_iexe_stage   );
                 $write("Instruction memory stage        : ");
                 pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage   );
+                if( `debug_lev0 )
+                    $write("                                  %s \n" , instr_sep_s_imem_stage   );
                 $write("Instruction write back stage    : ");
                 pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage  , instr_sep_s_iwb_stage    );
                 if( `debug_lev0 )
+                    $write("                                  %s \n" , instr_sep_s_iwb_stage    );
+                if( `log_en )
                 begin
-                    $write("DL0 : Instruction decode stage        : %s \n" , instr_sep_s_id_stage     );
-                    $write("DL0 : Instruction execute stage       : %s \n" , instr_sep_s_iexe_stage   );
-                    $write("DL0 : Instruction memory stage        : %s \n" , instr_sep_s_imem_stage   );
-                    $write("DL0 : Instruction write back stage    : %s \n" , instr_sep_s_iwb_stage    );
+                    $fwrite(log,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+                    $fwrite(log,"cycle = %d, pc = 0x%h \n", cycle_counter, nf_top_0.nf_cpu_0.addr_i);
+                    $fwrite(log,"Instruction decode stage        : ");
+                    $fwrite(log,"%s\n", instruction_id_stage);
+                    if( `debug_lev0 )
+                    $fwrite(log,"                                  %s \n" , instr_sep_s_id_stage     );
+                    $fwrite(log,"Instruction execute stage       : ");
+                    $fwrite(log,"%s\n", instruction_iexe_stage);
+                    if( `debug_lev0 )
+                    $fwrite(log,"                                  %s \n" , instr_sep_s_iexe_stage   );
+                    $fwrite(log,"Instruction memory stage        : ");
+                    $fwrite(log,"%s\n", instruction_imem_stage);
+                    if( `debug_lev0 )
+                    $fwrite(log,"                                  %s \n" , instr_sep_s_imem_stage   );
+                    $fwrite(log,"Instruction write back stage    : ");
+                    $fwrite(log,"%s\n", instruction_iwb_stage);
+                    if( `debug_lev0 )
+                    $fwrite(log,"                                  %s \n" , instr_sep_s_iwb_stage    );
                 end
+                cycle_counter++;
             end
             if( cycle_counter == repeat_cycles )
                 $stop;

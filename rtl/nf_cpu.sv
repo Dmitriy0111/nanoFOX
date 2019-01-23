@@ -36,6 +36,7 @@ module nf_cpu
     // program counter wires
     logic   [31 : 0]    pc_branch;
     logic               pc_src;
+    logic   [0  : 0]    branch_type;
     // register file wires
     logic   [4  : 0]    wa3;
     logic   [31 : 0]    wd3;
@@ -145,7 +146,8 @@ module nf_cpu
         .pc_src         ( pc_src            ),  // decoded next program counter value enable
         .we_rf          ( we_rf_id          ),  // decoded write register file
         .we_dm_en       ( we_dm_id          ),  // decoded write data memory
-        .rf_src         ( rf_src_id         )   // decoded source register file signal
+        .rf_src         ( rf_src_id         ),  // decoded source register file signal
+        .branch_type    ( branch_type       )
     );
 
     // for debug
@@ -269,7 +271,8 @@ module nf_cpu
         .stall_iexe     ( stall_iexe    ),
         .stall_imem     ( stall_imem    ),
         .stall_iwb      ( stall_iwb     ),
-        .flush_iexe     ( flush_iexe    )
+        .flush_iexe     ( flush_iexe    ),
+        .branch_type    ( branch_type   )
     );
 
     assign cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;

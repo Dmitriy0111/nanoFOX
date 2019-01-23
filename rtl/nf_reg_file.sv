@@ -37,11 +37,7 @@ module nf_reg_file
                   ( ( ra2 == wa3) ? wd3 : reg_file[ra2] );
     
     always_ff @(posedge clk)
-    begin
         if( we3 )
-        begin
             reg_file[wa3] <= wd3;
-        end
-    end
 
 endmodule : nf_reg_file
