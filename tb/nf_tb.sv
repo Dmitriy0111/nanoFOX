@@ -82,24 +82,34 @@ module nf_tb();
     begin
         div = 3;
         if( `log_en )
+        begin
             log = $fopen("../log/.log","w");
+            if( !log )
+                begin
+                    $display("Error! File not open.");
+                    $stop;
+                end
+        end
         forever
         begin
             @(posedge nf_top_0.cpu_en);
-            if(resetn)
+            if( resetn )
             begin
+                $display("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 $write("cycle = %d, pc = %h ", cycle_counter,nf_top_0.nf_cpu_0.instr_addr);
                 pars_instr_0.pars(nf_top_0.nf_cpu_0.instr, instruction, instr_sep);
                 if( `log_en )
                 begin
+                    $fwrite(log,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
                     $fwrite(log,"cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.instr_addr);
+                    $fwrite(log,"\n                    ");
                     $fwrite(log,"%s\n", instruction);
                     if( `debug_lev0)
                         $fwrite(log,"                    %s\n", instr_sep);
                 end
                 cycle_counter++;
             end
-            if(cycle_counter == repeat_cycles)
+            if( cycle_counter == repeat_cycles )
                 $stop;
         end
     end
