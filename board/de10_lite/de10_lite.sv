@@ -49,7 +49,6 @@ module de10_lite
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),
-        .div        ( div       ),
         .reg_addr   ( reg_addr  ),
         .reg_data   ( reg_data  ),
         .pwm        ( pwm       ),

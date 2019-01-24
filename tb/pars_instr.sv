@@ -62,7 +62,7 @@ class pars_instr;
         $timeformat(-9, 2, " ns", 7);
     endfunction : new
 
-    task pars(bit [31 : 0] instr, ref string instruction_s, ref string instr_sep);
+    task pars(logic [31 : 0] instr, ref string instruction_s, ref string instr_sep);
 
         instr_sep = "";
         // destination and sources registers
@@ -96,12 +96,14 @@ class pars_instr;
             { `C_SW   , `F3_SW   , `F7_ANY  } : instruction_s = $psprintf("SW   rs1 = %s, rs2 = %s, Imm = 0x%h", registers_list[ra1] , registers_list[ra2] , imm_data_s          );
             //  J - type command's
             //  in the future
-            //  Flushed instruction
-            { '0                            } : instruction_s = $psprintf("Flushed instruction"                ,                                                                 );
             //  Other's instructions
             { `C_ANY  , `F3_ANY  , `F7_ANY  } : instruction_s = $psprintf("Unknown instruction"                ,                                                                 );
         endcase
 
+        //  Flushed instruction
+        if( instr == '0 )
+            instruction_s = $psprintf("Flushed instruction"                ,                                                                 );
+        
         $display("%s", instruction_s);
         if( `debug_lev0 )
         begin

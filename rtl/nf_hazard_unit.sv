@@ -64,9 +64,9 @@ module nf_hazard_unit
     assign lw_stall = ( ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && we_rf_iexe && rf_src_iexe );
     assign branch_exe_id_stall = ( branch_type != `B_NONE ) && we_rf_iexe && ( ( wa3_iexe == ra1_id ) || ( wa3_iexe == ra2_id ) );
 
-    assign stall_if   = lw_stall || ( ~ req_ack_dm );
-    assign stall_id   = lw_stall || ( ~ req_ack_dm );
-    assign flush_iexe = lw_stall;
+    assign stall_if   = lw_stall || ( ~ req_ack_dm ) || branch_exe_id_stall;
+    assign stall_id   = lw_stall || ( ~ req_ack_dm ) || branch_exe_id_stall;
+    assign flush_iexe = lw_stall || branch_exe_id_stall;
     assign stall_iexe = ( ~ req_ack_dm );
     assign stall_imem = ( ~ req_ack_dm );
     assign stall_iwb  = ( ~ req_ack_dm );

@@ -88,9 +88,20 @@ module nf_cpu
     assign  instr_if2  = rd_i;   // from fetch 2 stage
 
     logic   [31 : 0]    instr_id;
+    logic   [31 : 0]    instr_id1;
     logic   [31 : 0]    pc_id;
+    // for control hazards. add s0, s1, s2 -> beq s0, zero, label1
+    logic               stall_id1;
+    always_ff @(posedge clk, negedge resetn)
+    begin
+        if( !resetn )
+            stall_id1 <='0;
+        else
+            stall_id1 <= stall_id;
+    end
 
-    nf_register_we_clr #( 32 ) instr_if2_id ( clk , resetn , ~ stall_id , flush_id , instr_if2 , instr_id );
+    nf_register_we_clr #( 32 ) instr_if2_id1 ( clk , resetn ,   stall_id , flush_id , instr_if2 , instr_id1 );
+    nf_register_we_clr #( 32 ) instr_if2_id ( clk , resetn , ~ stall_id , flush_id , ~ stall_id1 ? instr_if2 : instr_id1 , instr_id );
     nf_register_we_clr #( 32 ) pc_if2_id    ( clk , resetn , ~ stall_id , flush_id , pc_if2    , pc_id    );
 
     /*********************************************
