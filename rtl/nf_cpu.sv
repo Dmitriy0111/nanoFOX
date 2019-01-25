@@ -35,12 +35,12 @@ module nf_cpu
 
     // program counter wires
     logic   [31 : 0]    pc_branch;
-    logic               pc_src;
+    logic   [0  : 0]    pc_src;
     logic   [0  : 0]    branch_type;
     // register file wires
     logic   [4  : 0]    wa3;
     logic   [31 : 0]    wd3;
-    logic               we_rf;
+    logic   [0  : 0]    we_rf;
     //hazard's wires
     logic   [1  : 0]    rd1_bypass;
     logic   [1  : 0]    rd2_bypass;
@@ -66,7 +66,10 @@ module nf_cpu
     logic   [31 : 0]    pc_if1;
     // instruction fetch 2 stage
     logic   [31 : 0]    pc_if2;
+    logic   [0  : 0]    sel_id_instr;
     logic   [31 : 0]    instr_if2;
+    logic   [0  : 0]    we_if2_stalled;
+    logic   [31 : 0]    instr_if2_stalled;
     // creating one instruction fetch unit
     nf_i_fu nf_i_fu_0
     (
@@ -84,25 +87,17 @@ module nf_cpu
         .flush_id       ( flush_id          )   // for flushing instruction decode stage
     );
 
-    assign  addr_i     = pc_if1; // from fetch 1 stage
-    assign  instr_if2  = rd_i;   // from fetch 2 stage
+    assign  addr_i          = pc_if1;                                   // from fetch 1 stage
+    assign  instr_if2       = sel_id_instr ? instr_if2_stalled : rd_i;  // from fetch 2 stage
+    assign  we_if2_stalled  = stall_id  && ( ~ sel_id_instr );           // for sw and branch stalls
 
     logic   [31 : 0]    instr_id;
-    logic   [31 : 0]    instr_id1;
     logic   [31 : 0]    pc_id;
-    // for control hazards. add s0, s1, s2 -> beq s0, zero, label1
-    logic               stall_id1;
-    always_ff @(posedge clk, negedge resetn)
-    begin
-        if( !resetn )
-            stall_id1 <='0;
-        else
-            stall_id1 <= stall_id;
-    end
 
-    nf_register_we_clr #( 32 ) instr_if2_id1 ( clk , resetn ,   stall_id , flush_id , instr_if2 , instr_id1 );
-    nf_register_we_clr #( 32 ) instr_if2_id ( clk , resetn , ~ stall_id , flush_id , ~ stall_id1 ? instr_if2 : instr_id1 , instr_id );
-    nf_register_we_clr #( 32 ) pc_if2_id    ( clk , resetn , ~ stall_id , flush_id , pc_if2    , pc_id    );
+    nf_register        #(  1 ) sel_id_ff        ( clk , resetn ,                             stall_id  , sel_id_instr      );
+    nf_register_we_clr #( 32 ) instr_if2_stall  ( clk , resetn , we_if2_stalled , flush_id , rd_i      , instr_if2_stalled );
+    nf_register_we_clr #( 32 ) instr_if2_id     ( clk , resetn , ~ stall_id     , flush_id , instr_if2 , instr_id          );
+    nf_register_we_clr #( 32 ) pc_if2_id        ( clk , resetn , ~ stall_id     , flush_id , pc_if2    , pc_id             );
 
     /*********************************************
     **         Instruction Decode stage         **
@@ -225,7 +220,7 @@ module nf_cpu
 
     nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe , result_imem );
     nf_register_we  #( 1  ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , we_dm_iexe  , we_dm_imem  );
-    nf_register_we  #( 32 ) rd2_iexe_imem       ( clk , resetn , ~ stall_imem , rd2_iexe    , rd2_imem    );
+    nf_register_we  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , rd2_i_exu   , rd2_imem    );
     nf_register_we  #( 1  ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem , rf_src_iexe , rf_src_imem );
     nf_register_we  #( 5  ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem , wa3_iexe    , wa3_imem    );
     nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe  , we_rf_imem  );
@@ -233,7 +228,7 @@ module nf_cpu
     assign addr_dm  = result_imem;
     assign wd_dm    = rd2_imem;
     assign we_dm    = we_dm_imem;
-    assign req_dm   = we_dm_imem || rf_src_iexe;
+    assign req_dm   = we_dm_imem || rf_src_imem;
 
     /*********************************************
     **       Instruction write back stage       **
@@ -271,7 +266,6 @@ module nf_cpu
         .cmp_d1_bypass  ( cmp_d1_bypass ),
         .cmp_d2_bypass  ( cmp_d2_bypass ),
         // lw hazard stall and flush
-        .req_ack_dm     ( req_ack_dm    ),
         .wa3_iexe       ( wa3_iexe      ),
         .we_rf_iexe     ( we_rf_iexe    ),
         .rf_src_iexe    ( rf_src_iexe   ),
@@ -283,7 +277,10 @@ module nf_cpu
         .stall_imem     ( stall_imem    ),
         .stall_iwb      ( stall_iwb     ),
         .flush_iexe     ( flush_iexe    ),
-        .branch_type    ( branch_type   )
+        .branch_type    ( branch_type   ),
+        .we_dm_imem     ( we_dm_imem    ),
+        .req_ack_dm     ( req_ack_dm    ),
+        .rf_src_imem    ( rf_src_imem   )
     );
 
     assign cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;

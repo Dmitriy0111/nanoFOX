@@ -19,6 +19,7 @@ module nf_top
     output  logic   [31 : 0]                reg_data
 `endif
 );
+    logic   [2 : 0]     ack_pipe;
     //instruction memory
     logic   [31 : 0]    addr_i;     // instruction address
     logic   [31 : 0]    rd_i;       // read instruction
@@ -29,7 +30,20 @@ module nf_top
     logic   [31 : 0]    rd_dm;      // read data memory
     logic   [0  : 0]    req_dm;     // request data memory signal
     logic   [0  : 0]    req_ack_dm; // request acknowledge data memory signal
-    assign              req_ack_dm = '1;
+    assign              req_ack_dm = ack_pipe[2];
+
+
+    always_ff @(posedge clk, negedge resetn)
+    begin
+        if( !resetn )
+            ack_pipe <= '0;
+        else if (req_dm)
+        begin
+            ack_pipe <= ack_pipe + 1'b1;
+            if(ack_pipe == 3'b100)
+                ack_pipe <= '0;
+        end
+    end
     //creating one cpu unit
     nf_cpu nf_cpu_0
     (
