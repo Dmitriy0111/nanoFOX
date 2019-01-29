@@ -52,9 +52,9 @@ module nf_top
         .addr_i     ( addr_i            ),  // instruction address
         .rd_i       ( rd_i              ),  // read instruction
         .addr_dm    ( addr_dm           ),  // address data memory
-        .we_dm      ( we_dm             ),  // write enable signal
-        .wd_dm      ( wd_dm             ),  // write data memory
         .rd_dm      ( rd_dm             ),  // read data memory
+        .wd_dm      ( wd_dm             ),  // write data memory
+        .we_dm      ( we_dm             ),  // write enable signal
         .req_dm     ( req_dm            ),  // request data memory signal
         .req_ack_dm ( req_ack_dm        )   // request acknowledge data memory signal
     `ifdef debug

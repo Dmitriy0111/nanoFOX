@@ -20,9 +20,9 @@ module nf_cpu
     input   logic   [31 : 0]    rd_i,       // read instruction
     // data memory and other's
     output  logic   [31 : 0]    addr_dm,    // address data memory
-    output  logic   [0  : 0]    we_dm,      // write enable signal
-    output  logic   [31 : 0]    wd_dm,      // write data memory
     input   logic   [31 : 0]    rd_dm,      // read data memory
+    output  logic   [31 : 0]    wd_dm,      // write data memory
+    output  logic   [0  : 0]    we_dm,      // write enable signal
     output  logic   [0  : 0]    req_dm,     // request data memory signal
     input   logic   [0  : 0]    req_ack_dm  // request acknowledge data memory signal
 `ifdef debug

@@ -3,30 +3,38 @@
 *  Autor           :   Vlasov D.V.
 *  Data            :   2018.01.28
 *  Language        :   SystemVerilog
-*  Description     :   This is AHB multiplexor module
+*  Description     :   This is AHB multiplexer module
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
+`include "../inc/nf_settings.svh"
+
 module nf_ahb_mux
 #(
-    parameter                                   slave_c = 4
+    parameter                                   slave_c = `SLAVE_COUNT
 )(
-    input   logic   [slave_c-1  : 0]            hsel_ff,
-    input   logic   [slave_c-1  : 0][31 : 0]    rdata,
-    input   logic   [slave_c-1  : 0]            resp,
-    input   logic   [slave_c-1  : 0]            hreadyout,
-    output  logic   [31         : 0]            hrdata,
-    output  logic                               hresp,
-    output  logic                               hready
+    input   logic   [slave_c-1 : 0]             hsel_ff,        // hsel after flip-flop
+    // slave side
+    input   logic   [slave_c-1 : 0][31 : 0]     hrdata_s,       // AHB read data slaves 
+    input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,        // AHB response slaves
+    input   logic   [slave_c-1 : 0][0  : 0]     hreadyout_s,    // AHB ready slaves
+    // master side
+    output  logic                  [31 : 0]     hrdata,         // AHB read data master 
+    output  logic                  [1  : 0]     hresp,          // AHB response master
+    output  logic                  [0  : 0]     hready          // AHB ready master
 );
 
     always_comb
+    begin
+        hrdata  = 32'b0; 
+        hresp   = 2'b01; 
+        hready  = 1'b1;
         casex( hsel_ff )
-            4'b???1 : begin hrdata = rdata[0]; hresp = resp[0]; hready = hreadyout[0];  end
-            4'b??10 : begin hrdata = rdata[0]; hresp = resp[0]; hready = hreadyout[0];  end
-            4'b?100 : begin hrdata = rdata[1]; hresp = resp[1]; hready = hreadyout[1];  end
-            4'b1000 : begin hrdata = rdata[2]; hresp = resp[2]; hready = hreadyout[2];  end
-            default : begin hrdata = 32'b0   ; hresp = 1'b1   ; hready = 1'b1        ;  end 
+            3'b??1  : begin hrdata = hrdata_s[0] ; hresp = hresp_s[0] ; hready = hreadyout_s[0] ;   end
+            3'b?10  : begin hrdata = hrdata_s[1] ; hresp = hresp_s[1] ; hready = hreadyout_s[1] ;   end
+            3'b100  : begin hrdata = hrdata_s[2] ; hresp = hresp_s[2] ; hready = hreadyout_s[2] ;   end
+            default : ;
         endcase
+    end
 
 endmodule : nf_ahb_mux

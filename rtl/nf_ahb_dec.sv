@@ -7,19 +7,34 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
+`include "../inc/nf_settings.svh"
+
 module nf_ahb_dec
 #(
-    parameter                           slave_c = 4
+    parameter                                   slave_c = `SLAVE_COUNT,
+    parameter   logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
+                                                            {
+                                                                `NF_RAM_ADDR_MATCH,
+                                                                `NF_GPIO_ADDR_MATCH,
+                                                                `NF_PWM_ADDR_MATCH
+                                                            }
 )(
-    input   logic   [31         : 0]    haddr,
-    output  logic   [slave_c-1  : 0]    hsel
+    input   logic                      [31 : 0] haddr,      // AHB address
+    output  logic       [slave_c-1 : 0]         hsel        // hsel signal
 );
 
     genvar  gen_ahb_dec;
     generate
         for(gen_ahb_dec = 0 ; gen_ahb_dec < slave_c ; gen_ahb_dec++)
         begin : generate_hsel
-            assign  hsel[gen_ahb_dec] = haddr[31 -: 2] == gen_ahb_dec ? '1 : '0 ;
+            always_comb
+            begin
+                hsel[gen_ahb_dec] = '0;
+                casex( haddr )
+                    ahb_vector[gen_ahb_dec] : hsel[gen_ahb_dec] = '1;
+                    default                 : ;
+                endcase
+            end 
         end
     endgenerate
 

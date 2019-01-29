@@ -11,7 +11,7 @@
 
 module nf_router
 #(
-    parameter                                   Slave_n = `slave_number
+    parameter                                   Slave_n = `SLAVE_COUNT
 )(
     input   logic                               clk,
     input   logic                               resetn, 
@@ -35,11 +35,11 @@ module nf_router
     assign resetn_s  = resetn;
     assign wd_dm_s   = wd_dm_m;
     assign addr_dm_s = addr_dm_m;
-    assign we_dm_s   = { `slave_number { we_dm_m } } & slave_sel ; // {we_dm_m && slave_sel[n-1] , we_dm_m && slave_sel[n-2] , ... , we_dm_m && slave_sel[0] };
+    assign we_dm_s   = { `SLAVE_COUNT { we_dm_m } } & slave_sel ; // {we_dm_m && slave_sel[n-1] , we_dm_m && slave_sel[n-2] , ... , we_dm_m && slave_sel[0] };
 
     nf_router_dec
     #(
-        .Slave_n        ( `slave_number     )
+        .Slave_n        ( `SLAVE_COUNT     )
     )
     nf_router_dec_0
     (
@@ -49,7 +49,7 @@ module nf_router
 
     nf_router_mux
     #(
-        .Slave_n        ( `slave_number     )
+        .Slave_n        ( `SLAVE_COUNT     )
     )
     nf_router_mux_0
     (
