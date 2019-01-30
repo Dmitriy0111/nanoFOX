@@ -25,7 +25,7 @@
 //depth of ram module
 `define ram_depth  64
 //number of slave device's
-`define slave_number 4
+`define SLAVE_COUNT 3
 
 /*  
     memory map for devices
@@ -51,9 +51,9 @@
                 /
     0xffff_ffff/
 */
-`define NF_RAM_ADDR_MATCH   16'h0000
-`define NF_GPIO_ADDR_MATCH  16'h0001
-`define NF_PWM_ADDR_MATCH   16'h0002
+`define NF_RAM_ADDR_MATCH   32'h0000XXXX
+`define NF_GPIO_ADDR_MATCH  32'h0001XXXX
+`define NF_PWM_ADDR_MATCH   32'h0002XXXX
 //constant's for gpio module
 `define NF_GPIO_GPI         'h0
 `define NF_GPIO_GPO         'h4

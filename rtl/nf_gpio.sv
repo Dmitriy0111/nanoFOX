@@ -15,12 +15,12 @@ module nf_gpio
 )(
     input   logic                   clk,
     input   logic                   resetn,
-    //nf_router side
+    // bus side
     input   logic   [31       : 0]  addr,   // address
     input   logic                   we,     // write enable
     input   logic   [31       : 0]  wd,     // write data
     output  logic   [31       : 0]  rd,     // read data
-    //gpio_side
+    // GPIO side
     input   logic   [gpio_w-1 : 0]  gpi,    // GPIO input
     output  logic   [gpio_w-1 : 0]  gpo,    // GPIO output
     output  logic   [gpio_w-1 : 0]  gpd     // GPIO direction

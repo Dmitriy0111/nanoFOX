@@ -7,6 +7,8 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
+`include "../inc/nf_ahb.svh"
+
 module nf_ahb2core
 (
     input   logic               clk,
@@ -33,6 +35,10 @@ module nf_ahb2core
     assign  haddr  = addr_dm;
     assign  hwrite = we_dm;
     assign  rd_dm  = hrdata;
+    assign  htrans = req_dm ? `AHB_HTRANS_NONSEQ : `AHB_HTRANS_IDLE;
+    assign  hsize  = `AHB_HSIZE_W;
+    assign  hburst = `AHB_HBUSRT_SINGLE;
+    assign  req_ack_dm = hready && ( hresp != `AHB_HRESP_ERROR );
 
     // creating one write data flip-flop
     nf_register_we  #( 32 ) wd_dm_ff    ( clk, resetn, we_dm, wd_dm, hwdata );

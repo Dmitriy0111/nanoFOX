@@ -15,13 +15,13 @@ module nf_ahb_mux
 )(
     input   logic   [slave_c-1 : 0]             hsel_ff,        // hsel after flip-flop
     // slave side
-    input   logic   [slave_c-1 : 0][31 : 0]     hrdata_s,       // AHB read data slaves 
-    input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,        // AHB response slaves
-    input   logic   [slave_c-1 : 0][0  : 0]     hreadyout_s,    // AHB ready slaves
+    input   logic   [slave_c-1 : 0][31 : 0]     hrdata_s,   // AHB read data slaves 
+    input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,    // AHB response slaves
+    input   logic   [slave_c-1 : 0][0  : 0]     hready_s,   // AHB ready slaves
     // master side
-    output  logic                  [31 : 0]     hrdata,         // AHB read data master 
-    output  logic                  [1  : 0]     hresp,          // AHB response master
-    output  logic                  [0  : 0]     hready          // AHB ready master
+    output  logic                  [31 : 0]     hrdata,     // AHB read data master 
+    output  logic                  [1  : 0]     hresp,      // AHB response master
+    output  logic                  [0  : 0]     hready      // AHB ready master
 );
 
     always_comb
@@ -30,9 +30,9 @@ module nf_ahb_mux
         hresp   = 2'b01; 
         hready  = 1'b1;
         casex( hsel_ff )
-            3'b??1  : begin hrdata = hrdata_s[0] ; hresp = hresp_s[0] ; hready = hreadyout_s[0] ;   end
-            3'b?10  : begin hrdata = hrdata_s[1] ; hresp = hresp_s[1] ; hready = hreadyout_s[1] ;   end
-            3'b100  : begin hrdata = hrdata_s[2] ; hresp = hresp_s[2] ; hready = hreadyout_s[2] ;   end
+            3'b??1  : begin hrdata = hrdata_s[0] ; hresp = hresp_s[0] ; hready = hready_s[0] ;   end
+            3'b?10  : begin hrdata = hrdata_s[1] ; hresp = hresp_s[1] ; hready = hready_s[1] ;   end
+            3'b100  : begin hrdata = hrdata_s[2] ; hresp = hresp_s[2] ; hready = hready_s[2] ;   end
             default : ;
         endcase
     end

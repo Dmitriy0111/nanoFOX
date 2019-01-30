@@ -16,25 +16,26 @@ module nf_ahb_router
     input   logic                               hclk,
     input   logic                               hresetn,
     // Master side
-    input   logic                  [31 : 0]     haddr,      // AHB - Master HADDR
-    input   logic                  [31 : 0]     hwdata,     // AHB - Master HWDATA
-    output  logic                  [31 : 0]     hrdata,     // AHB - Master HRDATA
-    input   logic                  [0  : 0]     hwrite,     // AHB - Master HWRITE
-    input   logic                  [1  : 0]     htrans,     // AHB - Master HTRANS
-    input   logic                  [2  : 0]     hsize,      // AHB - Master HSIZE
-    input   logic                  [2  : 0]     hburst,     // AHB - Master HBURST
-    output  logic                  [1  : 0]     hresp,      // AHB - Master HRESP
-    output  logic                  [0  : 0]     hready,     // AHB - Master HREADY
+    input   logic                  [31 : 0]     haddr,          // AHB - Master HADDR
+    input   logic                  [31 : 0]     hwdata,         // AHB - Master HWDATA
+    output  logic                  [31 : 0]     hrdata,         // AHB - Master HRDATA
+    input   logic                  [0  : 0]     hwrite,         // AHB - Master HWRITE
+    input   logic                  [1  : 0]     htrans,         // AHB - Master HTRANS
+    input   logic                  [2  : 0]     hsize,          // AHB - Master HSIZE
+    input   logic                  [2  : 0]     hburst,         // AHB - Master HBURST
+    output  logic                  [1  : 0]     hresp,          // AHB - Master HRESP
+    output  logic                  [0  : 0]     hready,         // AHB - Master HREADY
     // Slaves side
-    output  logic   [slave_c-1 : 0][31 : 0]     haddr_s,    // AHB - Slave HADDR
-    output  logic   [slave_c-1 : 0][31 : 0]     hwdata_s,   // AHB - Slave HWDATA
-    input   logic   [slave_c-1 : 0][31 : 0]     hrdata_s,   // AHB - Slave HRDATA
-    output  logic   [slave_c-1 : 0][0  : 0]     hwrite_s,   // AHB - Slave HWRITE
-    output  logic   [slave_c-1 : 0][1  : 0]     htrans_s,   // AHB - Slave HTRANS
-    output  logic   [slave_c-1 : 0][2  : 0]     hsize_s,    // AHB - Slave HSIZE
-    output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,   // AHB - Slave HBURST
-    input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,    // AHB - Slave HRESP
-    input   logic   [slave_c-1 : 0][0  : 0]     hreadyout_s // AHB - Slave HREADYOUT
+    output  logic   [slave_c-1 : 0][31 : 0]     haddr_s,        // AHB - Slave HADDR
+    output  logic   [slave_c-1 : 0][31 : 0]     hwdata_s,       // AHB - Slave HWDATA
+    input   logic   [slave_c-1 : 0][31 : 0]     hrdata_s,       // AHB - Slave HRDATA
+    output  logic   [slave_c-1 : 0][0  : 0]     hwrite_s,       // AHB - Slave HWRITE
+    output  logic   [slave_c-1 : 0][1  : 0]     htrans_s,       // AHB - Slave HTRANS
+    output  logic   [slave_c-1 : 0][2  : 0]     hsize_s,        // AHB - Slave HSIZE
+    output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,       // AHB - Slave HBURST
+    input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,        // AHB - Slave HRESP
+    input   logic   [slave_c-1 : 0][0  : 0]     hready_s,       // AHB - Slave HREADY
+    output  logic   [slave_c-1 : 0]             hsel_s          // AHB - Slave HSEL
 );
     // AHB memory map
     localparam  logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
@@ -46,6 +47,7 @@ module nf_ahb_router
     // hsel signals
     logic   [slave_c-1  : 0]                    hsel_ff;
     logic   [slave_c-1  : 0]                    hsel;
+    assign  hsel_s = hsel;
     // generating wires for all slaves
     genvar  gen_ahb_dec;
     generate
@@ -83,7 +85,7 @@ module nf_ahb_router
         // slave side
         .hrdata_s       ( hrdata_s      ),  // AHB read data slaves 
         .hresp_s        ( hresp_s       ),  // AHB response slaves
-        .hreadyout_s    ( hreadyout_s   ),  // AHB ready slaves
+        .hready_s       ( hready_s      ),  // AHB ready slaves
         // master side
         .hrdata         ( hrdata        ),  // AHB read data master 
         .hresp          ( hresp         ),  // AHB response master
