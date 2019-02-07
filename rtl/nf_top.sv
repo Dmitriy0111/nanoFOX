@@ -19,7 +19,7 @@ module nf_top
     output  logic   [31 : 0]                reg_data
 `endif
 );
-    logic   [2 : 0]     ack_pipe;
+    logic   [2  : 0]    ack_pipe;
     //instruction memory
     logic   [31 : 0]    addr_i;     // instruction address
     logic   [31 : 0]    rd_i;       // read instruction
@@ -37,10 +37,10 @@ module nf_top
     begin
         if( !resetn )
             ack_pipe <= '0;
-        else if (req_dm)
+        else if( req_dm )
         begin
             ack_pipe <= ack_pipe + 1'b1;
-            if(ack_pipe == 3'b100)
+            if( ack_pipe == 3'b100 )
                 ack_pipe <= '0;
         end
     end

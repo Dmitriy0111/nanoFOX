@@ -11,7 +11,13 @@
 
 module nf_ahb_router
 #(
-    parameter                                   slave_c = `SLAVE_COUNT
+    parameter                                   slave_c = `SLAVE_COUNT,
+    parameter   logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
+                                                            {
+                                                                `NF_PWM_ADDR_MATCH,
+                                                                `NF_GPIO_ADDR_MATCH,
+                                                                `NF_RAM_ADDR_MATCH
+                                                            }
 )(
     input   logic                               hclk,
     input   logic                               hresetn,
@@ -37,16 +43,9 @@ module nf_ahb_router
     input   logic   [slave_c-1 : 0][0  : 0]     hready_s,       // AHB - Slave HREADY
     output  logic   [slave_c-1 : 0]             hsel_s          // AHB - Slave HSEL
 );
-    // AHB memory map
-    localparam  logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
-                                                            {
-                                                                `NF_RAM_ADDR_MATCH,
-                                                                `NF_GPIO_ADDR_MATCH,
-                                                                `NF_PWM_ADDR_MATCH
-                                                            };
     // hsel signals
-    logic   [slave_c-1  : 0]                    hsel_ff;
-    logic   [slave_c-1  : 0]                    hsel;
+    logic   [slave_c-1 : 0]                     hsel_ff;
+    logic   [slave_c-1 : 0]                     hsel;
     assign  hsel_s = hsel;
     // generating wires for all slaves
     genvar  gen_ahb_dec;

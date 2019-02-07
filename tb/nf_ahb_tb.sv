@@ -25,6 +25,24 @@ module nf_ahb_tb();
     localparam          gpio_w  = `NF_GPIO_WIDTH,
                         slave_c = `SLAVE_COUNT;
 
+    // AHB memory map
+    /*localparam  logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
+                                                            {
+                                                                `NF_RAM_ADDR_MATCH,
+                                                                `NF_GPIO_ADDR_MATCH,
+                                                                `NF_PWM_ADDR_MATCH
+                                                            };*/
+    `define NF_GPIO_A_ADDR_MATCH    32'h0000XXXX
+    `define NF_GPIO_B_ADDR_MATCH    32'h0001XXXX
+    `define NF_GPIO_C_ADDR_MATCH    32'h0002XXXX
+
+    localparam  logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
+                                                            {
+                                                                `NF_GPIO_C_ADDR_MATCH,
+                                                                `NF_GPIO_B_ADDR_MATCH,
+                                                                `NF_GPIO_A_ADDR_MATCH
+                                                            };
+
     logic   [gpio_w-1 : 0]   gpi_a;        // GPIO input
     logic   [gpio_w-1 : 0]   gpo_a;        // GPIO output
     logic   [gpio_w-1 : 0]   gpd_a;        // GPIO direction
@@ -37,6 +55,10 @@ module nf_ahb_tb();
     logic   [gpio_w-1 : 0]   gpo_c;        // GPIO output
     logic   [gpio_w-1 : 0]   gpd_c;        // GPIO direction
 
+    assign  gpi_a = gpo_a ^ gpd_a;
+    assign  gpi_b = gpo_b ^ gpd_b;
+    assign  gpi_c = gpo_c ^ gpd_c;
+
     logic   [slave_c-1 : 0][31 : 0]         haddr_s;        // AHB - Slave HADDR 
     logic   [slave_c-1 : 0][31 : 0]         hwdata_s;       // AHB - Slave HWDATA 
     logic   [slave_c-1 : 0][31 : 0]         hrdata_s;       // AHB - Slave HRDATA 
@@ -48,20 +70,17 @@ module nf_ahb_tb();
     logic   [slave_c-1 : 0][0  : 0]         hready_s;       // AHB - Slave HREADYOUT 
     logic   [slave_c-1 : 0]                 hsel_s;         // AHB - Slave HSEL
 
-    logic                  [31 : 0]         addr_dm;        // address data memory
+    bit                    [31 : 0]         addr_dm;        // address data memory
     logic                  [31 : 0]         rd_dm;          // read data memory
-    logic                  [31 : 0]         wd_dm;          // write data memory
-    logic                  [0  : 0]         we_dm;          // write enable signal
-    logic                  [0  : 0]         req_dm;         // request data memory signal
+    bit                    [31 : 0]         wd_dm;          // write data memory
+    bit                    [0  : 0]         we_dm;          // write enable signal
+    bit                    [0  : 0]         req_dm;         // request data memory signal
     logic                  [0  : 0]         req_ack_dm;     // request acknowledge data memory signal
-
-    assign          gpi_a = gpo_a ^ gpd_a;
-    assign          gpi_b = gpo_b ^ gpd_b;
-    assign          gpi_c = gpo_c ^ gpd_c;
 
     nf_ahb_top
     #(
-        .slave_c    ( slave_c   )
+        .slave_c        ( slave_c       ),
+        .ahb_vector     ( ahb_vector    )
     )
     nf_ahb_top_0
     (
@@ -96,16 +115,16 @@ module nf_ahb_tb();
         .hclk           ( clk           ),
         .hresetn        ( resetn        ),
         // Slaves side
-        .haddr_s        ( haddr_s[0]    ),      // AHB - Slave HADDR
-        .hwdata_s       ( hwdata_s[0]   ),      // AHB - Slave HWDATA
-        .hrdata_s       ( hrdata_s[0]   ),      // AHB - Slave HRDATA
-        .hwrite_s       ( hwrite_s[0]   ),      // AHB - Slave HWRITE
-        .htrans_s       ( htrans_s[0]   ),      // AHB - Slave HTRANS
-        .hsize_s        ( hsize_s[0]    ),      // AHB - Slave HSIZE
-        .hburst_s       ( hburst_s[0]   ),      // AHB - Slave HBURST
-        .hresp_s        ( hresp_s[0]    ),      // AHB - Slave HRESP
-        .hready_s       ( hready_s[0]   ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s[0]     ),      // AHB - Slave HBURST
+        .haddr_s        ( haddr_s   [0] ),      // AHB - Slave HADDR
+        .hwdata_s       ( hwdata_s  [0] ),      // AHB - Slave HWDATA
+        .hrdata_s       ( hrdata_s  [0] ),      // AHB - Slave HRDATA
+        .hwrite_s       ( hwrite_s  [0] ),      // AHB - Slave HWRITE
+        .htrans_s       ( htrans_s  [0] ),      // AHB - Slave HTRANS
+        .hsize_s        ( hsize_s   [0] ),      // AHB - Slave HSIZE
+        .hburst_s       ( hburst_s  [0] ),      // AHB - Slave HBURST
+        .hresp_s        ( hresp_s   [0] ),      // AHB - Slave HRESP
+        .hready_s       ( hready_s  [0] ),      // AHB - Slave HREADYOUT
+        .hsel_s         ( hsel_s    [0] ),      // AHB - Slave HBURST
         //gpio_side
         .gpi            ( gpi_a         ),      // GPIO input
         .gpo            ( gpo_a         ),      // GPIO output
@@ -121,16 +140,16 @@ module nf_ahb_tb();
         .hclk           ( clk           ),
         .hresetn        ( resetn        ),
         // Slaves side
-        .haddr_s        ( haddr_s[1]    ),      // AHB - Slave HADDR
-        .hwdata_s       ( hwdata_s[1]   ),      // AHB - Slave HWDATA
-        .hrdata_s       ( hrdata_s[1]   ),      // AHB - Slave HRDATA
-        .hwrite_s       ( hwrite_s[1]   ),      // AHB - Slave HWRITE
-        .htrans_s       ( htrans_s[1]   ),      // AHB - Slave HTRANS
-        .hsize_s        ( hsize_s[1]    ),      // AHB - Slave HSIZE
-        .hburst_s       ( hburst_s[1]   ),      // AHB - Slave HBURST
-        .hresp_s        ( hresp_s[1]    ),      // AHB - Slave HRESP
-        .hready_s       ( hready_s[1]   ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s[1]     ),      // AHB - Slave HBURST
+        .haddr_s        ( haddr_s   [1] ),      // AHB - Slave HADDR
+        .hwdata_s       ( hwdata_s  [1] ),      // AHB - Slave HWDATA
+        .hrdata_s       ( hrdata_s  [1] ),      // AHB - Slave HRDATA
+        .hwrite_s       ( hwrite_s  [1] ),      // AHB - Slave HWRITE
+        .htrans_s       ( htrans_s  [1] ),      // AHB - Slave HTRANS
+        .hsize_s        ( hsize_s   [1] ),      // AHB - Slave HSIZE
+        .hburst_s       ( hburst_s  [1] ),      // AHB - Slave HBURST
+        .hresp_s        ( hresp_s   [1] ),      // AHB - Slave HRESP
+        .hready_s       ( hready_s  [1] ),      // AHB - Slave HREADYOUT
+        .hsel_s         ( hsel_s    [1] ),      // AHB - Slave HBURST
         //gpio_side
         .gpi            ( gpi_b         ),      // GPIO input
         .gpo            ( gpo_b         ),      // GPIO output
@@ -146,23 +165,23 @@ module nf_ahb_tb();
         .hclk           ( clk           ),
         .hresetn        ( resetn        ),
         // Slaves side
-        .haddr_s        ( haddr_s[2]    ),      // AHB - Slave HADDR
-        .hwdata_s       ( hwdata_s[2]   ),      // AHB - Slave HWDATA
-        .hrdata_s       ( hrdata_s[2]   ),      // AHB - Slave HRDATA
-        .hwrite_s       ( hwrite_s[2]   ),      // AHB - Slave HWRITE
-        .htrans_s       ( htrans_s[2]   ),      // AHB - Slave HTRANS
-        .hsize_s        ( hsize_s[2]    ),      // AHB - Slave HSIZE
-        .hburst_s       ( hburst_s[2]   ),      // AHB - Slave HBURST
-        .hresp_s        ( hresp_s[2]    ),      // AHB - Slave HRESP
-        .hready_s       ( hready_s[2]   ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s[2]     ),      // AHB - Slave HBURST
+        .haddr_s        ( haddr_s   [2] ),      // AHB - Slave HADDR
+        .hwdata_s       ( hwdata_s  [2] ),      // AHB - Slave HWDATA
+        .hrdata_s       ( hrdata_s  [2] ),      // AHB - Slave HRDATA
+        .hwrite_s       ( hwrite_s  [2] ),      // AHB - Slave HWRITE
+        .htrans_s       ( htrans_s  [2] ),      // AHB - Slave HTRANS
+        .hsize_s        ( hsize_s   [2] ),      // AHB - Slave HSIZE
+        .hburst_s       ( hburst_s  [2] ),      // AHB - Slave HBURST
+        .hresp_s        ( hresp_s   [2] ),      // AHB - Slave HRESP
+        .hready_s       ( hready_s  [2] ),      // AHB - Slave HREADYOUT
+        .hsel_s         ( hsel_s    [2] ),      // AHB - Slave HBURST
         //gpio_side
         .gpi            ( gpi_c         ),      // GPIO input
         .gpo            ( gpo_c         ),      // GPIO output
         .gpd            ( gpd_c         )       // GPIO direction
     );
 
-    task data_read( logic [31 : 0] addr );
+    task data_read( bit [31 : 0] addr );
         req_dm  = '1;
         addr_dm = addr;
         @(posedge clk);
@@ -171,7 +190,7 @@ module nf_ahb_tb();
         @(posedge clk);
     endtask : data_read
 
-    task data_write( logic [31 : 0] addr , logic [31 : 0] data );
+    task data_write( bit [31 : 0] addr , bit [31 : 0] data );
         req_dm  = '1;
         we_dm   = '1;
         addr_dm = addr;
@@ -183,40 +202,45 @@ module nf_ahb_tb();
         @(posedge clk);
     endtask : data_write
 
+    task wait_clk( int number );
+         repeat( number ) @(posedge clk);
+    endtask : wait_clk
+
     //generating clock
     initial
     begin
+    for(int i=0; i<3;i++)
+        $display("AHB slave[%d] = %h",i,ahb_vector[i]);
         $display("Clock generation start");
-        forever #(T/2) clk = ~clk;
+        forever #( T / 2 ) clk = ~clk;
     end
     //generation reset
     initial
     begin
         $display("Reset is in active state");
-        repeat(resetn_delay) @(posedge clk);
-        resetn = '1;
+        wait_clk    ( resetn_delay );
+        resetn  = '1;
         $display("Reset is in inactive state");
     end
     initial
     begin
-        addr_dm=32'h00000000 | `NF_GPIO_GPO;   
-        //rd_dm;     
-        wd_dm=8'h5a;     
-        we_dm='0;
-        req_dm='0;
-        //req_ack_dm;
+        addr_dm = `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO;       
+        wd_dm   = 8'h5a;     
+        we_dm   = '0;
+        req_dm  = '0;
         @(posedge resetn);
-        @(posedge clk);
-        data_write( 32'h00000000 | `NF_GPIO_GPO, 32'h5a );
-        data_write( 32'h00000000 | `NF_GPIO_DIR, 32'ha5 );
-        data_read ( 32'h00000000 | `NF_GPIO_DIR );
-        data_read ( 32'h00000000 | `NF_GPIO_GPO );
-        data_read ( 32'h00000000 | `NF_GPIO_GPI );
-        repeat(5) @(posedge clk);
-        addr_dm= '0;
-        repeat(5) @(posedge clk);
-        data_read ( 32'h00000000 | `NF_GPIO_GPO );
-        repeat(20) @(posedge clk); $stop;
+        wait_clk    ( 1 );
+        data_write  ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO, 32'h5a );
+        data_write  ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_DIR, 32'ha5 );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_DIR );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPI );
+        wait_clk    ( 5 );
+        addr_dm = '0;
+        wait_clk    ( 5 );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO );
+        wait_clk    ( 20 );
+        $stop;
     end
 
 endmodule : nf_ahb_tb

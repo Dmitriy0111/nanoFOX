@@ -25,7 +25,7 @@ module nf_reg_file
     output  logic   [31 : 0]    rd0     // read data 0
     `endif
 );
-    logic [31:0] reg_file [`reg_number-1:0];
+    logic [31 : 0] reg_file [`reg_number-1 : 0];
 
     `ifdef debug
     assign  rd0 = ( ra0 == '0 ) ? '0 : 

@@ -89,7 +89,7 @@ module nf_cpu
 
     assign  addr_i          = pc_if1;                                   // from fetch 1 stage
     assign  instr_if2       = sel_id_instr ? instr_if2_stalled : rd_i;  // from fetch 2 stage
-    assign  we_if2_stalled  = stall_id  && ( ~ sel_id_instr );           // for sw and branch stalls
+    assign  we_if2_stalled  = stall_id  && ( ~ sel_id_instr );          // for sw and branch stalls
 
     logic   [31 : 0]    instr_id;
     logic   [31 : 0]    pc_id;
@@ -218,12 +218,12 @@ module nf_cpu
     logic   [4  : 0]    wa3_imem;
     logic   [0  : 0]    we_rf_imem;
 
-    nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe , result_imem );
     nf_register_we  #( 1  ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , we_dm_iexe  , we_dm_imem  );
-    nf_register_we  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , rd2_i_exu   , rd2_imem    );
+    nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe  , we_rf_imem  );
     nf_register_we  #( 1  ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem , rf_src_iexe , rf_src_imem );
     nf_register_we  #( 5  ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem , wa3_iexe    , wa3_imem    );
-    nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe  , we_rf_imem  );
+    nf_register_we  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , rd2_i_exu   , rd2_imem    );
+    nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe , result_imem );
 
     assign addr_dm  = result_imem;
     assign wd_dm    = rd2_imem;
@@ -243,9 +243,9 @@ module nf_cpu
     logic   [0  : 0]    rf_src_iwb;
     logic   [31 : 0]    result_iwb;
 
-    nf_register_we  #( 5  ) wa3_imem_iwb    ( clk , resetn , ~ stall_iwb , wa3_imem    , wa3_iwb    );
     nf_register_we  #( 1  ) we_rf_imem_iwb  ( clk , resetn , ~ stall_iwb , we_rf_imem  , we_rf_iwb  );
     nf_register_we  #( 1  ) rf_src_imem_iwb ( clk , resetn , ~ stall_iwb , rf_src_imem , rf_src_iwb );
+    nf_register_we  #( 5  ) wa3_imem_iwb    ( clk , resetn , ~ stall_iwb , wa3_imem    , wa3_iwb    );
     nf_register_we  #( 32 ) result_imem_iwb ( clk , resetn , ~ stall_iwb , result_imem , result_iwb );
 
     assign wa3   = wa3_iwb;

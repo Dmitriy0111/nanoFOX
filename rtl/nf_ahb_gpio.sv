@@ -40,8 +40,8 @@ module nf_ahb_gpio
     assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
 
     nf_register_we #( 32 ) gpio_waddr_ff   ( hclk, hresetn, gpio_request, haddr_s, gpio_work_addr );
-    nf_register    #(  1 ) gpio_wreq_ff    ( hclk, hresetn, gpio_request && hwrite_s, gpio_wrequest );
-    nf_register    #(  1 ) hready_ff       ( hclk, hresetn, gpio_request, hready_s );
+    nf_register    #( 1  ) gpio_wreq_ff    ( hclk, hresetn, gpio_request && hwrite_s, gpio_wrequest );
+    nf_register    #( 1  ) hready_ff       ( hclk, hresetn, gpio_request, hready_s );
 
     logic   [31 : 0]    gpio_addr;
     logic   [31 : 0]    gpio_rd;

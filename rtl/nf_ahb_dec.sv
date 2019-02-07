@@ -14,9 +14,9 @@ module nf_ahb_dec
     parameter                                   slave_c = `SLAVE_COUNT,
     parameter   logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
                                                             {
-                                                                `NF_RAM_ADDR_MATCH,
+                                                                `NF_PWM_ADDR_MATCH,
                                                                 `NF_GPIO_ADDR_MATCH,
-                                                                `NF_PWM_ADDR_MATCH
+                                                                `NF_RAM_ADDR_MATCH
                                                             }
 )(
     input   logic                      [31 : 0] haddr,      // AHB address

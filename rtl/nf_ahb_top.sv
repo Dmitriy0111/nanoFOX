@@ -11,7 +11,13 @@
 
 module nf_ahb_top
 #(
-    parameter                                   slave_c = `SLAVE_COUNT
+    parameter                                   slave_c = `SLAVE_COUNT,
+    parameter   logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
+                                                            {
+                                                                `NF_PWM_ADDR_MATCH,
+                                                                `NF_GPIO_ADDR_MATCH,
+                                                                `NF_RAM_ADDR_MATCH
+                                                            }
 )(
     input   logic                               clk,
     input   logic                               resetn,
@@ -68,7 +74,12 @@ module nf_ahb_top
         .req_ack_dm     ( req_ack_dm    )   // request acknowledge data memory signal
     );
 
-    nf_ahb_router nf_ahb_router_0
+    nf_ahb_router 
+    #(
+        .slave_c        ( slave_c       ),
+        .ahb_vector     ( ahb_vector    )
+    )
+    nf_ahb_router_0
     (
         .hclk           ( clk           ),
         .hresetn        ( resetn        ),

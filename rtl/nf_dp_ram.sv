@@ -28,7 +28,7 @@ module nf_dp_ram
 
     always_ff @(posedge clk)
     begin : read_from_mem_p1
-            rd_p1 = ram[addr_p1];  
+            rd_p1 <= ram[addr_p1];  
     end
 
     always_ff @(posedge clk)
@@ -39,7 +39,7 @@ module nf_dp_ram
 
     always_ff @(posedge clk)
     begin : read_from_mem_p2
-            rd_p2 = ram[addr_p2];  
+            rd_p2 <= ram[addr_p2];  
     end
 
     always_ff @(posedge clk)
