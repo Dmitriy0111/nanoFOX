@@ -100,7 +100,7 @@ class pars_instr;
             { `C_ANY  , `F3_ANY  , `F7_ANY  } : instruction_s = $psprintf("Unknown instruction"                ,                                                                 );
         endcase
 
-        //  Flushed instruction
+        // Flushed instruction
         if( instr == '0 )
             instruction_s = $psprintf("Flushed instruction"                ,                                                                 );
         

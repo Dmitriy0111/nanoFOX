@@ -27,7 +27,6 @@ module de10_lite
     logic               resetn;
     logic   [4  : 0]    reg_addr;
     logic   [31 : 0]    reg_data;
-    logic   [25 : 0]    div;
     logic   [6*8-1 : 0] hex;
     //pwm side
     logic               pwm;
@@ -43,7 +42,6 @@ module de10_lite
     assign clk      = max10_clk1_50;
     assign resetn   = key[0];
     assign reg_addr = sw[0 +: 5];
-    assign div      = { sw[5 +: 5] , { 20 { 1'b1 } } };
 
     nf_top nf_top_0
     (

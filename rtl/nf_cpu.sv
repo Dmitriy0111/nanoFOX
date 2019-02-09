@@ -44,8 +44,8 @@ module nf_cpu
     //hazard's wires
     logic   [1  : 0]    rd1_bypass;
     logic   [1  : 0]    rd2_bypass;
-    logic   [1  : 0]    cmp_d1_bypass;
-    logic   [1  : 0]    cmp_d2_bypass;
+    logic   [0  : 0]    cmp_d1_bypass;
+    logic   [0  : 0]    cmp_d2_bypass;
     logic   [31 : 0]    cmp_d1;
     logic   [31 : 0]    cmp_d2;
     logic   [0  : 0]    stall_if;

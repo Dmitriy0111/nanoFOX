@@ -14,7 +14,6 @@ module rz_easyFPGA_A2_1
     logic               resetn;
     logic   [4  : 0]    reg_addr;
     logic   [31 : 0]    reg_data;
-    logic   [25 : 0]    div;
     logic   [7  : 0]    hex;
     
     assign hex0     = hex;

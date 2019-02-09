@@ -8,6 +8,7 @@
 */
 
 `include "../inc/nf_settings.svh"
+`include "../inc/nf_ahb.svh"
 
 module nf_ahb_mux
 #(
@@ -26,9 +27,9 @@ module nf_ahb_mux
 
     always_comb
     begin
-        hrdata  = 32'b0; 
-        hresp   = 2'b01; 
-        hready  = 1'b1;
+        hrdata  = '0; 
+        hresp   = `AHB_HRESP_ERROR; 
+        hready  = '1;
         casex( hsel_ff )
             3'b??1  : begin hrdata = hrdata_s[0] ; hresp = hresp_s[0] ; hready = hready_s[0] ;   end
             3'b?10  : begin hrdata = hrdata_s[1] ; hresp = hresp_s[1] ; hready = hready_s[1] ;   end

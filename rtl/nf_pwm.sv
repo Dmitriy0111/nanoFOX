@@ -13,19 +13,19 @@ module nf_pwm
 )(
     input   logic               clk,
     input   logic               resetn,
-    //nf_router side
+    // bus side
     input   logic   [31 : 0]    addr,       // address
-    input   logic               we,         // write enable
+    input   logic   [0  : 0]    we,         // write enable
     input   logic   [31 : 0]    wd,         // write data
     output  logic   [31 : 0]    rd,         // read data
-    //pmw_side
+    // pmw_side
     input   logic               pwm_clk,    // PWM clock input
     input   logic               pwm_resetn, // PWM reset input
     output  logic               pwm         // PWM output signal
 );
 
-    logic   [pwm_width-1 : 0]  pwm_i;      //internal counter register
-    logic   [pwm_width-1 : 0]  pwm_c;      //internal compare register
+    logic   [pwm_width-1 : 0]  pwm_i;       // internal counter register
+    logic   [pwm_width-1 : 0]  pwm_c;       // internal compare register
 
     assign pwm = ( pwm_i >= pwm_c );
     assign rd  = { '0 , pwm_c };

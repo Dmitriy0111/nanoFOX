@@ -22,23 +22,20 @@ module nf_ahb_tb();
     bit                 clk;
     bit                 resetn;
 
+    bit                 pwm_clk;    // PWM clock input
+    bit                 pwm_resetn; // PWM reset input
+    logic               pwm;        // PWM output signal
+
     localparam          gpio_w  = `NF_GPIO_WIDTH,
                         slave_c = `SLAVE_COUNT;
 
-    // AHB memory map
-    /*localparam  logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
-                                                            {
-                                                                `NF_RAM_ADDR_MATCH,
-                                                                `NF_GPIO_ADDR_MATCH,
-                                                                `NF_PWM_ADDR_MATCH
-                                                            };*/
     `define NF_GPIO_A_ADDR_MATCH    32'h0000XXXX
     `define NF_GPIO_B_ADDR_MATCH    32'h0001XXXX
-    `define NF_GPIO_C_ADDR_MATCH    32'h0002XXXX
+    `define NF_PWM_ADDR_MATCH       32'h0002XXXX
 
     localparam  logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
                                                             {
-                                                                `NF_GPIO_C_ADDR_MATCH,
+                                                                `NF_PWM_ADDR_MATCH,
                                                                 `NF_GPIO_B_ADDR_MATCH,
                                                                 `NF_GPIO_A_ADDR_MATCH
                                                             };
@@ -51,13 +48,8 @@ module nf_ahb_tb();
     logic   [gpio_w-1 : 0]   gpo_b;        // GPIO output
     logic   [gpio_w-1 : 0]   gpd_b;        // GPIO direction
 
-    logic   [gpio_w-1 : 0]   gpi_c;        // GPIO input
-    logic   [gpio_w-1 : 0]   gpo_c;        // GPIO output
-    logic   [gpio_w-1 : 0]   gpd_c;        // GPIO direction
-
     assign  gpi_a = gpo_a ^ gpd_a;
     assign  gpi_b = gpo_b ^ gpd_b;
-    assign  gpi_c = gpo_c ^ gpd_c;
 
     logic   [slave_c-1 : 0][31 : 0]         haddr_s;        // AHB - Slave HADDR 
     logic   [slave_c-1 : 0][31 : 0]         hwdata_s;       // AHB - Slave HWDATA 
@@ -156,11 +148,11 @@ module nf_ahb_tb();
         .gpd            ( gpd_b         )       // GPIO direction
     );
 
-    nf_ahb_gpio 
+    nf_ahb_pwm
     #(
-        .gpio_w         ( gpio_w        ) 
+        .pwm_width      ( 8             )
     )
-    nf_ahb_gpio_c
+    nf_ahb_pwm_0
     (
         .hclk           ( clk           ),
         .hresetn        ( resetn        ),
@@ -175,11 +167,14 @@ module nf_ahb_tb();
         .hresp_s        ( hresp_s   [2] ),      // AHB - Slave HRESP
         .hready_s       ( hready_s  [2] ),      // AHB - Slave HREADYOUT
         .hsel_s         ( hsel_s    [2] ),      // AHB - Slave HBURST
-        //gpio_side
-        .gpi            ( gpi_c         ),      // GPIO input
-        .gpo            ( gpo_c         ),      // GPIO output
-        .gpd            ( gpd_c         )       // GPIO direction
+        // pmw_side
+        .pwm_clk        ( pwm_clk       ),      // PWM clock input
+        .pwm_resetn     ( pwm_resetn    ),      // PWM reset input
+        .pwm            ( pwm           )       // PWM output signal
     );
+
+    assign pwm_clk = clk;
+    assign pwm_resetn = resetn;
 
     task data_read( bit [31 : 0] addr );
         req_dm  = '1;
@@ -206,7 +201,7 @@ module nf_ahb_tb();
          repeat( number ) @(posedge clk);
     endtask : wait_clk
 
-    //generating clock
+    // generating clock
     initial
     begin
     for(int i=0; i<3;i++)
@@ -214,7 +209,7 @@ module nf_ahb_tb();
         $display("Clock generation start");
         forever #( T / 2 ) clk = ~clk;
     end
-    //generation reset
+    // generation reset
     initial
     begin
         $display("Reset is in active state");
@@ -230,6 +225,10 @@ module nf_ahb_tb();
         req_dm  = '0;
         @(posedge resetn);
         wait_clk    ( 1 );
+        data_write  ( `NF_PWM_ADDR_MATCH    | '0          , 32'd244 );
+        data_read   ( `NF_PWM_ADDR_MATCH    | '0           );
+        data_write  ( `NF_PWM_ADDR_MATCH    | '0          , 32'd10  );
+        wait_clk    ( 3 );
         data_write  ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO, 32'h5a );
         data_write  ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_DIR, 32'ha5 );
         data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_DIR );

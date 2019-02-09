@@ -1,7 +1,7 @@
 
 vlib work
 
-set test "ahb test"
+set test "core test"
 
 set i0 +incdir+../rtl
 set i1 +incdir+../tb
@@ -15,6 +15,7 @@ if {$test == "core test"} {
     vsim -novopt work.nf_tb
     add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/*
     add wave -position insertpoint sim:/nf_tb/instruction_id_stage
+    add wave -position insertpoint sim:/nf_tb/*
 } elseif {$test == "ahb test"} {
     vsim -novopt work.nf_ahb_tb
     add wave -position insertpoint sim:/nf_ahb_tb/*

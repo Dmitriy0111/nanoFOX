@@ -322,4 +322,13 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_i_exu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_i_du.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_hazard_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_dp_ram.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_gpio.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ahb2core.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ahb_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ahb_router.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ahb_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ahb_mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ahb_gpio.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ahb_dec.sv
 set_global_assignment -name SYSTEMVERILOG_FILE de10_lite.sv

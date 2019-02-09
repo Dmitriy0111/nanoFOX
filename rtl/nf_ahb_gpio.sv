@@ -27,7 +27,7 @@ module nf_ahb_gpio
     output  logic   [1        : 0]      hresp_s,    // AHB - Slave HRESP
     output  logic   [0        : 0]      hready_s,   // AHB - Slave HREADYOUT
     input   logic   [0        : 0]      hsel_s,     // AHB - Slave HBURST
-    //gpio_side
+    // gpio_side
     input   logic   [gpio_w-1 : 0]      gpi,        // GPIO input
     output  logic   [gpio_w-1 : 0]      gpo,        // GPIO output
     output  logic   [gpio_w-1 : 0]      gpd         // GPIO direction

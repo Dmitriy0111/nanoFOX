@@ -23,13 +23,24 @@ module nf_tb();
     bit                 clk;
     bit                 resetn;
 
+    logic   [7  : 0]                gpio_i_a;   // GPIO_A input
+    logic   [7  : 0]                gpio_o_a;   // GPIO_A output
+    logic   [7  : 0]                gpio_d_a;   // GPIO_A direction
+    logic   [7  : 0]                gpio_i_b;   // GPIO_B input
+    logic   [7  : 0]                gpio_o_b;   // GPIO_B output
+    logic   [7  : 0]                gpio_d_b;   // GPIO_B direction
+    logic                           pwm;        // PWM output signal
+
+    assign  gpio_i_a = gpio_o_a ^ gpio_d_a;
+    assign  gpio_i_b = gpio_o_b ^ gpio_d_b;
+
     bit     [4  : 0]    reg_addr;
     bit     [31 : 0]    reg_data;
     bit     [31 : 0]    cycle_counter;
 
     integer             log;
 
-    //instructions
+    // instructions
     string  instruction_id_stage;
     string  instruction_iexe_stage;
     string  instruction_imem_stage;
@@ -45,17 +56,17 @@ module nf_tb();
         .*
     );
 
-    //reset all register's in '0
+    // reset all register's in '0
     initial
         for( int i=0 ; i<32 ; i++ )
             nf_top_0.nf_cpu_0.reg_file_0.reg_file[i] = '0;
-    //generating clock
+    // generating clock
     initial
     begin
         $display("Clock generation start");
         forever #(T/2) clk = ~clk;
     end
-    //generation reset
+    // generation reset
     initial
     begin
         $display("Reset is in active state");
@@ -63,9 +74,9 @@ module nf_tb();
         resetn = '1;
         $display("Reset is in inactive state");
     end
-    //creating pars_instruction class
+    // creating pars_instruction class
     pars_instr pars_instr_0 = new();
-    //parsing instruction
+    // parsing instruction
     initial
     begin
         if( `log_en )
