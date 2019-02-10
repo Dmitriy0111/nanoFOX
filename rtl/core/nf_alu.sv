@@ -7,7 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../inc/nf_cpu.svh"
+`include "../../inc/nf_cpu.svh"
 
 module nf_alu
 (

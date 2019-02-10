@@ -20,7 +20,6 @@ module rz_easyFPGA_A2_1
     assign clk      = clk50mhz;
     assign resetn   = rst_key;
     assign reg_addr = key[0 +: 4];
-    assign div      = 26'h00_ff_ff_ff;
 
     nf_top nf_top_0
     (

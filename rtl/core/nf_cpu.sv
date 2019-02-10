@@ -7,8 +7,8 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../inc/nf_settings.svh"
-`include "../inc/nf_hazard_unit.svh"
+`include "../../inc/nf_settings.svh"
+`include "../../inc/nf_hazard_unit.svh"
 
 module nf_cpu
 (

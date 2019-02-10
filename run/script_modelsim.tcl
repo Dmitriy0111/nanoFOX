@@ -1,15 +1,23 @@
 
 vlib work
 
-set test "core test"
+set test "ahb test"
 
-set i0 +incdir+../rtl
-set i1 +incdir+../tb
+set i0 +incdir+../rtl/common
+set i1 +incdir+../rtl/core
+set i2 +incdir+../rtl/periphery
+set i3 +incdir+../rtl/ahb
+set i4 +incdir+../rtl
+set i5 +incdir+../tb
 
-set s0 ../rtl/*.*v
-set s1 ../tb/*.*v
+set s0 ../rtl/common/*.*v
+set s1 ../rtl/core/*.*v
+set s2 ../rtl/periphery/*.*v
+set s3 ../rtl/ahb/*.*v
+set s4 ../rtl/*.*v
+set s5 ../tb/*.*v
 
-vlog $i0 $i1 $s0 $s1 
+vlog $i0 $i1 $i2 $i3 $i4 $i5 $s0 $s1 $s2 $s3 $s4 $s5
 
 if {$test == "core test"} {
     vsim -novopt work.nf_tb

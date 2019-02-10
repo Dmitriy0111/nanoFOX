@@ -50,7 +50,7 @@ module nf_dp_ram
 
     initial
     begin
-        $readmemh("../program_file/program.hex",ram);
+        $readmemh("../../program_file/program.hex",ram);
     end
 
 endmodule : nf_dp_ram
