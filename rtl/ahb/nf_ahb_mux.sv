@@ -14,7 +14,7 @@ module nf_ahb_mux
 #(
     parameter                                   slave_c = `SLAVE_COUNT
 )(
-    input   logic   [slave_c-1 : 0]             hsel_ff,        // hsel after flip-flop
+    input   logic   [slave_c-1 : 0]             hsel_ff,    // hsel after flip-flop
     // slave side
     input   logic   [slave_c-1 : 0][31 : 0]     hrdata_s,   // AHB read data slaves 
     input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,    // AHB response slaves
