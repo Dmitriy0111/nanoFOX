@@ -116,7 +116,7 @@ module nf_ahb_tb();
         .hburst_s       ( hburst_s  [0] ),      // AHB - Slave HBURST
         .hresp_s        ( hresp_s   [0] ),      // AHB - Slave HRESP
         .hready_s       ( hready_s  [0] ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s    [0] ),      // AHB - Slave HBURST
+        .hsel_s         ( hsel_s    [0] ),      // AHB - Slave HSEL
         //gpio_side
         .gpi            ( gpi_a         ),      // GPIO input
         .gpo            ( gpo_a         ),      // GPIO output
@@ -141,7 +141,7 @@ module nf_ahb_tb();
         .hburst_s       ( hburst_s  [1] ),      // AHB - Slave HBURST
         .hresp_s        ( hresp_s   [1] ),      // AHB - Slave HRESP
         .hready_s       ( hready_s  [1] ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s    [1] ),      // AHB - Slave HBURST
+        .hsel_s         ( hsel_s    [1] ),      // AHB - Slave HSEL
         //gpio_side
         .gpi            ( gpi_b         ),      // GPIO input
         .gpo            ( gpo_b         ),      // GPIO output
@@ -166,7 +166,7 @@ module nf_ahb_tb();
         .hburst_s       ( hburst_s  [2] ),      // AHB - Slave HBURST
         .hresp_s        ( hresp_s   [2] ),      // AHB - Slave HRESP
         .hready_s       ( hready_s  [2] ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s    [2] ),      // AHB - Slave HBURST
+        .hsel_s         ( hsel_s    [2] ),      // AHB - Slave HSEL
         // pmw_side
         .pwm_clk        ( pwm_clk       ),      // PWM clock input
         .pwm_resetn     ( pwm_resetn    ),      // PWM reset input

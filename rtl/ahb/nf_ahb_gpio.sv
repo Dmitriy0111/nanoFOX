@@ -12,25 +12,26 @@
 
 module nf_ahb_gpio
 #(
-    parameter                           gpio_w = `NF_GPIO_WIDTH
+    parameter                       gpio_w = `NF_GPIO_WIDTH
 )(
-    input   logic                       hclk,
-    input   logic                       hresetn,
-    // Slaves side
-    input   logic   [31       : 0]      haddr_s,    // AHB - Slave HADDR
-    input   logic   [31       : 0]      hwdata_s,   // AHB - Slave HWDATA
-    output  logic   [31       : 0]      hrdata_s,   // AHB - Slave HRDATA
-    input   logic   [0        : 0]      hwrite_s,   // AHB - Slave HWRITE
-    input   logic   [1        : 0]      htrans_s,   // AHB - Slave HTRANS
-    input   logic   [2        : 0]      hsize_s,    // AHB - Slave HSIZE
-    input   logic   [2        : 0]      hburst_s,   // AHB - Slave HBURST
-    output  logic   [1        : 0]      hresp_s,    // AHB - Slave HRESP
-    output  logic   [0        : 0]      hready_s,   // AHB - Slave HREADYOUT
-    input   logic   [0        : 0]      hsel_s,     // AHB - Slave HBURST
-    // gpio_side
-    input   logic   [gpio_w-1 : 0]      gpi,        // GPIO input
-    output  logic   [gpio_w-1 : 0]      gpo,        // GPIO output
-    output  logic   [gpio_w-1 : 0]      gpd         // GPIO direction
+    // clock and reset
+    input   logic   [0        : 0]  hclk,       // clk 
+    input   logic   [0        : 0]  hresetn,    // resetn 
+    // AHB slave side
+    input   logic   [31       : 0]  haddr_s,    // AHB - Slave HADDR 
+    input   logic   [31       : 0]  hwdata_s,   // AHB - Slave HWDATA 
+    output  logic   [31       : 0]  hrdata_s,   // AHB - Slave HRDATA 
+    input   logic   [0        : 0]  hwrite_s,   // AHB - Slave HWRITE 
+    input   logic   [1        : 0]  htrans_s,   // AHB - Slave HTRANS 
+    input   logic   [2        : 0]  hsize_s,    // AHB - Slave HSIZE 
+    input   logic   [2        : 0]  hburst_s,   // AHB - Slave HBURST 
+    output  logic   [1        : 0]  hresp_s,    // AHB - Slave HRESP 
+    output  logic   [0        : 0]  hready_s,   // AHB - Slave HREADYOUT 
+    input   logic   [0        : 0]  hsel_s,     // AHB - Slave HSEL
+    // GPIO side
+    input   logic   [gpio_w-1 : 0]  gpi,        // GPIO input
+    output  logic   [gpio_w-1 : 0]  gpo,        // GPIO output
+    output  logic   [gpio_w-1 : 0]  gpd         // GPIO direction
 );
 
     logic               gpio_request;

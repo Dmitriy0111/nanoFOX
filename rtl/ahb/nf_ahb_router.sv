@@ -38,7 +38,7 @@ module nf_ahb_router
     output  logic   [slave_c-1 : 0][0  : 0]     hwrite_s,       // AHB - Slave HWRITE
     output  logic   [slave_c-1 : 0][1  : 0]     htrans_s,       // AHB - Slave HTRANS
     output  logic   [slave_c-1 : 0][2  : 0]     hsize_s,        // AHB - Slave HSIZE
-    output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,       // AHB - Slave HBURST
+    output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,       // AHB - Slave 
     input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,        // AHB - Slave HRESP
     input   logic   [slave_c-1 : 0][0  : 0]     hready_s,       // AHB - Slave HREADY
     output  logic   [slave_c-1 : 0]             hsel_s          // AHB - Slave HSEL
@@ -57,7 +57,7 @@ module nf_ahb_router
             assign  hwrite_s[gen_ahb_dec] = hwrite;
             assign  htrans_s[gen_ahb_dec] = htrans;
             assign  hsize_s [gen_ahb_dec] = hsize;
-            assign  hburst_s[gen_ahb_dec] = hburst;
+            assign  hburst_s[gen_ahb_dec] = ;
         end
     endgenerate
     // creating one AHB decoder module

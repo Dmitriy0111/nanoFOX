@@ -31,7 +31,7 @@ module nf_ahb_top
     output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,       // AHB - Slave HBURST 
     input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,        // AHB - Slave HRESP 
     input   logic   [slave_c-1 : 0][0  : 0]     hready_s,       // AHB - Slave HREADYOUT 
-    output  logic   [slave_c-1 : 0]             hsel_s,         // AHB - Slave HSEL
+    output  logic   [slave_c-1 : 0][0  : 0]     hsel_s,         // AHB - Slave HSEL
     // core side
     input   logic                  [31 : 0]     addr_dm,        // address data memory
     output  logic                  [31 : 0]     rd_dm,          // read data memory
