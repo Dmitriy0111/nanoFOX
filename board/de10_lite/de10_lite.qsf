@@ -321,6 +321,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb2core.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_router.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_mux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_gpio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_dec.sv

@@ -15,19 +15,19 @@ module nf_ahb_gpio
     parameter                       gpio_w = `NF_GPIO_WIDTH
 )(
     // clock and reset
-    input   logic   [0        : 0]  hclk,       // clk 
-    input   logic   [0        : 0]  hresetn,    // resetn 
-    // AHB slave side
-    input   logic   [31       : 0]  haddr_s,    // AHB - Slave HADDR 
-    input   logic   [31       : 0]  hwdata_s,   // AHB - Slave HWDATA 
-    output  logic   [31       : 0]  hrdata_s,   // AHB - Slave HRDATA 
-    input   logic   [0        : 0]  hwrite_s,   // AHB - Slave HWRITE 
-    input   logic   [1        : 0]  htrans_s,   // AHB - Slave HTRANS 
-    input   logic   [2        : 0]  hsize_s,    // AHB - Slave HSIZE 
-    input   logic   [2        : 0]  hburst_s,   // AHB - Slave HBURST 
-    output  logic   [1        : 0]  hresp_s,    // AHB - Slave HRESP 
-    output  logic   [0        : 0]  hready_s,   // AHB - Slave HREADYOUT 
-    input   logic   [0        : 0]  hsel_s,     // AHB - Slave HSEL
+    input   logic   [0        : 0]  hclk,       // hclock
+    input   logic   [0        : 0]  hresetn,    // hresetn
+    // AHB GPIO slave side
+    input   logic   [31       : 0]  haddr_s,    // AHB - GPIO-slave HADDR
+    input   logic   [31       : 0]  hwdata_s,   // AHB - GPIO-slave HWDATA
+    output  logic   [31       : 0]  hrdata_s,   // AHB - GPIO-slave HRDATA
+    input   logic   [0        : 0]  hwrite_s,   // AHB - GPIO-slave HWRITE
+    input   logic   [1        : 0]  htrans_s,   // AHB - GPIO-slave HTRANS
+    input   logic   [2        : 0]  hsize_s,    // AHB - GPIO-slave HSIZE
+    input   logic   [2        : 0]  hburst_s,   // AHB - GPIO-slave HBURST
+    output  logic   [1        : 0]  hresp_s,    // AHB - GPIO-slave HRESP
+    output  logic   [0        : 0]  hready_s,   // AHB - GPIO-slave HREADYOUT
+    input   logic   [0        : 0]  hsel_s,     // AHB - GPIO-slave HSEL
     // GPIO side
     input   logic   [gpio_w-1 : 0]  gpi,        // GPIO input
     output  logic   [gpio_w-1 : 0]  gpo,        // GPIO output
@@ -38,7 +38,7 @@ module nf_ahb_gpio
     logic               gpio_wrequest;
     logic   [31 : 0]    gpio_work_addr;
 
-    assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
+    assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
 
     nf_register_we #( 32 ) gpio_waddr_ff   ( hclk, hresetn, gpio_request, haddr_s, gpio_work_addr );
     nf_register    #( 1  ) gpio_wreq_ff    ( hclk, hresetn, gpio_request && hwrite_s, gpio_wrequest );

@@ -29,7 +29,7 @@
 
 /*  
     memory map for devices
-
+  
     0x0000_0000\
                 \
                  RAM
@@ -54,6 +54,17 @@
 `define NF_RAM_ADDR_MATCH   32'h0000XXXX
 `define NF_GPIO_ADDR_MATCH  32'h0001XXXX
 `define NF_PWM_ADDR_MATCH   32'h0002XXXX
+
+`ifndef ahb_vector_
+`define ahb_vector_
+    parameter   logic   [`SLAVE_COUNT-1 : 0][31 : 0]    ahb_vector = 
+                                                                    {
+                                                                        `NF_PWM_ADDR_MATCH,
+                                                                        `NF_GPIO_ADDR_MATCH,
+                                                                        `NF_RAM_ADDR_MATCH
+                                                                    };
+`endif
+
 //constant's for gpio module
 `define NF_GPIO_GPI         'h0
 `define NF_GPIO_GPO         'h4

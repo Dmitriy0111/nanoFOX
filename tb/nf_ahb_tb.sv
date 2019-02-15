@@ -71,8 +71,7 @@ module nf_ahb_tb();
 
     nf_ahb_top
     #(
-        .slave_c        ( slave_c       ),
-        .ahb_vector     ( ahb_vector    )
+        .slave_c        ( slave_c       )
     )
     nf_ahb_top_0
     (

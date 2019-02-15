@@ -20,12 +20,20 @@ module nf_ram
 
     logic [31 : 0] ram [depth-1 : 0];
 
-    assign rd = ram[addr];
+    always_ff @(posedge clk)
+    begin : read_from_ran
+            rd <= ram[addr];  
+    end
 
     always_ff @(posedge clk)
-    begin
+    begin : write_to_ram
         if( we )
             ram[addr] <= wd;  
+    end
+
+    initial
+    begin
+        $readmemh("../../program_file/program.hex",ram);
     end
 
 endmodule : nf_ram

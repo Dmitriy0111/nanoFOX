@@ -12,28 +12,33 @@ module rz_easyFPGA_A2_1
 
     logic               clk;
     logic               resetn;
-    logic   [4  : 0]    reg_addr;
-    logic   [31 : 0]    reg_data;
+    logic   [7  : 0]    gpio_i_0;   // GPIO_0 input
+    logic   [7  : 0]    gpio_o_0;   // GPIO_0 output
+    logic   [7  : 0]    gpio_d_0;   // GPIO_0 direction
+    logic               pwm;        // PWM output signal
+    logic   [31 : 0]    gpio2hex;
     logic   [7  : 0]    hex;
     
     assign hex0     = hex;
     assign clk      = clk50mhz;
     assign resetn   = rst_key;
-    assign reg_addr = key[0 +: 4];
+    assign gpio2hex = {'0,gpio_o_0};
 
     nf_top nf_top_0
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),
-        .reg_addr   ( reg_addr  ),
-        .reg_data   ( reg_data  )
+        .gpio_i_0   ( gpio_i_0  ),
+        .gpio_o_0   ( gpio_o_0  ),
+        .gpio_d_0   ( gpio_d_0  ),
+        .pwm        ( pwm       ) 
     );
 
     nf_seven_seg_dynamic nf_seven_seg_dynamic_0
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),
-        .hex        ( reg_data  ),
+        .hex        ( gpio2hex  ),
         .cc_ca      ( '0        ),
         .seven_seg  ( hex       ),
         .dig        ( dig       )

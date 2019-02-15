@@ -11,26 +11,26 @@
 `include "../../inc/nf_hazard_unit.svh"
 
 module nf_cpu
-(
+#(
+    parameter                   ver = "1.1"
+)(
     // clock and reset
-    input   logic               clk,
-    input   logic               resetn,
+    input   logic   [0  : 0]    clk,        // clk  
+    input   logic   [0  : 0]    resetn,     // resetn
     // instruction memory (IF)
-    output  logic   [31 : 0]    addr_i,     // instruction address
-    input   logic   [31 : 0]    rd_i,       // read instruction
+    output  logic   [31 : 0]    addr_i,     // address instruction memory
+    input   logic   [31 : 0]    rd_i,       // read instruction memory
+    output  logic   [31 : 0]    wd_i,       // write instruction memory
+    output  logic   [0  : 0]    we_i,       // write enable instruction memory signal
+    output  logic   [0  : 0]    req_i,      // request instruction memory signal
+    input   logic   [0  : 0]    req_ack_i,  // request acknowledge instruction memory signal
     // data memory and other's
     output  logic   [31 : 0]    addr_dm,    // address data memory
     input   logic   [31 : 0]    rd_dm,      // read data memory
     output  logic   [31 : 0]    wd_dm,      // write data memory
-    output  logic   [0  : 0]    we_dm,      // write enable signal
+    output  logic   [0  : 0]    we_dm,      // write enable data memory signal
     output  logic   [0  : 0]    req_dm,     // request data memory signal
     input   logic   [0  : 0]    req_ack_dm  // request acknowledge data memory signal
-`ifdef debug
-    // for debug
-    ,
-    input   logic   [4  : 0]    reg_addr,   // register address
-    output  logic   [31 : 0]    reg_data    // register data
-`endif
 );
 
     // program counter wires
@@ -130,11 +130,6 @@ module nf_cpu
         .wa3            ( wa3               ),  // write address 
         .wd3            ( wd3               ),  // write data
         .we3            ( we_rf             )   // write enable signal
-        `ifdef debug
-        ,
-        .ra0            ( reg_addr          ),  // read address 0
-        .rd0            ( reg_data          )   // read data 0
-        `endif
     );
     // creating instruction decode unit
     nf_i_du nf_i_du_0

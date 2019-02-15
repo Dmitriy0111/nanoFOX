@@ -15,22 +15,22 @@ module nf_ahb_pwm
     parameter                   pwm_width = 8
 )(
     // clock and reset
-    input   logic   [0  : 0]    hclk,       // clk 
-    input   logic   [0  : 0]    hresetn,    // resetn 
-    // AHB slave side
-    input   logic   [31 : 0]    haddr_s,    // AHB - Slave HADDR 
-    input   logic   [31 : 0]    hwdata_s,   // AHB - Slave HWDATA 
-    output  logic   [31 : 0]    hrdata_s,   // AHB - Slave HRDATA 
-    input   logic   [0  : 0]    hwrite_s,   // AHB - Slave HWRITE 
-    input   logic   [1  : 0]    htrans_s,   // AHB - Slave HTRANS 
-    input   logic   [2  : 0]    hsize_s,    // AHB - Slave HSIZE 
-    input   logic   [2  : 0]    hburst_s,   // AHB - Slave HBURST 
-    output  logic   [1  : 0]    hresp_s,    // AHB - Slave HRESP 
-    output  logic   [0  : 0]    hready_s,   // AHB - Slave HREADYOUT 
-    input   logic   [0  : 0]    hsel_s,     // AHB - Slave HSEL
+    input   logic   [0  : 0]    hclk,       // hclk
+    input   logic   [0  : 0]    hresetn,    // hresetn
+    // AHB PWM slave side
+    input   logic   [31 : 0]    haddr_s,    // AHB - PWM-slave HADDR
+    input   logic   [31 : 0]    hwdata_s,   // AHB - PWM-slave HWDATA
+    output  logic   [31 : 0]    hrdata_s,   // AHB - PWM-slave HRDATA
+    input   logic   [0  : 0]    hwrite_s,   // AHB - PWM-slave HWRITE
+    input   logic   [1  : 0]    htrans_s,   // AHB - PWM-slave HTRANS
+    input   logic   [2  : 0]    hsize_s,    // AHB - PWM-slave HSIZE
+    input   logic   [2  : 0]    hburst_s,   // AHB - PWM-slave HBURST
+    output  logic   [1  : 0]    hresp_s,    // AHB - PWM-slave HRESP
+    output  logic   [0  : 0]    hready_s,   // AHB - PWM-slave HREADYOUT
+    input   logic   [0  : 0]    hsel_s,     // AHB - PWM-slave HSEL
     // PWM side
-    input   logic   [0  : 0]    pwm_clk,    // PWM clock input
-    input   logic   [0  : 0]    pwm_reset,  // PWM reset input
+    input   logic   [0  : 0]    pwm_clk,    // PWM_clk
+    input   logic   [0  : 0]    pwm_resetn, // PWM_resetn
     output  logic   [0  : 0]    pwm         // PWM output signal
 );
 

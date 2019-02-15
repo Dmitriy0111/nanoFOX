@@ -11,13 +11,7 @@
 
 module nf_ahb_router
 #(
-    parameter                                   slave_c = `SLAVE_COUNT,
-    parameter   logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
-                                                            {
-                                                                `NF_PWM_ADDR_MATCH,
-                                                                `NF_GPIO_ADDR_MATCH,
-                                                                `NF_RAM_ADDR_MATCH
-                                                            }
+    parameter                                   slave_c = `SLAVE_COUNT
 )(
     input   logic                               hclk,
     input   logic                               hresetn,
@@ -38,7 +32,7 @@ module nf_ahb_router
     output  logic   [slave_c-1 : 0][0  : 0]     hwrite_s,       // AHB - Slave HWRITE
     output  logic   [slave_c-1 : 0][1  : 0]     htrans_s,       // AHB - Slave HTRANS
     output  logic   [slave_c-1 : 0][2  : 0]     hsize_s,        // AHB - Slave HSIZE
-    output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,       // AHB - Slave 
+    output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,       // AHB - Slave HBURST
     input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,        // AHB - Slave HRESP
     input   logic   [slave_c-1 : 0][0  : 0]     hready_s,       // AHB - Slave HREADY
     output  logic   [slave_c-1 : 0]             hsel_s          // AHB - Slave HSEL
@@ -57,14 +51,13 @@ module nf_ahb_router
             assign  hwrite_s[gen_ahb_dec] = hwrite;
             assign  htrans_s[gen_ahb_dec] = htrans;
             assign  hsize_s [gen_ahb_dec] = hsize;
-            assign  hburst_s[gen_ahb_dec] = ;
+            assign  hburst_s[gen_ahb_dec] = hburst;
         end
     endgenerate
     // creating one AHB decoder module
     nf_ahb_dec
     #(
-        .slave_c        ( slave_c       ),
-        .ahb_vector     ( ahb_vector    )
+        .slave_c        ( slave_c       )
     )
     nf_ahb_dec_0
     (   

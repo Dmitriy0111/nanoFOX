@@ -13,85 +13,101 @@ module nf_top
 (
     input   logic                           clk,
     input   logic                           resetn,
-    input   logic   [7  : 0]                gpio_i_a,   // GPIO_A input
-    output  logic   [7  : 0]                gpio_o_a,   // GPIO_A output
-    output  logic   [7  : 0]                gpio_d_a,   // GPIO_A direction
-    input   logic   [7  : 0]                gpio_i_b,   // GPIO_B input
-    output  logic   [7  : 0]                gpio_o_b,   // GPIO_B output
-    output  logic   [7  : 0]                gpio_d_b,   // GPIO_B direction
+    input   logic   [7  : 0]                gpio_i_0,   // GPIO_0 input
+    output  logic   [7  : 0]                gpio_o_0,   // GPIO_0 output
+    output  logic   [7  : 0]                gpio_d_0,   // GPIO_0 direction
     output  logic                           pwm         // PWM output signal
-`ifdef debug
-    ,
-    input   logic   [4  : 0]                reg_addr,
-    output  logic   [31 : 0]                reg_data
-`endif
 );
 
     localparam          gpio_w  = `NF_GPIO_WIDTH,
                         slave_c = `SLAVE_COUNT;
 
-    //instruction memory
-    logic   [31 : 0]    addr_i;     // instruction address
-    logic   [31 : 0]    rd_i;       // read instruction
-    //data memory and others's
-    logic   [31 : 0]    addr_dm;    // address data memory
-    logic   [0  : 0]    we_dm;      // write enable signal
-    logic   [31 : 0]    wd_dm;      // write data memory
-    logic   [31 : 0]    rd_dm;      // read data memory
-    logic   [0  : 0]    req_dm;     // request data memory signal
-    logic   [0  : 0]    req_ack_dm; // request acknowledge data memory signal
+    // instruction memory (IF)
+    logic   [31 : 0]    addr_i;                 // address instruction memory
+    logic   [31 : 0]    rd_i;                   // read instruction memory
+    logic   [31 : 0]    wd_i;                   // write instruction memory
+    logic   [0  : 0]    we_i;                   // write enable instruction memory signal
+    logic   [0  : 0]    req_i;                  // request instruction memory signal
+    logic   [0  : 0]    req_ack_i;              // request acknowledge instruction memory signal
+    // data memory and other's
+    logic   [31 : 0]    addr_dm;                // address data memory
+    logic   [31 : 0]    rd_dm;                  // read data memory
+    logic   [31 : 0]    wd_dm;                  // write data memory
+    logic   [0  : 0]    we_dm;                  // write enable data memory signal
+    logic   [0  : 0]    req_dm;                 // request data memory signal
+    logic   [0  : 0]    req_ack_dm;             // request acknowledge data memory signal
+    // cross connect data
+    logic   [31 : 0]    addr_cc;                // address cc_data memory
+    logic   [31 : 0]    rd_cc;                  // read cc_data memory
+    logic   [31 : 0]    wd_cc;                  // write cc_data memory
+    logic   [0  : 0]    we_cc;                  // write enable cc_data memory signal
+    logic   [0  : 0]    req_cc;                 // request cc_data memory signal
+    logic   [0  : 0]    req_ack_cc;             // request acknowledge cc_data memory signal
     // PWM 
-    logic               pwm_clk;    // PWM clock input
-    logic               pwm_resetn; // PWM reset input   
-    assign              pwm_clk = clk;
-    assign              pwm_resetn = resetn;    
-    // GPIO
-    // GPIO port A
-    logic   [gpio_w-1 : 0]   gpi_a;        // GPIO input
-    logic   [gpio_w-1 : 0]   gpo_a;        // GPIO output
-    logic   [gpio_w-1 : 0]   gpd_a;        // GPIO direction
-    // GPIO port B
-    logic   [gpio_w-1 : 0]   gpi_b;        // GPIO input
-    logic   [gpio_w-1 : 0]   gpo_b;        // GPIO output
-    logic   [gpio_w-1 : 0]   gpd_b;        // GPIO direction
+    logic               pwm_clk;                // PWM clock input
+    logic               pwm_resetn;             // PWM reset input   
+    // GPIO port 0
+    logic   [gpio_w-1 : 0]   gpi_0;             // GPIO input
+    logic   [gpio_w-1 : 0]   gpo_0;             // GPIO output
+    logic   [gpio_w-1 : 0]   gpd_0;             // GPIO direction
 
-    assign gpi_a    = gpio_i_a;
-    assign gpio_o_a = gpo_a;
-    assign gpio_d_a = gpd_a;
-    assign gpi_b    = gpio_i_b;
-    assign gpio_o_b = gpo_b;
-    assign gpio_d_b = gpd_b;
+    assign pwm_clk    = clk;
+    assign pwm_resetn = resetn;    
+    assign gpi_0      = gpio_i_0;
+    assign gpio_o_0   = gpo_0;
+    assign gpio_d_0   = gpd_0;
 
-    //creating one cpu unit
+    // Creating one nf_cpu_0
     nf_cpu nf_cpu_0
     (
-        .clk        ( clk               ),
-        .resetn     ( resetn            ),
-        .addr_i     ( addr_i            ),  // instruction address
-        .rd_i       ( rd_i              ),  // read instruction
-        .addr_dm    ( addr_dm           ),  // address data memory
-        .rd_dm      ( rd_dm             ),  // read data memory
-        .wd_dm      ( wd_dm             ),  // write data memory
-        .we_dm      ( we_dm             ),  // write enable signal
-        .req_dm     ( req_dm            ),  // request data memory signal
-        .req_ack_dm ( req_ack_dm        )   // request acknowledge data memory signal
-    `ifdef debug
-        ,
-        .reg_addr   ( reg_addr          ),  // register address
-        .reg_data   ( reg_data          )   // register data
-    `endif
+        // clock and reset
+        .clk            ( clk           ),      // clk  
+        .resetn         ( resetn        ),      // resetn
+        // instruction memory (IF)
+        .addr_i         ( addr_i        ),      // address instruction memory
+        .rd_i           ( rd_i          ),      // read instruction memory
+        .wd_i           ( wd_i          ),      // write instruction memory
+        .we_i           ( we_i          ),      // write enable instruction memory signal
+        .req_i          ( req_i         ),      // request instruction memory signal
+        .req_ack_i      ( req_ack_i     ),      // request acknowledge instruction memory signal
+        // data memory and other's
+        .addr_dm        ( addr_dm       ),      // address data memory
+        .rd_dm          ( rd_dm         ),      // read data memory
+        .wd_dm          ( wd_dm         ),      // write data memory
+        .we_dm          ( we_dm         ),      // write enable data memory signal
+        .req_dm         ( req_dm        ),      // request data memory signal
+        .req_ack_dm     ( req_ack_dm    )       // request acknowledge data memory signal
     );
 
-    // AHB memory map
-    `define NF_GPIO_A_ADDR_MATCH    32'h0000XXXX
-    `define NF_GPIO_B_ADDR_MATCH    32'h0001XXXX
-    `define NF_PWM_ADDR_MATCH       32'h0002XXXX
-    localparam  logic   [slave_c-1 : 0][31 : 0] ahb_vector = 
-                                                            {
-                                                                `NF_PWM_ADDR_MATCH,
-                                                                `NF_GPIO_B_ADDR_MATCH,
-                                                                `NF_GPIO_A_ADDR_MATCH
-                                                            };
+    // Creating one nf_cpu_cc_0
+    nf_cpu_cc nf_cpu_cc_0
+    (
+        // clock and reset
+        .clk            ( clk           ),      // clk
+        .resetn         ( resetn        ),      // resetn
+        // instruction memory (IF)
+        //addr_i         ( addr_i         ),      // address instruction memory
+        //rd_i           ( rd_i           ),      // read instruction memory
+        //wd_i           ( wd_i           ),      // write instruction memory
+        //we_i           ( we_i           ),      // write enable instruction memory signal
+        //req_i          ( req_i          ),      // request instruction memory signal
+        //req_ack_i      ( req_ack_i      ),      // request acknowledge instruction memory signal
+        // data memory and other's
+        //.addr_dm        ( addr_dm       ),      // address data memory
+        //.rd_dm          ( rd_dm         ),      // read data memory
+        //.wd_dm          ( wd_dm         ),      // write data memory
+        //.we_dm          ( we_dm         ),      // write enable data memory signal
+        //.req_dm         ( req_dm        ),      // request data memory signal
+        //.req_ack_dm     ( req_ack_dm    ),      // request acknowledge data memory signal
+        // cross connect data
+        .addr_cc        ( addr_cc       ),      // address cc_data memory
+        .rd_cc          ( rd_cc         ),      // read cc_data memory
+        .wd_cc          ( wd_cc         ),      // write cc_data memory
+        .we_cc          ( we_cc         ),      // write enable cc_data memory signal
+        .req_cc         ( req_cc        ),      // request cc_data memory signal
+        .req_ack_cc     ( req_ack_cc    )       // request acknowledge cc_data memory signal
+    );
+
     // AHB interconnect wires
     logic   [slave_c-1 : 0][31 : 0]         haddr_s;        // AHB - Slave HADDR 
     logic   [slave_c-1 : 0][31 : 0]         hwdata_s;       // AHB - Slave HWDATA 
@@ -106,13 +122,13 @@ module nf_top
     // creating AHB top module
     nf_ahb_top
     #(
-        .slave_c        ( slave_c       ),
-        .ahb_vector     ( ahb_vector    )
+        .slave_c        ( slave_c       )
     )
     nf_ahb_top_0
     (
-        .clk            ( clk           ),
-        .resetn         ( resetn        ),
+        // clock and reset
+        .clk            ( clk           ),      // clk
+        .resetn         ( resetn        ),      // resetn
         // AHB slaves side
         .haddr_s        ( haddr_s       ),      // AHB - Slave HADDR 
         .hwdata_s       ( hwdata_s      ),      // AHB - Slave HWDATA 
@@ -132,56 +148,53 @@ module nf_top
         .req_dm         ( req_dm        ),      // request data memory signal
         .req_ack_dm     ( req_ack_dm    )       // request acknowledge data memory signal
     );
-    // creating AHB GPIO A module
-    nf_ahb_gpio 
-    #(
-        .gpio_w         ( gpio_w        ) 
-    )
-    nf_ahb_gpio_a
+
+    // Creating one nf_ahb_ram_0
+    nf_ahb_ram nf_ahb_ram_0
     (
-        .hclk           ( clk           ),
-        .hresetn        ( resetn        ),
-        // Slaves side
-        .haddr_s        ( haddr_s   [0] ),      // AHB - Slave HADDR
-        .hwdata_s       ( hwdata_s  [0] ),      // AHB - Slave HWDATA
-        .hrdata_s       ( hrdata_s  [0] ),      // AHB - Slave HRDATA
-        .hwrite_s       ( hwrite_s  [0] ),      // AHB - Slave HWRITE
-        .htrans_s       ( htrans_s  [0] ),      // AHB - Slave HTRANS
-        .hsize_s        ( hsize_s   [0] ),      // AHB - Slave HSIZE
-        .hburst_s       ( hburst_s  [0] ),      // AHB - Slave HBURST
-        .hresp_s        ( hresp_s   [0] ),      // AHB - Slave HRESP
-        .hready_s       ( hready_s  [0] ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s    [0] ),      // AHB - Slave HSEL
-        //gpio_side
-        .gpi            ( gpi_a         ),      // GPIO input
-        .gpo            ( gpo_a         ),      // GPIO output
-        .gpd            ( gpd_a         )       // GPIO direction
+        // clock and reset
+        .hclk           ( clk           ),      // hclk
+        .hresetn        ( resetn        ),      // hresetn
+        // AHB RAM slave side
+        .haddr_s        ( haddr_s   [0] ),      // AHB - RAM-slave HADDR
+        .hwdata_s       ( hwdata_s  [0] ),      // AHB - RAM-slave HWDATA
+        .hrdata_s       ( hrdata_s  [0] ),      // AHB - RAM-slave HRDATA
+        .hwrite_s       ( hwrite_s  [0] ),      // AHB - RAM-slave HWRITE
+        .htrans_s       ( htrans_s  [0] ),      // AHB - RAM-slave HTRANS
+        .hsize_s        ( hsize_s   [0] ),      // AHB - RAM-slave HSIZE
+        .hburst_s       ( hburst_s  [0] ),      // AHB - RAM-slave HBURST
+        .hresp_s        ( hresp_s   [0] ),      // AHB - RAM-slave HRESP
+        .hready_s       ( hready_s  [0] ),      // AHB - RAM-slave HREADYOUT
+        .hsel_s         ( hsel_s    [0] )       // AHB - RAM-slave HSEL
     );
-    // creating AHB GPIO B module
+
+    // Creating one nf_ahb_gpio_0
     nf_ahb_gpio 
     #(
         .gpio_w         ( gpio_w        ) 
     )
     nf_ahb_gpio_b
     (
-        .hclk           ( clk           ),
-        .hresetn        ( resetn        ),
+        // clock and reset
+        .hclk           ( clk           ),      // hclock
+        .hresetn        ( resetn        ),      // hresetn
         // Slaves side
-        .haddr_s        ( haddr_s   [1] ),      // AHB - Slave HADDR
-        .hwdata_s       ( hwdata_s  [1] ),      // AHB - Slave HWDATA
-        .hrdata_s       ( hrdata_s  [1] ),      // AHB - Slave HRDATA
-        .hwrite_s       ( hwrite_s  [1] ),      // AHB - Slave HWRITE
-        .htrans_s       ( htrans_s  [1] ),      // AHB - Slave HTRANS
-        .hsize_s        ( hsize_s   [1] ),      // AHB - Slave HSIZE
-        .hburst_s       ( hburst_s  [1] ),      // AHB - Slave HBURST
-        .hresp_s        ( hresp_s   [1] ),      // AHB - Slave HRESP
-        .hready_s       ( hready_s  [1] ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s    [1] ),      // AHB - Slave HSEL
+        .haddr_s        ( haddr_s   [1] ),      // AHB - GPIO-slave HADDR
+        .hwdata_s       ( hwdata_s  [1] ),      // AHB - GPIO-slave HWDATA
+        .hrdata_s       ( hrdata_s  [1] ),      // AHB - GPIO-slave HRDATA
+        .hwrite_s       ( hwrite_s  [1] ),      // AHB - GPIO-slave HWRITE
+        .htrans_s       ( htrans_s  [1] ),      // AHB - GPIO-slave HTRANS
+        .hsize_s        ( hsize_s   [1] ),      // AHB - GPIO-slave HSIZE
+        .hburst_s       ( hburst_s  [1] ),      // AHB - GPIO-slave HBURST
+        .hresp_s        ( hresp_s   [1] ),      // AHB - GPIO-slave HRESP
+        .hready_s       ( hready_s  [1] ),      // AHB - GPIO-slave HREADYOUT
+        .hsel_s         ( hsel_s    [1] ),      // AHB - GPIO-slave HSEL
         //gpio_side
-        .gpi            ( gpi_b         ),      // GPIO input
-        .gpo            ( gpo_b         ),      // GPIO output
-        .gpd            ( gpd_b         )       // GPIO direction
+        .gpi            ( gpi_0         ),      // GPIO input
+        .gpo            ( gpo_0         ),      // GPIO output
+        .gpd            ( gpd_0         )       // GPIO direction
     );
+
     // creating AHB PWM module
     nf_ahb_pwm
     #(
@@ -189,42 +202,38 @@ module nf_top
     )
     nf_ahb_pwm_0
     (
-        .hclk           ( clk           ),
-        .hresetn        ( resetn        ),
+        // clock and reset
+        .hclk           ( clk           ),      // hclk
+        .hresetn        ( resetn        ),      // hresetn
         // Slaves side
-        .haddr_s        ( haddr_s   [2] ),      // AHB - Slave HADDR
-        .hwdata_s       ( hwdata_s  [2] ),      // AHB - Slave HWDATA
-        .hrdata_s       ( hrdata_s  [2] ),      // AHB - Slave HRDATA
-        .hwrite_s       ( hwrite_s  [2] ),      // AHB - Slave HWRITE
-        .htrans_s       ( htrans_s  [2] ),      // AHB - Slave HTRANS
-        .hsize_s        ( hsize_s   [2] ),      // AHB - Slave HSIZE
-        .hburst_s       ( hburst_s  [2] ),      // AHB - Slave HBURST
-        .hresp_s        ( hresp_s   [2] ),      // AHB - Slave HRESP
-        .hready_s       ( hready_s  [2] ),      // AHB - Slave HREADYOUT
-        .hsel_s         ( hsel_s    [2] ),      // AHB - Slave HSEL
+        .haddr_s        ( haddr_s   [2] ),      // AHB - PWM-slave HADDR
+        .hwdata_s       ( hwdata_s  [2] ),      // AHB - PWM-slave HWDATA
+        .hrdata_s       ( hrdata_s  [2] ),      // AHB - PWM-slave HRDATA
+        .hwrite_s       ( hwrite_s  [2] ),      // AHB - PWM-slave HWRITE
+        .htrans_s       ( htrans_s  [2] ),      // AHB - PWM-slave HTRANS
+        .hsize_s        ( hsize_s   [2] ),      // AHB - PWM-slave HSIZE
+        .hburst_s       ( hburst_s  [2] ),      // AHB - PWM-slave HBURST
+        .hresp_s        ( hresp_s   [2] ),      // AHB - PWM-slave HRESP
+        .hready_s       ( hready_s  [2] ),      // AHB - PWM-slave HREADYOUT
+        .hsel_s         ( hsel_s    [2] ),      // AHB - PWM-slave HSEL
         // pmw_side
-        .pwm_clk        ( pwm_clk       ),      // PWM clock input
-        .pwm_resetn     ( pwm_resetn    ),      // PWM reset input
+        .pwm_clk        ( pwm_clk       ),      // PWM_clk
+        .pwm_resetn     ( pwm_resetn    ),      // PWM_resetn
         .pwm            ( pwm           )       // PWM output signal
     );
+    
     //creating one instruction/data memory
-    nf_dp_ram
+    nf_ram
     #(
-        .depth      ( 256               ) 
+        .depth          ( 256           ) 
     )
-    nf_dp_ram_0
+    nf_ram_0
     (
-        .clk        ( clk               ),
-        // Port 1
-        .addr_p1    ( addr_i >> 2       ),  // Port-1 addr
-        .we_p1      ( '0                ),  // Port-1 write enable
-        .wd_p1      ( '0                ),  // Port-1 write data
-        .rd_p1      ( rd_i              )   // Port-1 read data
-        // Port 2
-        //.addr_p2    ( addr_dm >> 2      ),  // Port-2 addr
-        //.we_p2      ( we_dm             ),  // Port-2 write enable
-        //.wd_p2      ( wd_dm             ),  // Port-2 write data
-        //.rd_p2      ( rd_dm             )   // Port-2 read data
+        .clk            ( clk           ),
+        .addr           ( addr_i >> 2   ),      // addr memory
+        .we             ( '0            ),      // write enable
+        .wd             ( '0            ),      // write data
+        .rd             ( rd_i          )       // read data
     );
 
 endmodule : nf_top

@@ -51,6 +51,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_sign_ex.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/common/nf_registers.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_reg_file.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cpu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cpu_cc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_control_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_fu.sv
@@ -58,12 +59,14 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_exu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_du.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hazard_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_dp_ram.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_pwm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_gpio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb2core.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_router.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_mux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_gpio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_dec.sv

@@ -23,19 +23,13 @@ module nf_tb();
     bit                 clk;
     bit                 resetn;
 
-    logic   [7  : 0]                gpio_i_a;   // GPIO_A input
-    logic   [7  : 0]                gpio_o_a;   // GPIO_A output
-    logic   [7  : 0]                gpio_d_a;   // GPIO_A direction
-    logic   [7  : 0]                gpio_i_b;   // GPIO_B input
-    logic   [7  : 0]                gpio_o_b;   // GPIO_B output
-    logic   [7  : 0]                gpio_d_b;   // GPIO_B direction
+    logic   [7  : 0]                gpio_i_0;   // GPIO_0 input
+    logic   [7  : 0]                gpio_o_0;   // GPIO_0 output
+    logic   [7  : 0]                gpio_d_0;   // GPIO_0 direction
     logic                           pwm;        // PWM output signal
 
-    assign  gpio_i_a = gpio_o_a ^ gpio_d_a;
-    assign  gpio_i_b = gpio_o_b ^ gpio_d_b;
+    assign  gpio_i_0 = gpio_o_0 ^ gpio_d_0;
 
-    bit     [4  : 0]    reg_addr;
-    bit     [31 : 0]    reg_data;
     bit     [31 : 0]    cycle_counter;
 
     integer             log;

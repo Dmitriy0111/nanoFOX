@@ -25,8 +25,6 @@ module de10_lite
 
     logic               clk;
     logic               resetn;
-    logic   [4  : 0]    reg_addr;
-    logic   [31 : 0]    reg_data;
     logic   [6*8-1 : 0] hex;
     //pwm side
     logic               pwm;
@@ -47,8 +45,6 @@ module de10_lite
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),
-        .reg_addr   ( reg_addr  ),
-        .reg_data   ( reg_data  ),
         .pwm        ( pwm       ),
         .gpi        ( gpi       ),
         .gpo        ( gpo       ),
@@ -61,7 +57,7 @@ module de10_lite
     )
     nf_seven_seg_static_0
     (
-        .hex        ( reg_data  ),
+        .hex        ( 32'd2019  ),
         .cc_ca      ( '0        ),
         .seven_seg  ( hex       )
     );
