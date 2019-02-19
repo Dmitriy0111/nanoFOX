@@ -97,7 +97,7 @@ class pars_instr;
             //  J - type command's
             //  in the future
             //  Other's instructions
-            { `C_ANY  , `F3_ANY  , `F7_ANY  } : instruction_s = $psprintf("Unknown instruction"                ,                                                                 );
+            { `C_ANY  , `F3_ANY  , `F7_ANY  } : instruction_s = $psprintf("ERROR! Unknown instruction = %b"    , instr                                                           );
         endcase
 
         // Flushed instruction

@@ -76,6 +76,9 @@ module nf_cpu
         // clock and reset
         .clk            ( clk               ),
         .resetn         ( resetn            ),
+        // instruction ram
+        .req_ack_i      ( req_ack_i         ),
+        .req_i          ( req_i             ),
         // instruction fetch 1 stage
         .pc_if1         ( pc_if1            ),  // program counter from fetch 1 stage
         // instruction fetch 2 stage
@@ -90,6 +93,9 @@ module nf_cpu
     assign  addr_i          = pc_if1;                                   // from fetch 1 stage
     assign  instr_if2       = sel_id_instr ? instr_if2_stalled : rd_i;  // from fetch 2 stage
     assign  we_if2_stalled  = stall_id  && ( ~ sel_id_instr );          // for sw and branch stalls
+
+    assign  we_i  = '0;
+    assign  wd_i  = '0;
 
     logic   [31 : 0]    instr_id;
     logic   [31 : 0]    pc_id;

@@ -14,6 +14,9 @@ module nf_i_fu
     // clock and reset
     input   logic               clk,
     input   logic               resetn,
+    // instruction ram
+    input   logic   [0  : 0]    req_ack_i,
+    output  logic   [0  : 0]    req_i,
     // instruction fetch 1 stage
     output  logic   [31 : 0]    pc_if1,     // program counter from fetch 1 stage
     // instruction fetch 2 stage
@@ -37,14 +40,15 @@ module nf_i_fu
     logic   [0  : 0]    flush_id_delayed;
 
     assign  flush_id_branch = pc_src;
-    assign  flush_id = flush_id_ifu || flush_id_delayed || flush_id_branch;
+    assign  flush_id = flush_id_ifu || flush_id_delayed || flush_id_branch || ~ req_ack_i;
+    assign  req_i = ~ pc_src;
 
     nf_register         #( 1 ) reg_flush_id_delayed ( clk, resetn, flush_id_branch, flush_id_delayed );
     nf_register_we_r    #( 1 ) reg_flush_id_ifu     ( clk, resetn, '1, '1, '0,      flush_id_ifu     );
 
     // creating program counter
-    nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ~ stall_if, '0, pc_i, pc_if1      );
+    nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ( ~ stall_if ) , '0, pc_i, pc_if1      );
     // fetch 1 stage
-    nf_register_we     #( 32 ) pc_if1_if2           ( clk, resetn, ~ stall_if, pc_if1,   pc_if2      );
+    nf_register_we     #( 32 ) pc_if1_if2           ( clk, resetn, ( ~ stall_if ) , pc_if1,   pc_if2      );
 
 endmodule : nf_i_fu

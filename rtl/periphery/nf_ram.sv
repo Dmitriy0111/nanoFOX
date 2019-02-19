@@ -20,10 +20,11 @@ module nf_ram
 
     logic [31 : 0] ram [depth-1 : 0];
 
-    always_ff @(posedge clk)
-    begin : read_from_ran
-            rd <= ram[addr];  
-    end
+    //always_ff @(posedge clk)
+    //begin : read_from_ran
+    //        rd <= ram[addr];  
+    //end
+    assign  rd = ram[addr];  
 
     always_ff @(posedge clk)
     begin : write_to_ram
@@ -33,7 +34,11 @@ module nf_ram
 
     initial
     begin
-        $readmemh("../../program_file/program.hex",ram);
+        integer file;
+        file = $fopen("..\/..\/program_file\/program.hex","r");
+        if( file == '0)
+            $stop;
+        //$readmemh("../../program_file/program.hex",ram);
     end
 
 endmodule : nf_ram

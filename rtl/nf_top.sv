@@ -50,13 +50,21 @@ module nf_top
     logic   [gpio_w-1 : 0]   gpi_0;             // GPIO input
     logic   [gpio_w-1 : 0]   gpo_0;             // GPIO output
     logic   [gpio_w-1 : 0]   gpd_0;             // GPIO direction
+    // RAM side
+    logic   [31 : 0]    ram_addr;               // addr memory
+    logic   [0  : 0]    ram_we;                 // write enable
+    logic   [31 : 0]    ram_wd;                 // write data
+    logic   [31 : 0]    ram_rd;                 // read data
 
-    assign pwm_clk    = clk;
-    assign pwm_resetn = resetn;    
-    assign gpi_0      = gpio_i_0;
-    assign gpio_o_0   = gpo_0;
-    assign gpio_d_0   = gpd_0;
+    assign  rd_dm       = '1;
+    assign  req_ack_dm  = '1; 
 
+    assign  pwm_clk    = clk;
+    assign  pwm_resetn = resetn;    
+    assign  gpi_0      = gpio_i_0;
+    assign  gpio_o_0   = gpo_0;
+    assign  gpio_d_0   = gpd_0;
+ 
     // Creating one nf_cpu_0
     nf_cpu nf_cpu_0
     (
@@ -86,19 +94,19 @@ module nf_top
         .clk            ( clk           ),      // clk
         .resetn         ( resetn        ),      // resetn
         // instruction memory (IF)
-        //addr_i         ( addr_i         ),      // address instruction memory
-        //rd_i           ( rd_i           ),      // read instruction memory
-        //wd_i           ( wd_i           ),      // write instruction memory
-        //we_i           ( we_i           ),      // write enable instruction memory signal
-        //req_i          ( req_i          ),      // request instruction memory signal
-        //req_ack_i      ( req_ack_i      ),      // request acknowledge instruction memory signal
+        .addr_i         ( addr_i        ),      // address instruction memory
+        .rd_i           ( rd_i          ),      // read instruction memory
+        .wd_i           ( wd_i          ),      // write instruction memory
+        .we_i           ( we_i          ),      // write enable instruction memory signal
+        .req_i          ( req_i         ),      // request instruction memory signal
+        .req_ack_i      ( req_ack_i     ),      // request acknowledge instruction memory signal
         // data memory and other's
-        //.addr_dm        ( addr_dm       ),      // address data memory
-        //.rd_dm          ( rd_dm         ),      // read data memory
-        //.wd_dm          ( wd_dm         ),      // write data memory
-        //.we_dm          ( we_dm         ),      // write enable data memory signal
-        //.req_dm         ( req_dm        ),      // request data memory signal
-        //.req_ack_dm     ( req_ack_dm    ),      // request acknowledge data memory signal
+        .addr_dm        ( addr_dm       ),      // address data memory
+        .rd_dm          (               ),      // read data memory
+        .wd_dm          ( wd_dm         ),      // write data memory
+        .we_dm          ( we_dm         ),      // write enable data memory signal
+        .req_dm         ( req_dm        ),      // request data memory signal
+        .req_ack_dm     (               ),      // request acknowledge data memory signal
         // cross connect data
         .addr_cc        ( addr_cc       ),      // address cc_data memory
         .rd_cc          ( rd_cc         ),      // read cc_data memory
@@ -141,12 +149,12 @@ module nf_top
         .hready_s       ( hready_s      ),      // AHB - Slave HREADYOUT 
         .hsel_s         ( hsel_s        ),      // AHB - Slave HSEL
         // core side
-        .addr_dm        ( addr_dm       ),      // address data memory
-        .rd_dm          ( rd_dm         ),      // read data memory
-        .wd_dm          ( wd_dm         ),      // write data memory
-        .we_dm          ( we_dm         ),      // write enable signal
-        .req_dm         ( req_dm        ),      // request data memory signal
-        .req_ack_dm     ( req_ack_dm    )       // request acknowledge data memory signal
+        .addr_dm        ( addr_cc       ),      // address data memory
+        .rd_dm          ( rd_cc         ),      // read data memory
+        .wd_dm          ( wd_cc         ),      // write data memory
+        .we_dm          ( we_cc         ),      // write enable signal
+        .req_dm         ( req_cc        ),      // request data memory signal
+        .req_ack_dm     ( req_ack_cc    )       // request acknowledge data memory signal
     );
 
     // Creating one nf_ahb_ram_0
@@ -165,7 +173,12 @@ module nf_top
         .hburst_s       ( hburst_s  [0] ),      // AHB - RAM-slave HBURST
         .hresp_s        ( hresp_s   [0] ),      // AHB - RAM-slave HRESP
         .hready_s       ( hready_s  [0] ),      // AHB - RAM-slave HREADYOUT
-        .hsel_s         ( hsel_s    [0] )       // AHB - RAM-slave HSEL
+        .hsel_s         ( hsel_s    [0] ),      // AHB - RAM-slave HSEL
+        // RAM side
+        .ram_addr       ( ram_addr      ),      // addr memory
+        .ram_we         ( ram_we        ),      // write enable
+        .ram_wd         ( ram_wd        ),      // write data
+        .ram_rd         ( ram_rd        )       // read data
     );
 
     // Creating one nf_ahb_gpio_0
@@ -223,17 +236,31 @@ module nf_top
     );
     
     //creating one instruction/data memory
+    //nf_ram
+    //#(
+    //    .depth          ( 256           ) 
+    //)
+    //nf_ram_0
+    //(
+    //    .clk            ( clk           ),
+    //    .addr           ( addr_i >> 2   ),      // addr memory
+    //    .we             ( '0            ),      // write enable
+    //    .wd             ( '0            ),      // write data
+    //    .rd             ( rd_i          )       // read data
+    //);
+
+    //creating one instruction/data memory
     nf_ram
     #(
         .depth          ( 256           ) 
     )
-    nf_ram_0
+    nf_ram_i_d_0
     (
         .clk            ( clk           ),
-        .addr           ( addr_i >> 2   ),      // addr memory
-        .we             ( '0            ),      // write enable
-        .wd             ( '0            ),      // write data
-        .rd             ( rd_i          )       // read data
+        .addr           ( ram_addr >> 2 ),      // addr memory
+        .we             ( ram_we        ),      // write enable
+        .wd             ( ram_wd        ),      // write data
+        .rd             ( ram_rd        )       // read data
     );
 
 endmodule : nf_top
