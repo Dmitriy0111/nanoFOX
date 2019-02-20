@@ -35,11 +35,45 @@ module nf_cpu_cc
     input   logic   [0  : 0]    req_ack_cc  // request acknowledge cc_data memory signal
 );
 
-    assign addr_cc     = addr_i;
-    assign rd_i        = rd_cc;
-    assign wd_cc       = wd_i;
-    assign we_cc       = we_i;
-    assign req_cc      = req_i;
-    assign req_ack_i   = req_ack_cc;
+    logic   [1 : 0] master_sel;
+
+    `define MASTER_0    2'b01
+    `define MASTER_1    2'b10
+    `define MASTER_NONE 2'b00
+
+    always_comb
+    begin 
+        req_cc  = '0;
+        wd_cc   = '0;
+        we_cc   = '0;
+        addr_cc = '0;
+        case( master_sel )
+            `MASTER_0       :   begin req_cc = req_i  ; wd_cc = wd_i  ; we_cc = we_i  ; addr_cc = addr_i  ; end
+            `MASTER_1       :   begin req_cc = req_dm ; wd_cc = wd_dm ; we_cc = we_dm ; addr_cc = addr_dm ; end
+            `MASTER_NONE    :   begin req_cc = '0     ; wd_cc = '0    ; we_cc = '0    ; addr_cc = '0      ; end
+            default         :   ;
+        endcase
+    end
+
+    assign req_ack_i  = master_sel == `MASTER_0 || master_sel == `MASTER_NONE ? req_ack_cc : '0;
+    assign rd_i       = master_sel == `MASTER_0 || master_sel == `MASTER_NONE ? rd_cc      : '0;
+
+    assign req_ack_dm = master_sel == `MASTER_1 ? req_ack_cc : '0;
+    assign rd_dm      = master_sel == `MASTER_1 ? rd_cc      : '0;
+
+    always_ff @(posedge clk, negedge resetn)
+    if( !resetn )
+    begin
+        master_sel <= `MASTER_0;
+    end
+    else
+    begin
+        if( req_dm == '1 && master_sel != `MASTER_1 )
+            master_sel <= `MASTER_NONE;
+        if( master_sel == `MASTER_NONE && req_ack_i == '0 )
+            master_sel <= `MASTER_1;
+        if( req_dm == '0 )
+            master_sel <= `MASTER_0;
+    end
 
 endmodule : nf_cpu_cc

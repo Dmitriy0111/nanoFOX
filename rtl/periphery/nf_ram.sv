@@ -34,11 +34,11 @@ module nf_ram
 
     initial
     begin
-        integer file;
-        file = $fopen("..\/..\/program_file\/program.hex","r");
-        if( file == '0)
-            $stop;
-        //$readmemh("../../program_file/program.hex",ram);
+        //integer file;
+        //file = $fopen("..\/..\/program_file\/program.hex","r");
+        //if( file == '0)
+        //    $stop;
+        $readmemh("../../program_file/program.hex",ram);
     end
 
 endmodule : nf_ram

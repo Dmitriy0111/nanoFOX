@@ -38,10 +38,12 @@ module nf_i_fu
     logic   [0  : 0]    flush_id_ifu;
     logic   [0  : 0]    flush_id_branch;
     logic   [0  : 0]    flush_id_delayed;
+    logic   [0  : 0]    flush_id_sw_instr;
 
+    assign  flush_id_sw_instr = ~ req_ack_i;
     assign  flush_id_branch = pc_src;
-    assign  flush_id = flush_id_ifu || flush_id_delayed || flush_id_branch || ~ req_ack_i;
-    assign  req_i = ~ pc_src;
+    assign  flush_id = flush_id_ifu || flush_id_delayed || flush_id_branch || flush_id_sw_instr;
+    assign  req_i = '1;
 
     nf_register         #( 1 ) reg_flush_id_delayed ( clk, resetn, flush_id_branch, flush_id_delayed );
     nf_register_we_r    #( 1 ) reg_flush_id_ifu     ( clk, resetn, '1, '1, '0,      flush_id_ifu     );

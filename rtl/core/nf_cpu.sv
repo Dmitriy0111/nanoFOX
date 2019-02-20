@@ -281,6 +281,7 @@ module nf_cpu
         .branch_type    ( branch_type   ),
         .we_dm_imem     ( we_dm_imem    ),
         .req_ack_dm     ( req_ack_dm    ),
+        .req_ack_i      ( req_ack_i     ),
         .rf_src_imem    ( rf_src_imem   )
     );
 

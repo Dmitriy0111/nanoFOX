@@ -56,9 +56,6 @@ module nf_top
     logic   [31 : 0]    ram_wd;                 // write data
     logic   [31 : 0]    ram_rd;                 // read data
 
-    assign  rd_dm       = '1;
-    assign  req_ack_dm  = '1; 
-
     assign  pwm_clk    = clk;
     assign  pwm_resetn = resetn;    
     assign  gpi_0      = gpio_i_0;
@@ -102,11 +99,11 @@ module nf_top
         .req_ack_i      ( req_ack_i     ),      // request acknowledge instruction memory signal
         // data memory and other's
         .addr_dm        ( addr_dm       ),      // address data memory
-        .rd_dm          (               ),      // read data memory
+        .rd_dm          ( rd_dm         ),      // read data memory
         .wd_dm          ( wd_dm         ),      // write data memory
         .we_dm          ( we_dm         ),      // write enable data memory signal
         .req_dm         ( req_dm        ),      // request data memory signal
-        .req_ack_dm     (               ),      // request acknowledge data memory signal
+        .req_ack_dm     ( req_ack_dm    ),      // request acknowledge data memory signal
         // cross connect data
         .addr_cc        ( addr_cc       ),      // address cc_data memory
         .rd_cc          ( rd_cc         ),      // read cc_data memory
