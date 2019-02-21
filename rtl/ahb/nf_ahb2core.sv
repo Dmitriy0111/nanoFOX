@@ -11,8 +11,8 @@
 
 module nf_ahb2core
 (
-    input   logic               clk,
-    input   logic               resetn,
+    input   logic   [0  : 0]    clk,
+    input   logic   [0  : 0]    resetn,
     // AHB side
     output  logic   [31 : 0]    haddr,      // AHB HADDR
     output  logic   [31 : 0]    hwdata,     // AHB HWDATA

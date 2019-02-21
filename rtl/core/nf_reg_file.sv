@@ -11,14 +11,14 @@
 
 module nf_reg_file
 (
-    input   logic               clk,
+    input   logic   [0  : 0]    clk,
     input   logic   [4  : 0]    ra1,    // read address 1
     output  logic   [31 : 0]    rd1,    // read data 1
     input   logic   [4  : 0]    ra2,    // read address 2
     output  logic   [31 : 0]    rd2,    // read data 2
     input   logic   [4  : 0]    wa3,    // write address 
     input   logic   [31 : 0]    wd3,    // write data
-    input   logic               we3     // write enable signal
+    input   logic   [0  : 0]    we3     // write enable signal
 );
 
     logic [31 : 0] reg_file [`reg_number-1 : 0];

@@ -26,29 +26,29 @@ module de10_lite
     logic               clk;
     logic               resetn;
     logic   [6*8-1 : 0] hex;
-    //pwm side
+    // pwm side
     logic               pwm;
-    //gpio side
-    logic   [7 : 0]     gpi;
-    logic   [7 : 0]     gpo;
-    logic   [7 : 0]     gpd;
+    // gpio side
+    logic   [7 : 0]     gpio_i_0;
+    logic   [7 : 0]     gpio_o_0;
+    logic   [7 : 0]     gpio_d_0;
 
-    assign ledr[0 +: 8] = gpo;
+    assign ledr[0 +: 8] = gpio_o_0;
     assign ledr[8]      = pwm;
     
     assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
     assign clk      = max10_clk1_50;
     assign resetn   = key[0];
-    assign reg_addr = sw[0 +: 5];
+    assign gpio_i_0 = sw[0 +: 5];
 
     nf_top nf_top_0
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),
         .pwm        ( pwm       ),
-        .gpi        ( gpi       ),
-        .gpo        ( gpo       ),
-        .gpd        ( gpd       )
+        .gpio_i_0   ( gpio_i_0  ),
+        .gpio_o_0   ( gpio_o_0  ),
+        .gpio_d_0   ( gpio_d_0  )
     );
 
     nf_seven_seg_static 

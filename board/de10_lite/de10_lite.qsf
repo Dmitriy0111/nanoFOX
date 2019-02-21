@@ -308,6 +308,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/common/nf_registers.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_reg_file.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cpu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cpu_cc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_control_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_fu.sv

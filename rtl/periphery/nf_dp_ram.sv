@@ -48,9 +48,4 @@ module nf_dp_ram
             ram[addr_p2] <= wd_p2;  
     end
 
-    initial
-    begin
-        $readmemh("../../program_file/program.hex",ram);
-    end
-
 endmodule : nf_dp_ram

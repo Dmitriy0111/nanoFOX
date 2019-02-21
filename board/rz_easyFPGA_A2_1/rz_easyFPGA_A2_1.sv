@@ -9,16 +9,17 @@ module rz_easyFPGA_A2_1
 );
 
     // wires & inputs
-
     logic               clk;
     logic               resetn;
+    // GPIO
     logic   [7  : 0]    gpio_i_0;   // GPIO_0 input
     logic   [7  : 0]    gpio_o_0;   // GPIO_0 output
     logic   [7  : 0]    gpio_d_0;   // GPIO_0 direction
+    // PWM
     logic               pwm;        // PWM output signal
     logic   [31 : 0]    gpio2hex;
     logic   [7  : 0]    hex;
-    
+    // assigns
     assign hex0     = hex;
     assign clk      = clk50mhz;
     assign resetn   = rst_key;

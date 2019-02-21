@@ -62,14 +62,13 @@ module nf_cpu
     /*********************************************
     **         Instruction Fetch  stage         **
     *********************************************/
-    // instruction fetch 1 stage
-    logic   [31 : 0]    pc_if1;
-    // instruction fetch 2 stage
-    logic   [31 : 0]    pc_if2;
+
+    // instruction fetch stage
+    logic   [31 : 0]    pc_if;
     logic   [0  : 0]    sel_id_instr;
-    logic   [31 : 0]    instr_if2;
-    logic   [0  : 0]    we_if2_stalled;
-    logic   [31 : 0]    instr_if2_stalled;
+    logic   [31 : 0]    instr_if;
+    logic   [0  : 0]    we_if_stalled;
+    logic   [31 : 0]    instr_if_stalled;
     // creating one instruction fetch unit
     nf_i_fu nf_i_fu_0
     (
@@ -79,20 +78,18 @@ module nf_cpu
         // instruction ram
         .req_ack_i      ( req_ack_i         ),
         .req_i          ( req_i             ),
-        // instruction fetch 1 stage
-        .pc_if1         ( pc_if1            ),  // program counter from fetch 1 stage
-        // instruction fetch 2 stage
-        .pc_if2         ( pc_if2            ),  // program counter from fetch 2 stage
+        // instruction fetch  stage
+        .pc_if          ( pc_if             ),  // program counter from fetch stage
         // program counter inputs
         .pc_branch      ( pc_branch         ),  // program counter branch value from decode stage
         .pc_src         ( pc_src            ),  // next program counter source
-        .stall_if       ( stall_if          ),  // for stalling instruction fetch 1 and 2 stage
+        .stall_if       ( stall_if          ),  // for stalling instruction fetch stage
         .flush_id       ( flush_id          )   // for flushing instruction decode stage
     );
 
-    assign  addr_i          = pc_if1;                                   // from fetch 1 stage
-    assign  instr_if2       = sel_id_instr ? instr_if2_stalled : rd_i;  // from fetch 2 stage
-    assign  we_if2_stalled  = stall_id  && ( ~ sel_id_instr );          // for sw and branch stalls
+    assign  addr_i          = pc_if;                                    // from fetch stage
+    assign  instr_if        = sel_id_instr ? instr_if_stalled : rd_i;   // from fetch stage
+    assign  we_if_stalled   = stall_id  && ( ~ sel_id_instr );          // for sw and branch stalls
 
     assign  we_i  = '0;
     assign  wd_i  = '0;
@@ -100,10 +97,10 @@ module nf_cpu
     logic   [31 : 0]    instr_id;
     logic   [31 : 0]    pc_id;
 
-    nf_register        #(  1 ) sel_id_ff        ( clk , resetn ,                             stall_id  , sel_id_instr      );
-    nf_register_we_clr #( 32 ) instr_if2_stall  ( clk , resetn , we_if2_stalled , flush_id , rd_i      , instr_if2_stalled );
-    nf_register_we_clr #( 32 ) instr_if2_id     ( clk , resetn , ~ stall_id     , flush_id , instr_if2 , instr_id          );
-    nf_register_we_clr #( 32 ) pc_if2_id        ( clk , resetn , ~ stall_id     , flush_id , pc_if2    , pc_id             );
+    nf_register        #(  1 ) sel_id_ff        ( clk , resetn ,                            stall_id , sel_id_instr     );
+    nf_register_we_clr #( 32 ) instr_if_stall   ( clk , resetn , we_if_stalled , flush_id , rd_i     , instr_if_stalled );
+    nf_register_we_clr #( 32 ) instr_if_id      ( clk , resetn , ~ stall_id    , flush_id , instr_if , instr_id         );
+    nf_register_we_clr #( 32 ) pc_if_id         ( clk , resetn , ~ stall_id    , flush_id , pc_if    , pc_id            );
 
     /*********************************************
     **         Instruction Decode stage         **
@@ -123,7 +120,7 @@ module nf_cpu
     logic   [4  : 0]    shamt_id;
 
     // next program counter value for branch command
-    assign pc_branch  = pc_id + ( ext_data_id << 1 );
+    assign pc_branch  = pc_id + ( ext_data_id << 1 ) - 4;
 
     // creating register file
     nf_reg_file reg_file_0

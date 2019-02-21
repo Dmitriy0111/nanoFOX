@@ -12,19 +12,17 @@
 module nf_i_fu
 (
     // clock and reset
-    input   logic               clk,
-    input   logic               resetn,
+    input   logic   [0  : 0]    clk,
+    input   logic   [0  : 0]    resetn,
     // instruction ram
     input   logic   [0  : 0]    req_ack_i,
     output  logic   [0  : 0]    req_i,
-    // instruction fetch 1 stage
-    output  logic   [31 : 0]    pc_if1,     // program counter from fetch 1 stage
-    // instruction fetch 2 stage
-    output  logic   [31 : 0]    pc_if2,     // program counter from fetch 2 stage
+    // instruction fetch stage
+    output  logic   [31 : 0]    pc_if,      // program counter from fetch stage
     // program counter inputs
     input   logic   [31 : 0]    pc_branch,  // program counter branch value from decode stage
     input   logic   [0  : 0]    pc_src,     // next program counter source
-    input   logic   [0  : 0]    stall_if,   // for stalling instruction fetch 1 and 2 stage
+    input   logic   [0  : 0]    stall_if,   // for stalling instruction fetch stage
     output  logic   [0  : 0]    flush_id    // for flushing instruction decode stage
     
 );
@@ -32,7 +30,7 @@ module nf_i_fu
     logic   [31 : 0]    pc_i;
     logic   [31 : 0]    pc_not_branch;
 
-    assign pc_not_branch = pc_if1 + 4;
+    assign pc_not_branch = pc_if + 4;
     assign pc_i  = pc_src ? pc_branch : pc_not_branch;
 
     logic   [0  : 0]    flush_id_ifu;
@@ -49,8 +47,6 @@ module nf_i_fu
     nf_register_we_r    #( 1 ) reg_flush_id_ifu     ( clk, resetn, '1, '1, '0,      flush_id_ifu     );
 
     // creating program counter
-    nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ( ~ stall_if ) , '0, pc_i, pc_if1      );
-    // fetch 1 stage
-    nf_register_we     #( 32 ) pc_if1_if2           ( clk, resetn, ( ~ stall_if ) , pc_if1,   pc_if2      );
+    nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ( ~ stall_if ) , '0, pc_i, pc_if      );
 
 endmodule : nf_i_fu

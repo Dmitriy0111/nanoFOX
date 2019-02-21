@@ -11,12 +11,15 @@
 
 module nf_top
 (
-    input   logic                           clk,
-    input   logic                           resetn,
+    // clock and reset
+    input   logic   [0  : 0]                clk,        // clock input
+    input   logic   [0  : 0]                resetn,     // reset input
+    // GPIO side
     input   logic   [7  : 0]                gpio_i_0,   // GPIO_0 input
     output  logic   [7  : 0]                gpio_o_0,   // GPIO_0 output
     output  logic   [7  : 0]                gpio_d_0,   // GPIO_0 direction
-    output  logic                           pwm         // PWM output signal
+    // PWM side
+    output  logic   [0  : 0]                pwm         // PWM output signal
 );
 
     localparam          gpio_w  = `NF_GPIO_WIDTH,
@@ -233,20 +236,6 @@ module nf_top
     );
     
     //creating one instruction/data memory
-    //nf_ram
-    //#(
-    //    .depth          ( 256           ) 
-    //)
-    //nf_ram_0
-    //(
-    //    .clk            ( clk           ),
-    //    .addr           ( addr_i >> 2   ),      // addr memory
-    //    .we             ( '0            ),      // write enable
-    //    .wd             ( '0            ),      // write data
-    //    .rd             ( rd_i          )       // read data
-    //);
-
-    //creating one instruction/data memory
     nf_ram
     #(
         .depth          ( 256           ) 
@@ -254,7 +243,7 @@ module nf_top
     nf_ram_i_d_0
     (
         .clk            ( clk           ),
-        .addr           ( ram_addr >> 2 ),      // addr memory
+        .addr           ( ram_addr >> 2 ),      // addr memory (world addressable)
         .we             ( ram_we        ),      // write enable
         .wd             ( ram_wd        ),      // write data
         .rd             ( ram_rd        )       // read data
