@@ -435,4 +435,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_mux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_gpio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_dec.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_transmitter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_receiver.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_cdc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE de10_lite.sv

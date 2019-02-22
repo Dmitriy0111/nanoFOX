@@ -10,21 +10,26 @@
 
 module nf_uart_receiver
 (
-    //reset and clock
-    input   logic               clk,
-    input   logic               resetn,
-    //controller side interface
-    input   logic               rec_en,      // receiver enable
-    input   logic   [15 : 0]    comp,
-    output  logic   [7  : 0]    rx_data,
-    output  logic               rx_valid,
-    //uart side
-    input   logic               uart_rx
+    // reset and clock
+    input   logic   [0  : 0]    clk,        // clk
+    input   logic   [0  : 0]    resetn,     // resetn
+    // controller side interface
+    input   logic   [0  : 0]    rec_en,     // receiver enable
+    input   logic   [15 : 0]    comp,       // compare input for setting baudrate
+    output  logic   [7  : 0]    rx_data,    // received data
+    output  logic   [0  : 0]    rx_valid,   // receiver data valid
+    // uart rx side
+    input   logic   [0  : 0]    uart_rx     // UART rx wire
 );
 
-    logic   [7  : 0]    int_reg; //internal register
-    logic   [15 : 0]    counter;
-    logic   [3  : 0]    bit_counter;
+    logic   [7  : 0]    int_reg;        // internal register
+    logic   [3  : 0]    bit_counter;    // bit counter for internal register
+    logic   [15 : 0]    counter;        // counter for baudrate
+    logic   [0  : 0]    wait2rec;       // wait to receive
+    logic   [0  : 0]    rec2wait;       // receive to wait
+
+    assign wait2rec = uart_rx == '0 ;
+    assign rec2wait = bit_counter == 4'h9;
     
     assign rx_data = int_reg;
     
@@ -46,9 +51,9 @@ module nf_uart_receiver
     begin : next_state_finding
         next_state = state;
         case( state )
-            WAIT_s      :   if( uart_rx == '0 )         next_state = RECEIVE_s;
-            RECEIVE_s   :   if( bit_counter == 4'h9 )   next_state = WAIT_s;
-            default     :                               next_state = WAIT_s;
+            WAIT_s      :   if( wait2rec )  next_state = RECEIVE_s;
+            RECEIVE_s   :   if( rec2wait )  next_state = WAIT_s;
+            default     :                   next_state = WAIT_s;
         endcase
     end
     //Other FSM sequence logic

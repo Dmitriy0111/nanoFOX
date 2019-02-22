@@ -8,6 +8,7 @@
 */
 
 `include "../inc/nf_settings.svh"
+`define  P_SLAVE_COUNT 3
 
 module nf_apb_bridge
 #(

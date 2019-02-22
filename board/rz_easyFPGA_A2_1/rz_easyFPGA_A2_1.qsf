@@ -65,7 +65,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_gpio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_transmitter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_receiver.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_strob_gen.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_cdc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb2core.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_router.sv

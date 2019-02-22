@@ -1,7 +1,7 @@
 
 vlib work
 
-set test "core test"
+set test "uart test"
 
 set i0 +incdir+../rtl/common
 set i1 +incdir+../rtl/core
@@ -30,6 +30,10 @@ if {$test == "core test"} {
 } elseif {$test == "ahb test"} {
     vsim -novopt work.nf_ahb_tb
     add wave -position insertpoint sim:/nf_ahb_tb/*
+} elseif {$test == "uart test"} {
+    vsim -novopt work.nf_uart_top_tb
+    add wave -position insertpoint sim:/nf_uart_top_tb/*
+    add wave -position insertpoint sim:/nf_uart_top_tb/nf_uart_top_0/*
 }
 
 run -all

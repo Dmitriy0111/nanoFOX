@@ -10,48 +10,58 @@
 module nf_uart_transmitter
 (
     // reset and clock
-    input   logic               clk,        // clk
-    input   logic               resetn,     // resetn
-    // controller interface
-    input   logic               en,         // strobing input
-    input   logic               tr_en,      // transmitter enable
-    input   logic   [7 : 0]     tx_data,    // data for transfer
-    input   logic               req,        // request signal
-    output  logic               req_ack,    // acknowledgent signal
+    input   logic   [0  : 0]    clk,        // clk
+    input   logic   [0  : 0]    resetn,     // resetn
+    // controller side interface
+    input   logic   [0  : 0]    tr_en,      // transmitter enable
+    input   logic   [15 : 0]    comp,       // compare input for setting baudrate
+    input   logic   [7  : 0]    tx_data,    // data for transfer
+    input   logic   [0  : 0]    req,        // request signal
+    output  logic   [0  : 0]    req_ack,    // acknowledgent signal
     // uart tx side
-    output  logic               uart_tx     // UART tx wire
+    output  logic   [0  : 0]    uart_tx     // UART tx wire
 );
 
-    logic   [7 : 0]     int_reg;  //internal register
-    logic   [3 : 0]     counter;
-    logic               tr2wait;
+    logic   [7  : 0]    int_reg;        // internal register
+    logic   [3  : 0]    bit_counter;    // bit counter for internal register
+    logic   [15 : 0]    counter;        // counter for baudrate
+    logic               idle2start;     // idle to start
+    logic               start2tr;       // start to transmit
+    logic               tr2stop;        // transmit to stop
+    logic               stop2wait;      // stop to wait
+    logic               wait2idle;      // wait to idle
 
-    assign tr2wait = counter == 4'h8;
+    assign idle2start = req;
+    assign start2tr   = counter >= comp;
+    assign tr2stop    = bit_counter == 4'h8;
+    assign stop2wait  = counter >= comp;
+    assign wait2idle  = req_ack;
     
-    enum logic [1 : 0] { WAIT_s, START_s, TRANSMIT_s, STOP_s } state, next_state; //FSM states
+    enum logic [2 : 0] { IDLE_s, START_s, TRANSMIT_s, STOP_s, WAIT_s} state, next_state; //FSM states
     
     //FSM state change
     always_ff @(posedge clk, negedge resetn)
         if( !resetn )
-            state <= WAIT_s;
+            state <= IDLE_s;
         else
-            if( en || state == WAIT_s )
-                state <= next_state;
-            else if( !tr_en )
-                state <= WAIT_s;
+        begin
+            state <= next_state;
+            if( !tr_en )
+                state <= IDLE_s;
+        end
             
     //Finding next state for FSM
     always_comb 
-    begin
+    begin : next_state_finding
         next_state = state;
         case( state )
-            WAIT_s      :   if( req )       next_state = START_s;
-            START_s     :                   next_state = TRANSMIT_s;
-            TRANSMIT_s  :   if( tr2wait )   next_state = STOP_s;
-            STOP_s      :                   next_state = WAIT_s;
-            default     :                   next_state = WAIT_s;
+            IDLE_s      :   if( idle2start  )   next_state = START_s;
+            START_s     :   if( start2tr    )   next_state = TRANSMIT_s;
+            TRANSMIT_s  :   if( tr2stop     )   next_state = STOP_s;
+            STOP_s      :   if( stop2wait   )   next_state = WAIT_s;
+            WAIT_s      :   if( wait2idle   )   next_state = IDLE_s;
+            default     :                       next_state = IDLE_s;
         endcase
-
     end
 
     //Other FSM sequence logic
@@ -59,44 +69,66 @@ module nf_uart_transmitter
     begin
         if( !resetn )
         begin
-            counter <= '0;
+            bit_counter <= '0;
             int_reg <= '1;
             uart_tx <= '1;
+            req_ack <= '0;
         end
         else
         begin
-            req_ack <= '0;
-            if( en && tr_en )
-                case( state )
-                    WAIT_s      : 
+            case( state )
+                IDLE_s      : 
+                        begin
+                            uart_tx <= '1;
+                            req_ack <= '0;
+                            if( idle2start )
                             begin
-                                uart_tx <= '1;
-                            end
-                    START_s     : 
-                            begin
+                                bit_counter <= '0;
+                                counter <= '0;
                                 int_reg <= tx_data;
-                                uart_tx <= '0;
+                            end
+                        end
+                START_s     : 
+                        begin
+                            uart_tx <= '0;
+                            counter <= counter + 1'b1;
+                            if( counter >= comp )
+                            begin
                                 counter <= '0;
                             end
-                    TRANSMIT_s  : 
+                        end
+                TRANSMIT_s  : 
+                        begin
+                            uart_tx <= int_reg[ bit_counter[2 : 0] ];
+                            counter <= counter + 1'b1;
+                            if( counter >= comp )
                             begin
-                                uart_tx <= int_reg[ counter[2 : 0] ];
-                                counter <= counter + 1'b1;
-                                if( counter == 4'h8 )
-                                begin
-                                    counter <= '0;
-                                    uart_tx <= '1;
-                                    
-                                end
+                                counter <= '0;
+                                bit_counter <= bit_counter + 1'b1;
                             end
-                    STOP_s      : 
+                            if( bit_counter == 4'h8 )
                             begin
+                                bit_counter <= '0;
+                                uart_tx <= '1;
+                            end
+                        end
+                STOP_s      : 
+                        begin
+                            counter <= counter + 1'b1;
+                            if( counter >= comp )
+                            begin
+                                counter <= '0;
                                 req_ack <= '1;
                             end
-                endcase
-            else
+                        end
+                WAIT_s      :
+                        begin
+
+                        end
+            endcase
+            if( !tr_en )
             begin
-                counter <= '0;
+                bit_counter <= '0;
                 int_reg <= '1;
                 uart_tx <= '1;
             end
