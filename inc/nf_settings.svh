@@ -24,8 +24,10 @@
 `endif
 //depth of ram module
 `define ram_depth  64
+//path to program file
+`define path2file "../../program_file/program.hex"
 //number of slave device's
-`define SLAVE_COUNT 3
+`define SLAVE_COUNT 4
 
 /*  
     memory map for devices
@@ -47,6 +49,11 @@
     0x0002_ffff/
     0x0003_0000\
                 \
+                 UART
+                /
+    0x0003_ffff/
+    0x0004_0000\
+                \
                  Unused
                 /
     0xffff_ffff/
@@ -54,14 +61,16 @@
 `define NF_RAM_ADDR_MATCH   32'h0000XXXX
 `define NF_GPIO_ADDR_MATCH  32'h0001XXXX
 `define NF_PWM_ADDR_MATCH   32'h0002XXXX
+`define NF_UART_ADDR_MATCH  32'h0003XXXX
 
 `ifndef ahb_vector_
 `define ahb_vector_
-    parameter   logic   [`SLAVE_COUNT-1 : 0][31 : 0]    ahb_vector = 
+    parameter   logic   [0 : `SLAVE_COUNT-1][31 : 0]    ahb_vector = 
                                                                     {
-                                                                        `NF_PWM_ADDR_MATCH,
+                                                                        `NF_RAM_ADDR_MATCH,
                                                                         `NF_GPIO_ADDR_MATCH,
-                                                                        `NF_RAM_ADDR_MATCH
+                                                                        `NF_PWM_ADDR_MATCH,
+                                                                        `NF_UART_ADDR_MATCH
                                                                     };
 `endif
 

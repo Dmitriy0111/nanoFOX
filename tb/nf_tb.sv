@@ -26,7 +26,9 @@ module nf_tb();
     logic   [7  : 0]                gpio_i_0;   // GPIO_0 input
     logic   [7  : 0]                gpio_o_0;   // GPIO_0 output
     logic   [7  : 0]                gpio_d_0;   // GPIO_0 direction
-    logic                           pwm;        // PWM output signal
+    logic   [0  : 0]                pwm;        // PWM output signal
+    logic   [0  : 0]                uart_tx;
+    logic   [0  : 0]                uart_rx;
 
     assign  gpio_i_0 = gpio_o_0 ^ gpio_d_0;
 
@@ -49,6 +51,8 @@ module nf_tb();
     (
         .*
     );
+
+    defparam nf_top_0.nf_ram_i_d_0.path2file = "../program_file/program.hex";
 
     // reset all register's in '0
     initial

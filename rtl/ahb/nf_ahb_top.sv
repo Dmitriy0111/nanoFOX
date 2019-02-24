@@ -13,8 +13,8 @@ module nf_ahb_top
 #(
     parameter                                   slave_c = `SLAVE_COUNT
 )(
-    input   logic                  [0  : 0]     clk,
-    input   logic                  [0  : 0]     resetn,
+    input   logic                  [0  : 0]     clk,            // clk
+    input   logic                  [0  : 0]     resetn,         // resetn
     // AHB slaves side
     output  logic   [slave_c-1 : 0][31 : 0]     haddr_s,        // AHB - Slave HADDR 
     output  logic   [slave_c-1 : 0][31 : 0]     hwdata_s,       // AHB - Slave HWDATA 

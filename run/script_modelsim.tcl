@@ -1,7 +1,7 @@
 
 vlib work
 
-set test "uart test"
+set test "core test"
 
 set i0 +incdir+../rtl/common
 set i1 +incdir+../rtl/core

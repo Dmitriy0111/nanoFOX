@@ -31,9 +31,10 @@ module nf_ahb_mux
         hresp   = `AHB_HRESP_ERROR; 
         hready  = '1;
         casex( hsel_ff )
-            3'b??1  : begin hrdata = hrdata_s[0] ; hresp = hresp_s[0] ; hready = hready_s[0] ;   end
-            3'b?10  : begin hrdata = hrdata_s[1] ; hresp = hresp_s[1] ; hready = hready_s[1] ;   end
-            3'b100  : begin hrdata = hrdata_s[2] ; hresp = hresp_s[2] ; hready = hready_s[2] ;   end
+            4'b???1 : begin hrdata = hrdata_s[0] ; hresp = hresp_s[0] ; hready = hready_s[0] ;   end
+            4'b??10 : begin hrdata = hrdata_s[1] ; hresp = hresp_s[1] ; hready = hready_s[1] ;   end
+            4'b?100 : begin hrdata = hrdata_s[2] ; hresp = hresp_s[2] ; hready = hready_s[2] ;   end
+            4'b1000 : begin hrdata = hrdata_s[3] ; hresp = hresp_s[3] ; hready = hready_s[3] ;   end
             default : ;
         endcase
     end

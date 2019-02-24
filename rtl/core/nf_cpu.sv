@@ -173,13 +173,13 @@ module nf_cpu
     logic   [31 : 0]    result_iexe;
 
     // data and address wires (not flushed)
-    nf_register_we_clr  #( 5  ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , wa3_id      , wa3_iexe      );
-    nf_register_we_clr  #( 5  ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , ra1_id      , ra1_iexe      );
-    nf_register_we_clr  #( 5  ) ra2_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , ra2_id      , ra2_iexe      );
-    nf_register_we_clr  #( 5  ) shamt_id_iexe       ( clk , resetn , ~ stall_iexe , '0         , shamt_id    , shamt_iexe    );
-    nf_register_we_clr  #( 32 ) sign_ex_id_iexe     ( clk , resetn , ~ stall_iexe , '0         , ext_data_id , ext_data_iexe );
-    nf_register_we_clr  #( 32 ) rd1_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , rd1_id      , rd1_iexe      );
-    nf_register_we_clr  #( 32 ) rd2_id_iexe         ( clk , resetn , ~ stall_iexe , '0         , rd2_id      , rd2_iexe      );
+    nf_register_we_clr  #( 5  ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , wa3_id      , wa3_iexe      );
+    nf_register_we_clr  #( 5  ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra1_id      , ra1_iexe      );
+    nf_register_we_clr  #( 5  ) ra2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra2_id      , ra2_iexe      );
+    nf_register_we_clr  #( 5  ) shamt_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , shamt_id    , shamt_iexe    );
+    nf_register_we_clr  #( 32 ) sign_ex_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , ext_data_id , ext_data_iexe );
+    nf_register_we_clr  #( 32 ) rd1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd1_id      , rd1_iexe      );
+    nf_register_we_clr  #( 32 ) rd2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd2_id      , rd2_iexe      );
     // control wires (flushed)
     nf_register_we_clr  #( 1  ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id , srcB_sel_iexe );
     nf_register_we_clr  #( 1  ) we_rf_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_rf_id    , we_rf_iexe    );

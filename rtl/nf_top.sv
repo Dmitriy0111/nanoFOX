@@ -19,7 +19,10 @@ module nf_top
     output  logic   [7  : 0]                gpio_o_0,   // GPIO_0 output
     output  logic   [7  : 0]                gpio_d_0,   // GPIO_0 direction
     // PWM side
-    output  logic   [0  : 0]                pwm         // PWM output signal
+    output  logic   [0  : 0]                pwm,        // PWM output signal
+    // UART side
+    output  logic   [0  : 0]                uart_tx,    // UART tx wire
+    input   logic   [0  : 0]                uart_rx     // UART rx wire
 );
 
     localparam          gpio_w  = `NF_GPIO_WIDTH,
@@ -234,11 +237,36 @@ module nf_top
         .pwm_resetn     ( pwm_resetn    ),      // PWM_resetn
         .pwm            ( pwm           )       // PWM output signal
     );
+
+    // Creating one nf_ahb_gpio_0
+    nf_ahb_uart 
+    nf_ahb_uart_0
+    (
+        // clock and reset
+        .hclk           ( clk           ),      // hclock
+        .hresetn        ( resetn        ),      // hresetn
+        // Slaves side
+        .haddr_s        ( haddr_s   [3] ),      // AHB - UART-slave HADDR
+        .hwdata_s       ( hwdata_s  [3] ),      // AHB - UART-slave HWDATA
+        .hrdata_s       ( hrdata_s  [3] ),      // AHB - UART-slave HRDATA
+        .hwrite_s       ( hwrite_s  [3] ),      // AHB - UART-slave HWRITE
+        .htrans_s       ( htrans_s  [3] ),      // AHB - UART-slave HTRANS
+        .hsize_s        ( hsize_s   [3] ),      // AHB - UART-slave HSIZE
+        .hburst_s       ( hburst_s  [3] ),      // AHB - UART-slave HBURST
+        .hresp_s        ( hresp_s   [3] ),      // AHB - UART-slave HRESP
+        .hready_s       ( hready_s  [3] ),      // AHB - UART-slave HREADYOUT
+        .hsel_s         ( hsel_s    [3] ),      // AHB - UART-slave HSEL
+        // UART side
+        .uart_tx        ( uart_tx       ),      // UART tx wire
+        .uart_rx        ( uart_rx       )       // UART rx wire
+    );
     
     //creating one instruction/data memory
     nf_ram
     #(
-        .depth          ( 256           ) 
+        .depth          ( 256           ),
+        .load           ( 1             ),
+        .path2file      ( `path2file    )
     )
     nf_ram_i_d_0
     (

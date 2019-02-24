@@ -13,8 +13,8 @@ module nf_ahb_router
 #(
     parameter                                   slave_c = `SLAVE_COUNT
 )(
-    input   logic                  [0  : 0]     hclk,
-    input   logic                  [0  : 0]     hresetn,
+    input   logic                  [0  : 0]     hclk,           // hclk
+    input   logic                  [0  : 0]     hresetn,        // hresetn
     // Master side
     input   logic                  [31 : 0]     haddr,          // AHB - Master HADDR
     input   logic                  [31 : 0]     hwdata,         // AHB - Master HWDATA
@@ -35,7 +35,7 @@ module nf_ahb_router
     output  logic   [slave_c-1 : 0][2  : 0]     hburst_s,       // AHB - Slave HBURST
     input   logic   [slave_c-1 : 0][1  : 0]     hresp_s,        // AHB - Slave HRESP
     input   logic   [slave_c-1 : 0][0  : 0]     hready_s,       // AHB - Slave HREADY
-    output  logic   [slave_c-1 : 0]             hsel_s          // AHB - Slave HSEL
+    output  logic   [slave_c-1 : 0][0  : 0]     hsel_s          // AHB - Slave HSEL
 );
     // hsel signals
     logic   [slave_c-1 : 0]                     hsel_ff;

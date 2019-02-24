@@ -7,11 +7,15 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
+`include "../../inc/nf_settings.svh"
+
 module nf_ram
 #(
-    parameter                   depth = 64
+    parameter                   depth     = 64,
+                                load      = '0,
+                                path2file = "path to hex file"
 )(
-    input   logic   [0  : 0]    clk,
+    input   logic   [0  : 0]    clk,    // clock
     input   logic   [31 : 0]    addr,   // address
     input   logic   [0  : 0]    we,     // write enable
     input   logic   [31 : 0]    wd,     // write data
@@ -34,11 +38,8 @@ module nf_ram
 
     initial
     begin
-        //integer file;
-        //file = $fopen("..\/..\/program_file\/program.hex","r");
-        //if( file == '0)
-        //    $stop;
-        $readmemh("../../program_file/program.hex",ram);
+        if( load )
+            $readmemh( path2file, ram );
     end
 
 endmodule : nf_ram

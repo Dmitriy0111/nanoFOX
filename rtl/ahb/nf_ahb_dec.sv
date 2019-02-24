@@ -11,10 +11,10 @@
 
 module nf_ahb_dec
 #(
-    parameter                                   slave_c = `SLAVE_COUNT
+    parameter                           slave_c = `SLAVE_COUNT
 )(
-    input   logic                      [31 : 0] haddr,      // AHB address
-    output  logic       [slave_c-1 : 0]         hsel        // hsel signal
+    input   logic   [31        : 0]     haddr,  // AHB address
+    output  logic   [slave_c-1 : 0]     hsel    // hsel signal
 );
 
     genvar  gen_ahb_dec;
