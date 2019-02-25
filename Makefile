@@ -90,7 +90,7 @@ sim_gui: sim_dir
 PROG_NAME ?= 00_counter
 
 prog_comp_win:
-	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv64ima -mabi=lp64
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv32i -mabi=ilp32
 	riscv-none-embed-objdump -D -z program/$(PROG_NAME)/main > program/$(PROG_NAME)/main.elf
 	rm -rfd program/$(PROG_NAME)/main
 	mkdir -p program_file
@@ -99,7 +99,7 @@ prog_comp_win:
 	rm -rfd program/$(PROG_NAME)/main.elf
 
 prog_comp_lin:
-	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv64ima -mabi=lp64
+	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv32i -mabi=ilp32
 	riscv64-unknown-elf-objdump -D -z program/$(PROG_NAME)/main > program/$(PROG_NAME)/main.elf
 	rm -rfd program/$(PROG_NAME)/main
 	mkdir program_file

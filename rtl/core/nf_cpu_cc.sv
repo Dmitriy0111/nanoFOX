@@ -35,7 +35,8 @@ module nf_cpu_cc
     input   logic   [0  : 0]    req_ack_cc  // request acknowledge cc_data memory signal
 );
 
-    logic   [1 : 0] master_sel;
+    logic   [1 : 0] master_sel_out;
+    logic   [1 : 0] master_sel_in;
 
     `define MASTER_0    2'b01
     `define MASTER_1    2'b10
@@ -47,7 +48,7 @@ module nf_cpu_cc
         wd_cc   = '0;
         we_cc   = '0;
         addr_cc = '0;
-        case( master_sel )
+        case( master_sel_out )
             `MASTER_0       :   begin req_cc = req_i  ; wd_cc = wd_i  ; we_cc = we_i  ; addr_cc = addr_i  ; end
             `MASTER_1       :   begin req_cc = req_dm ; wd_cc = wd_dm ; we_cc = we_dm ; addr_cc = addr_dm ; end
             `MASTER_NONE    :   begin req_cc = '0     ; wd_cc = '0    ; we_cc = '0    ; addr_cc = '0      ; end
@@ -55,25 +56,60 @@ module nf_cpu_cc
         endcase
     end
 
-    assign req_ack_i  = master_sel == `MASTER_0 || master_sel == `MASTER_NONE ? req_ack_cc : '0;
-    assign rd_i       = master_sel == `MASTER_0 || master_sel == `MASTER_NONE ? rd_cc      : '0;
+    assign req_ack_i  = master_sel_in == `MASTER_0 ? req_ack_cc : '0;
+    assign rd_i       = master_sel_in == `MASTER_0 ? rd_cc      : '0;
 
-    assign req_ack_dm = master_sel == `MASTER_1 ? req_ack_cc : '0;
-    assign rd_dm      = master_sel == `MASTER_1 ? rd_cc      : '0;
+    assign req_ack_dm = master_sel_in == `MASTER_1 ? req_ack_cc : '0;
+    assign rd_dm      = master_sel_in == `MASTER_1 ? rd_cc      : '0;
+
+    enum logic [1 : 0] {M0_s, M1_s, M_NONE_s} state;
+    logic   last_master;
 
     always_ff @(posedge clk, negedge resetn)
     if( !resetn )
     begin
-        master_sel <= `MASTER_0;
+        master_sel_out <= `MASTER_0;
+        master_sel_in  <= `MASTER_0;
+        state <= M0_s;
+        last_master <= '0;
     end
     else
     begin
-        if( req_dm == '1 && master_sel != `MASTER_1 )
-            master_sel <= `MASTER_NONE;
-        if( master_sel == `MASTER_NONE && req_ack_i == '0 )
-            master_sel <= `MASTER_1;
-        if( req_dm == '0 )
-            master_sel <= `MASTER_0;
+        case( state )
+            M0_s:
+            begin
+                if( req_dm )
+                begin
+                    state <= M_NONE_s;
+                    last_master <= '0;
+                    master_sel_out <= `MASTER_NONE;
+                end
+            end
+            M1_s:
+            begin
+                if( req_i )
+                begin
+                    state <= M_NONE_s;
+                    last_master <= '1;
+                    master_sel_out <= `MASTER_NONE;
+                end
+            end
+            M_NONE_s:
+            begin
+                if( ( ! req_ack_cc ) && (! last_master ) )
+                begin
+                    state <= M1_s;
+                    master_sel_out <= `MASTER_1;
+                    master_sel_in  <= `MASTER_1;
+                end
+                if( ( ! req_ack_cc ) && (  last_master ) )
+                begin
+                    state <= M0_s;
+                    master_sel_out <= `MASTER_0;
+                    master_sel_in  <= `MASTER_0;
+                end
+            end
+        endcase
     end
 
 endmodule : nf_cpu_cc
