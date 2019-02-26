@@ -27,12 +27,12 @@ module nf_ahb_top
     input   logic   [slave_c-1 : 0][0  : 0]     hready_s,       // AHB - Slave HREADYOUT 
     output  logic   [slave_c-1 : 0][0  : 0]     hsel_s,         // AHB - Slave HSEL
     // core side
-    input   logic                  [31 : 0]     addr_dm,        // address data memory
-    output  logic                  [31 : 0]     rd_dm,          // read data memory
-    input   logic                  [31 : 0]     wd_dm,          // write data memory
-    input   logic                  [0  : 0]     we_dm,          // write enable signal
-    input   logic                  [0  : 0]     req_dm,         // request data memory signal
-    output  logic                  [0  : 0]     req_ack_dm      // request acknowledge data memory signal
+    input   logic                  [31 : 0]     addr,           // address memory
+    output  logic                  [31 : 0]     rd,             // read memory
+    input   logic                  [31 : 0]     wd,             // write memory
+    input   logic                  [0  : 0]     we,             // write enable signal
+    input   logic                  [0  : 0]     req,            // request memory signal
+    output  logic                  [0  : 0]     req_ack         // request acknowledge memory signal
 );
 
     logic   [31 : 0]    haddr;
@@ -60,12 +60,12 @@ module nf_ahb_top
         .hresp          ( hresp         ),  // AHB HRESP
         .hready         ( hready        ),  // AHB HREADY
         // core side
-        .addr_dm        ( addr_dm       ),  // address data memory
-        .we_dm          ( we_dm         ),  // write enable signal
-        .wd_dm          ( wd_dm         ),  // write data memory
-        .rd_dm          ( rd_dm         ),  // read data memory
-        .req_dm         ( req_dm        ),  // request data memory signal
-        .req_ack_dm     ( req_ack_dm    )   // request acknowledge data memory signal
+        .addr           ( addr          ),  // address memory
+        .we             ( we            ),  // write enable signal
+        .wd             ( wd            ),  // write memory
+        .rd             ( rd            ),  // read memory
+        .req            ( req           ),  // request memory signal
+        .req_ack        ( req_ack       )   // request acknowledge memory signal
     );
 
     nf_ahb_router 

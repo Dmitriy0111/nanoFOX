@@ -73,6 +73,7 @@ module nf_uart_transmitter
             int_reg <= '1;
             uart_tx <= '1;
             req_ack <= '0;
+            counter <= '0;
         end
         else
         begin

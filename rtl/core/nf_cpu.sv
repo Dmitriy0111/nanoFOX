@@ -240,14 +240,16 @@ module nf_cpu
     logic   [0  : 0]    we_rf_iwb;
     logic   [0  : 0]    rf_src_iwb;
     logic   [31 : 0]    result_iwb;
+    logic   [31 : 0]    rd_dm_iwb;
 
     nf_register_we  #( 1  ) we_rf_imem_iwb  ( clk , resetn , ~ stall_iwb , we_rf_imem  , we_rf_iwb  );
     nf_register_we  #( 1  ) rf_src_imem_iwb ( clk , resetn , ~ stall_iwb , rf_src_imem , rf_src_iwb );
     nf_register_we  #( 5  ) wa3_imem_iwb    ( clk , resetn , ~ stall_iwb , wa3_imem    , wa3_iwb    );
     nf_register_we  #( 32 ) result_imem_iwb ( clk , resetn , ~ stall_iwb , result_imem , result_iwb );
+    nf_register_we  #( 32 ) rd_dm_iwb_ff    ( clk , resetn , ~ stall_iwb , rd_dm       , rd_dm_iwb  );
 
     assign wa3   = wa3_iwb;
-    assign wd3   = rf_src_iwb ? rd_dm : result_iwb;
+    assign wd3   = rf_src_iwb ? rd_dm_iwb : result_iwb;
     assign we_rf = we_rf_iwb;
     // creating hazard unit
     nf_hazard_unit nf_hazard_unit_0

@@ -152,12 +152,12 @@ module nf_top
         .hready_s       ( hready_s      ),      // AHB - Slave HREADYOUT 
         .hsel_s         ( hsel_s        ),      // AHB - Slave HSEL
         // core side
-        .addr_dm        ( addr_cc       ),      // address data memory
-        .rd_dm          ( rd_cc         ),      // read data memory
-        .wd_dm          ( wd_cc         ),      // write data memory
-        .we_dm          ( we_cc         ),      // write enable signal
-        .req_dm         ( req_cc        ),      // request data memory signal
-        .req_ack_dm     ( req_ack_cc    )       // request acknowledge data memory signal
+        .addr           ( addr_cc       ),      // address memory
+        .rd             ( rd_cc         ),      // read memory
+        .wd             ( wd_cc         ),      // write memory
+        .we             ( we_cc         ),      // write enable signal
+        .req            ( req_cc        ),      // request memory signal
+        .req_ack        ( req_ack_cc    )       // request acknowledge memory signal
     );
 
     // Creating one nf_ahb_ram_0

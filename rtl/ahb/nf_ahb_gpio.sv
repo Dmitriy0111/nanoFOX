@@ -34,25 +34,27 @@ module nf_ahb_gpio
     output  logic   [gpio_w-1 : 0]  gpd         // GPIO direction
 );
 
-    logic               gpio_request;
-    logic               gpio_wrequest;
-    logic   [31 : 0]    gpio_work_addr;
-
-    assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
-
-    nf_register_we #( 32 ) gpio_waddr_ff   ( hclk, hresetn, gpio_request, haddr_s, gpio_work_addr );
-    nf_register    #( 1  ) gpio_wreq_ff    ( hclk, hresetn, gpio_request && hwrite_s, gpio_wrequest );
-    nf_register    #( 1  ) hready_ff       ( hclk, hresetn, gpio_request, hready_s );
-
+    logic   [0  : 0]    gpio_request;
+    logic   [0  : 0]    gpio_wrequest;
     logic   [31 : 0]    gpio_addr;
-    logic   [31 : 0]    gpio_rd;
-    logic   [31 : 0]    gpio_wd;
     logic   [0  : 0]    gpio_we;
 
-    assign  gpio_addr = gpio_work_addr;
-    assign  gpio_we   = gpio_wrequest;
-    assign  gpio_wd   = hwdata_s;
-    assign  hrdata_s  = gpio_rd;
+    assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
+    assign  gpio_wrequest = gpio_request && hwrite_s;
+
+    nf_register_we  #( 32 ) gpio_addr_ff    ( hclk, hresetn, gpio_request , haddr_s, gpio_addr );
+    nf_register     #( 1  ) gpio_wreq_ff    ( hclk, hresetn, gpio_wrequest, gpio_we  );
+    nf_register     #( 1  ) hready_ff       ( hclk, hresetn, gpio_request , hready_s );
+
+    logic   [31 : 0]    addr;
+    logic   [31 : 0]    rd;
+    logic   [31 : 0]    wd;
+    logic   [0  : 0]    we;
+
+    assign  addr     = gpio_addr;
+    assign  we       = gpio_we;
+    assign  wd       = hwdata_s;
+    assign  hrdata_s = rd;
 
     assign  hresp_s   = `AHB_HRESP_OKAY;
 
@@ -62,17 +64,18 @@ module nf_ahb_gpio
     )
     nf_gpio_0
     (
-        .clk        ( hclk              ),
-        .resetn     ( hresetn           ),
+        // reset and clock
+        .clk        ( hclk      ),  // clk
+        .resetn     ( hresetn   ),  // resetn
         // bus side
-        .addr       ( gpio_addr         ),  // address
-        .we         ( gpio_we           ),  // write enable
-        .wd         ( gpio_wd           ),  // write data
-        .rd         ( gpio_rd           ),  // read data
+        .addr       ( addr      ),  // address
+        .we         ( we        ),  // write enable
+        .wd         ( wd        ),  // write data
+        .rd         ( rd        ),  // read data
         // GPIO side
-        .gpi        ( gpi               ),  // GPIO input
-        .gpo        ( gpo               ),  // GPIO output
-        .gpd        ( gpd               )   // GPIO direction
+        .gpi        ( gpi       ),  // GPIO input
+        .gpo        ( gpo       ),  // GPIO output
+        .gpd        ( gpd       )   // GPIO direction
     );
     
 endmodule : nf_ahb_gpio

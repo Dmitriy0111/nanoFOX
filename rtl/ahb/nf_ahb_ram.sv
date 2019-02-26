@@ -32,18 +32,20 @@ module nf_ahb_ram
     output  logic   [0  : 0]    ram_we      // write enable
 );
 
-    logic               ram_request;
-    logic               ram_wrequest;
-    logic   [31 : 0]    ram_work_addr;
+    logic   [0  : 0]    ram_request;
+    logic   [0  : 0]    ram_wrequest;
+    logic   [31 : 0]    ram_addr_;
+    logic   [0  : 0]    ram_we_;
 
-    assign  ram_request = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
+    assign  ram_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
+    assign  ram_wrequest = ram_request && hwrite_s; 
 
-    nf_register_we #( 32 ) ram_waddr_ff     ( hclk, hresetn, ram_request, haddr_s, ram_work_addr );
-    nf_register    #( 1  ) ram_wreq_ff      ( hclk, hresetn, ram_request && hwrite_s, ram_wrequest );
-    nf_register    #( 1  ) hready_ff        ( hclk, hresetn, ram_request, hready_s );
+    nf_register_we  #( 32 ) ram_addr_ff ( hclk, hresetn, ram_request , haddr_s, ram_addr_ );
+    nf_register     #( 1  ) ram_wreq_ff ( hclk, hresetn, ram_wrequest, ram_we_  );
+    nf_register     #( 1  ) hready_ff   ( hclk, hresetn, ram_request , hready_s );
 
-    assign  ram_addr  = ram_work_addr;
-    assign  ram_we    = ram_wrequest;
+    assign  ram_addr  = ram_addr_;
+    assign  ram_we    = ram_we_;
     assign  ram_wd    = hwdata_s;
     assign  hrdata_s  = ram_rd;
 

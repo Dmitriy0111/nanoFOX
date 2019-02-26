@@ -24,23 +24,23 @@ module nf_ahb2core
     input   logic   [1  : 0]    hresp,      // AHB HRESP
     input   logic   [0  : 0]    hready,     // AHB HREADY
     // core side
-    input   logic   [31 : 0]    addr_dm,    // address data memory
-    input   logic   [31 : 0]    wd_dm,      // write data memory
-    output  logic   [31 : 0]    rd_dm,      // read data memory
-    input   logic   [0  : 0]    we_dm,      // write enable signal
-    input   logic   [0  : 0]    req_dm,     // request data memory signal
-    output  logic   [0  : 0]    req_ack_dm  // request acknowledge data memory signal
+    input   logic   [31 : 0]    addr,       // address memory
+    input   logic   [31 : 0]    wd,         // write memory
+    output  logic   [31 : 0]    rd,         // read memory
+    input   logic   [0  : 0]    we,         // write enable signal
+    input   logic   [0  : 0]    req,        // request memory signal
+    output  logic   [0  : 0]    req_ack     // request acknowledge memory signal
 );
 
-    assign  haddr  = addr_dm;
-    assign  hwrite = we_dm;
-    assign  rd_dm  = hrdata;
-    assign  htrans = req_dm ? `AHB_HTRANS_NONSEQ : `AHB_HTRANS_IDLE;
-    assign  hsize  = `AHB_HSIZE_W;
-    assign  hburst = `AHB_HBUSRT_SINGLE;
-    assign  req_ack_dm = hready && ( hresp != `AHB_HRESP_ERROR );
+    assign  haddr   = addr;
+    assign  hwrite  = we;
+    assign  rd      = hrdata;
+    assign  htrans  = req ? `AHB_HTRANS_NONSEQ : `AHB_HTRANS_IDLE;
+    assign  hsize   = `AHB_HSIZE_W;
+    assign  hburst  = `AHB_HBUSRT_SINGLE;
+    assign  req_ack = hready && ( hresp != `AHB_HRESP_ERROR );
 
     // creating one write data flip-flop
-    nf_register_we  #( 32 ) wd_dm_ff    ( clk, resetn, we_dm, wd_dm, hwdata );
+    nf_register_we  #( 32 ) wd_dm_ff    ( clk, resetn, we, wd, hwdata );
 
 endmodule : nf_ahb2core
