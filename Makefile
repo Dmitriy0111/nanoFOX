@@ -88,24 +88,30 @@ sim_gui: sim_dir
 # compiling  - program
 
 PROG_NAME ?= 00_counter
+COMP_KEY  ?= -march=rv32i -mabi=ilp32
 
-prog_comp_win:
-	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv32i -mabi=ilp32
-	riscv-none-embed-objdump -D -z program/$(PROG_NAME)/main > program/$(PROG_NAME)/main.elf
+prog_form:
 	rm -rfd program/$(PROG_NAME)/main
+	echo @00000000 > program_file/program.hex
+	cat program_file/main.elf | sed -rn 's/\s+[a-f0-9]+:\s+([a-f0-9]*)\s+.*/\1/p' >> program_file/program.hex
+
+prog_compile_win:
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main $(COMP_KEY)
 	mkdir -p program_file
-	echo @00000000 > program_file/program.hex
-	cat program/$(PROG_NAME)/main.elf | sed -rn 's/\s+[a-f0-9]+:\s+([a-f0-9]*)\s+.*/\1/p' >> program_file/program.hex
-	rm -rfd program/$(PROG_NAME)/main.elf
+	riscv-none-embed-objdump -D -z program/$(PROG_NAME)/main > program_file/main.elf
+	
+prog_compile_lin:
+	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main $(COMP_KEY)
+	mkdir -p program_file
+	riscv64-unknown-elf-objdump -D -z program/$(PROG_NAME)/main > program_file/main.elf
 
-prog_comp_lin:
-	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main -march=rv32i -mabi=ilp32
-	riscv64-unknown-elf-objdump -D -z program/$(PROG_NAME)/main > program/$(PROG_NAME)/main.elf
-	rm -rfd program/$(PROG_NAME)/main
-	mkdir program_file
-	echo @00000000 > program_file/program.hex
-	cat program/$(PROG_NAME)/main.elf | sed -rn 's/\s+[a-f0-9]+:\s+([a-f0-9]*)\s+.*/\1/p' >> program_file/program.hex
-	rm -rfd program/$(PROG_NAME)/main.elf
+prog_comp_win: \
+	prog_compile_win \
+	prog_form 
+	
+prog_comp_lin: \
+	prog_compile_lin \
+	prog_form 
 
 ########################################################
 # synthesis - default board only

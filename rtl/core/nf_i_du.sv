@@ -34,7 +34,8 @@ module nf_i_du
     logic   [11 : 0]    imm_data_b; // for B-type command's
     logic   [11 : 0]    imm_data_s; // for S-type command's
     // control unit wires
-    logic   [6  : 0]    opcode;
+    logic   [1  : 0]    instr_type;
+    logic   [4  : 0]    opcode;
     logic   [2  : 0]    funct3;
     logic   [6  : 0]    funct7;
     logic   [0  : 0]    eq_neq;
@@ -51,13 +52,15 @@ module nf_i_du
     assign ra2 = instr[20 +: 5];
     assign wa3 = instr[7  +: 5];
     // operation code, funct3 and funct7 field's in instruction
-    assign opcode = instr[0   +: 7];
-    assign funct3 = instr[12  +: 3];
-    assign funct7 = instr[25  +: 7];
+    assign instr_type = instr[0   +: 2];
+    assign opcode     = instr[2   +: 5];
+    assign funct3     = instr[12  +: 3];
+    assign funct7     = instr[25  +: 7];
     
     // creating control unit for cpu
     nf_control_unit nf_control_unit_0
     (
+        .instr_type     ( instr_type            ),  // instruction type
         .opcode         ( opcode                ),  // operation code field in instruction code
         .funct3         ( funct3                ),  // funct 3 field in instruction code
         .funct7         ( funct7                ),  // funct 7 field in instruction code

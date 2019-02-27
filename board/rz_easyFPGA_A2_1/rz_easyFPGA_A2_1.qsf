@@ -73,6 +73,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_pwm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_mux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_gpio.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_uart.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_dec.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rz_easyFPGA_A2_1.sv
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files

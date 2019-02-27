@@ -8,258 +8,157 @@
 */
 
 //  Base Instruction Formats for ISA
-//  fields          31              25 24       20 19       15 14       12 11           7 6         0
-//  instr R-type    |     funct7     | |   rs2   | |   rs1   | |  funct3 | |      rd    | | opcode  |
-//                  --------------------------------------------------------------------------------
-//  fields          31              25 24       20 19       15 14       12 11           7 6         0
-//  instr I-type    |            imm[11:0]       | |   rs1   | |  funct3 | |      rd    | | opcode  |
-//                  --------------------------------------------------------------------------------
-//  fields          31              25 24       20 19       15 14       12 11           7 6         0
-//  instr S-type    |   imm[11:5]    | |   rs2   | |   rs1   | |  funct3 | |   imm[4:0] | | opcode  |
-//                  --------------------------------------------------------------------------------
-//  fields          31              25 24       20 19       15 14       12 11           7 6         0
-//  instr U-type    |                        imm[31:12]                  | |      rd    | | opcode  |
-//                  --------------------------------------------------------------------------------
-//  fields          31          31 30           25 24       20 19       15 14       12 11           8 7         7 6         0
-//  instr B-type    |  imm[12]   | |  imm[10:5]  | |   rs2   | |   rs1   | |  funct3 | |   imm[4:1] | | imm[11] | | opcode  |
-//                  --------------------------------------------------------------------------------------------------------
-//  fields          31          31 30           21 20         20 19            12 11           7 6         0
-//  instr J-type    |  imm[20]   | |  imm[10:1]  | |  imm[11]  | |  imm[19:12]  | |      rd    | | opcode  |
-//                  ---------------------------------------------------------------------------------------
+//  fields          31                           25 24                           20 19       15 14        12 11                         7 6          0
+//  instr R-type    |           funct7            | |             rs2             | |   rs1   | |  funct3  | |            rd            | |  opcode  |
+//                  ----------------------------------------------------------------------------------------------------------------------------------
+//  fields          31                                                           20 19       15 14        12 11                         7 6          0
+//  instr I-type    |                          imm[11:0]                          | |   rs1   | |  funct3  | |            rd            | |  opcode  |
+//                  ----------------------------------------------------------------------------------------------------------------------------------
+//  fields          31                           25 24                           20 19       15 14        12 11                         7 6          0
+//  instr S-type    |          imm[11:5]          | |             rs2             | |   rs1   | |  funct3  | |         imm[4:0]         | |  opcode  |
+//                  ----------------------------------------------------------------------------------------------------------------------------------
+//  fields          31                                                                                    12 11                         7 6          0
+//  instr U-type    |                                      imm[31:12]                                      | |            rd            | |  opcode  |
+//                  ----------------------------------------------------------------------------------------------------------------------------------
+//  fields          31           31 30           25 24                           20 19       15 14        12 11           8 7           7 6          0
+//  instr B-type    |   imm[12]   | |  imm[10:5]  | |             rs2             | |   rs1   | |  funct3  | |  imm[4:1]  | |  imm[11]  | |  opcode  |
+//                  ----------------------------------------------------------------------------------------------------------------------------------
+//  fields          31           31 30                             21 20         20 19                    12 11                         7 6          0
+//  instr J-type    |   imm[20]   | |           imm[10:1]           | |  imm[11]  | |      imm[19:12]      | |            rd            | |  opcode  |
+//                  ----------------------------------------------------------------------------------------------------------------------------------
 //  rs1 and rs2 are sources registers, rd are destination register. 
 //  imm is immediate data. 
 //  opcode is operation code for instruction
 //  funct3 and funct7 help's for encode more instructions with same opcode field
 
-// LUI -    Load Upper Immediate
+`define RVI         2'b11
+`define ANY         2'b??
+
+typedef struct packed
+{
+    logic   [4 : 0] OP;
+    logic   [2 : 0] F3;
+    logic   [6 : 0] F7;
+} instr_cf;                 // instruction opcode, function3, function7 fields
+
+`ifndef COMMANDS
+`define COMMANDS
+// LUI      -    Load Upper Immediate
 //          rd = Immed << 12
-`define C_LUI       7'b0110111
-`define F3_LUI      3'b???    
-`define F7_LUI      7'b???????
-
-// AUIPC -  U-type, Add upper immediate to PC
+parameter instr_cf LUI   = { 5'b01101 , 3'b??? , 7'b??????? };
+// AUIPC    -  U-type, Add upper immediate to PC
 //          rd = PC + Immed << 12
-`define C_AUIPC     7'b0010111
-`define F3_AUIPC    3'b???    
-`define F7_AUIPC    7'b???????
-
-// JAL -    J-type, Jump and load PC + 4 in register
+parameter instr_cf AUIPC = { 5'b00101 , 3'b??? , 7'b??????? };
+// JAL      -   J-type, Jump and load PC + 4 in register
 //          rd = PC + 4
 //          PC = Immed << 12
-`define C_JAL       7'b1101111
-`define F3_JAL      3'b???
-`define F7_JAL      7'b???????
-
-// JALR -   I-type, Jump and link register
+parameter instr_cf JAL   = { 5'b11011 , 3'b??? , 7'b??????? };
+// JAL      -    J-type, Jump and load PC + 4 in register
 //          rd = PC + 4
 //          PC = Immed << 12
-`define C_JALR      7'b1100111
-`define F3_JALR     3'b000 
-`define F7_JALR     7'b???????
-
-// BEQ -    B-type, Branch if equal
+parameter instr_cf JALR  = { 5'b11001 , 3'b??? , 7'b??????? };
+// BEQ      -    B-type, Branch if equal
 // 
-`define C_BEQ       7'b1100011
-`define F3_BEQ      3'b000
-`define F7_BEQ      7'b???????
-                            
-// BNE -    B-type, Branch if not equal
+parameter instr_cf BEQ   = { 5'b11000 , 3'b000 , 7'b??????? };
+// BNE      -    B-type, Branch if not equal
 // 
-`define C_BNE       7'b1100011
-`define F3_BNE      3'b001
-`define F7_BNE      7'b???????
-
-// BLT -    B-type, Branch if less
+parameter instr_cf BNE   = { 5'b11000 , 3'b001 , 7'b??????? };
+// BLT      -    B-type, Branch if less
 // 
-`define C_BLT       7'b1100011
-`define F3_BLT      3'b100    
-`define F7_BLT      7'b???????
-
-// BGE -    B-type, Branch if greater
+parameter instr_cf BLT   = { 5'b11000 , 3'b100 , 7'b??????? };
+// BGE      -    B-type, Branch if greater
 // 
-`define C_BGE       7'b1100011
-`define F3_BGE      3'b101    
-`define F7_BGE      7'b???????
-                              
-// BLTU -   B-type, Branch if less unsigned
+parameter instr_cf BGE   = { 5'b11000 , 3'b101 , 7'b??????? };
+// BLTU     -   B-type, Branch if less unsigned
 // 
-`define C_BLTU      7'b1100011
-`define F3_BLTU     3'b110    
-`define F7_BLTU     7'b???????
-                              
-// BGEU -   B-type, Branch if greater unsigned
+parameter instr_cf BLTU  = { 5'b11000 , 3'b110 , 7'b??????? };
+// BGEU     -   B-type, Branch if greater unsigned
 //
-`define C_BGEU      7'b1100011
-`define F3_BGEU     3'b111    
-`define F7_BGEU     7'b???????
-                              
-// LB -     I-type, Load byte
+parameter instr_cf BGEU  = { 5'b11000 , 3'b111 , 7'b??????? };
+// LB       -     I-type, Load byte
 //          rd = mem[addr]
-`define C_LB        7'b0000011
-`define F3_LB       3'b000    
-`define F7_LB       7'b???????
-                              
-// LH -     I-type, Load half word
+parameter instr_cf LB    = { 5'b00000 , 3'b000 , 7'b??????? };
+// LH       -     I-type, Load half word
 //          rd = mem[addr]
-`define C_LH        7'b0000011
-`define F3_LH       3'b001    
-`define F7_LH       7'b???????
-                              
-// LW -     I-type, Load word
+parameter instr_cf LH    = { 5'b00000 , 3'b001 , 7'b??????? };
+// LW       -     I-type, Load word
 //          rd = mem[addr]
-`define C_LW        7'b0000011
-`define F3_LW       3'b010    
-`define F7_LW       7'b???????
-                              
-// LBU -    I-type, Load byte unsigned
+parameter instr_cf LW    = { 5'b00000 , 3'b010 , 7'b??????? };
+// LBU      -    I-type, Load byte unsigned
 //          rd = mem[addr]
-`define C_LBU       7'b0000011
-`define F3_LBU      3'b100    
-`define F7_LBU      7'b???????
-                              
-// LHU -    I-type, Load half word unsigned
+parameter instr_cf LBU   = { 5'b00000 , 3'b100 , 7'b??????? };
+// LHU      -    I-type, Load half word unsigned
 //          rd = mem[addr]
-`define C_LHU       7'b0000011
-`define F3_LHU      3'b101    
-`define F7_LHU      7'b???????
-                              
-// SB -     S-type, Store byte
+parameter instr_cf LHU   = { 5'b00000 , 3'b101 , 7'b??????? };
+// SB       -     S-type, Store byte
 //          mem[addr] = rs1
-`define C_SB        7'b0100011
-`define F3_SB       3'b000    
-`define F7_SB       7'b???????
-                              
-// SH -     S-type, Store half word
+parameter instr_cf SB    = { 5'b01000 , 3'b000 , 7'b??????? };
+// SH       -     S-type, Store half word
 //          mem[addr] = rs1
-`define C_SH        7'b0100011
-`define F3_SH       3'b001    
-`define F7_SH       7'b???????
-                              
-// SW -     S-type, Store word
+parameter instr_cf SH    = { 5'b01000 , 3'b001 , 7'b??????? };
+// SW       -     S-type, Store word
 //          mem[addr] = rs1
-`define C_SW        7'b0100011
-`define F3_SW       3'b010    
-`define F7_SW       7'b???????
-                              
-// ADDI -   I-type, Adding with immidiate
+parameter instr_cf SW    = { 5'b01000 , 3'b010 , 7'b??????? };
+// ADDI     -   I-type, Adding with immidiate
 //          rd = rs1 + Immed
-`define C_ADDI      7'b0010011
-`define F3_ADDI     3'b000    
-`define F7_ADDI     7'b???????
-                              
-// SLTI -   I-type, Set less immidiate
+parameter instr_cf ADDI  = { 5'b00100 , 3'b000 , 7'b??????? };
+// SLTI     -   I-type, Set less immidiate
 //          rd = rs1 < signed   ( Immed ) ? '0 : '1
-`define C_SLTI      7'b0010011
-`define F3_SLTI     3'b010    
-`define F7_SLTI     7'b???????
-                              
-// SLTIU -  I-type, Set less unsigned immidiate
+parameter instr_cf SLTI  = { 5'b00100 , 3'b010 , 7'b??????? };
+// SLTIU    -  I-type, Set less unsigned immidiate
 //          rd = rs1 < unsigned ( Immed ) ? '0 : '1
-`define C_SLTIU     7'b0010011
-`define F3_SLTIU    3'b011    
-`define F7_SLTIU    7'b???????
-                              
-// XORI -   I-type, Excluding Or operation with immidiate
+parameter instr_cf SLTIU = { 5'b00100 , 3'b011 , 7'b??????? };
+// XORI     -   I-type, Excluding Or operation with immidiate
 //          rd = rs1 ^ Immed
-`define C_XORI      7'b0010011
-`define F3_XORI     3'b100    
-`define F7_XORI     7'b???????
-                              
-// ORI -    I-type, Or operation with immidiate
+parameter instr_cf XORI  = { 5'b00100 , 3'b100 , 7'b??????? };
+// ORI      -    I-type, Or operation with immidiate
 //          rd = rs1 | Immed
-`define C_ORI       7'b0010011
-`define F3_ORI      3'b110    
-`define F7_ORI      7'b???????
-                              
-// ANDI -   I-type, And operation with immidiate
+parameter instr_cf ORI   = { 5'b00100 , 3'b110 , 7'b??????? };
+// ANDI     -   I-type, And operation with immidiate
 //          rd = rs1 & Immed
-`define C_ANDI      7'b0010011
-`define F3_ANDI     3'b111    
-`define F7_ANDI     7'b???????
-                              
-// SLLI -   I-type, Shift Left Logical
+parameter instr_cf ANDI  = { 5'b00100 , 3'b111 , 7'b??????? };
+// SLLI     -   I-type, Shift Left Logical
 //          rd = rs1 << shamt
-`define C_SLLI      7'b0010011
-`define F3_SLLI     3'b001    
-`define F7_SLLI     7'b0000000
-                              
-// SRLI -   I-type, Shift Right Logical
+parameter instr_cf SLLI  = { 5'b00100 , 3'b001 , 7'b0000000 };
+// SRLI     -   I-type, Shift Right Logical
 //          rd = rs1 >> shamt
-`define C_SRLI      7'b0010011
-`define F3_SRLI     3'b101    
-`define F7_SRLI     7'b0000000
-                              
-// SRAI -   I-type, Shift Right Arifmetical
+parameter instr_cf SRLI  = { 5'b00100 , 3'b101 , 7'b0000000 };
+// SRAI     -   I-type, Shift Right Arifmetical
 //          rd = rs1 >> shamt
-`define C_SRAI      7'b0010011
-`define F3_SRAI     3'b101    
-`define F7_SRAI     7'b0100000
-                              
-// ADD -    R-type, Adding with register
+parameter instr_cf SRAI  = { 5'b00100 , 3'b101 , 7'b0100000 };
+// ADD      -    R-type, Adding with register
 //          rd = rs1 + rs2
-`define C_ADD       7'b0110011
-`define F3_ADD      3'b000    
-`define F7_ADD      7'b0000000
-                              
-// SUB -    R-type, Adding with register
+parameter instr_cf ADD   = { 5'b01100 , 3'b000 , 7'b0000000 };
+// SUB      -    R-type, Adding with register
 //          rd = rs1 - rs2
-`define C_SUB       7'b0110011
-`define F3_SUB      3'b000    
-`define F7_SUB      7'b0100000
-                              
-// SLL -    R-type, Set left logical
+parameter instr_cf SUB   = { 5'b01100 , 3'b000 , 7'b0100000 };
+// SLL      -    R-type, Set left logical
 //          rd = rs1 << rs2
-`define C_SLL       7'b0110011
-`define F3_SLL      3'b001    
-`define F7_SLL      7'b0000000
-                              
-// SLT -    R-type, Set less
+parameter instr_cf SLL   = { 5'b01100 , 3'b001 , 7'b0000000 };
+// SLT      -    R-type, Set less
 //          rd = rs1 < rs2 ? '0 : '1
-`define C_SLT       7'b0110011
-`define F3_SLT      3'b010    
-`define F7_SLT      7'b0000000
-                              
-// SLTU -   R-type, Set less unsigned
+parameter instr_cf SLT   = { 5'b01100 , 3'b010 , 7'b0000000 };
+// SLTU     -   R-type, Set less unsigned
 //          rd = rs1 < rs2 ? '0 : '1
-`define C_SLTU      7'b0110011
-`define F3_SLTU     3'b011    
-`define F7_SLTU     7'b0000000
-                              
-// XOR -    R-type, Excluding Or two register
+parameter instr_cf SLTU  = { 5'b01100 , 3'b011 , 7'b0000000 };
+// XOR      -    R-type, Excluding Or two register
 //          rd = rs1 ^ rs2
-`define C_XOR       7'b0110011
-`define F3_XOR      3'b100    
-`define F7_XOR      7'b0000000
-                              
-// SRL -    R-type, Set right logical
+parameter instr_cf XOR   = { 5'b01100 , 3'b100 , 7'b0000000 };
+// SRL      -    R-type, Set right logical
 //          rd = rs1 >> rs2
-`define C_SRL       7'b0110011
-`define F3_SRL      3'b101    
-`define F7_SRL      7'b0000000
-                              
-// SRA -    R-type, Set right arifmetical
+parameter instr_cf SRL   = { 5'b01100 , 3'b101 , 7'b0000000 };
+// SRA      -    R-type, Set right arifmetical
 //          rd = rs1 >> rs2
-`define C_SRA       7'b0110011
-`define F3_SRA      3'b101    
-`define F7_SRA      7'b0100000
-                              
-// OR -     R-type, Or two register
+parameter instr_cf SRA   = { 5'b01100 , 3'b101 , 7'b0100000 };
+// OR       -     R-type, Or two register
 //          rd = rs1 | rs2
-`define C_OR        7'b0110011
-`define F3_OR       3'b110    
-`define F7_OR       7'b0000000
-                              
-// AND -    R-type, And two register
+parameter instr_cf OR    = { 5'b01100 , 3'b110 , 7'b0000000 };
+// AND      -    R-type, And two register
 //          rd = rs1 & rs2
-`define C_AND       7'b0110011  
-`define F3_AND      3'b111      
-`define F7_AND      7'b0000000
-                                
-// For Verification
-`define C_ANY       7'b???????
-`define F3_ANY      3'b???    
-`define F7_ANY      7'b???????
-
+parameter instr_cf AND   = { 5'b01100 , 3'b111 , 7'b0000000 };
+// VER      -    For verification
+parameter instr_cf VER   = { 5'b????? , 3'b??? , 7'b??????? };
+`endif
 
 //ALU commands
 `define ALU_ADD     'b000
