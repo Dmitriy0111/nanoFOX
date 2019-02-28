@@ -32,155 +32,195 @@
 //  funct3 and funct7 help's for encode more instructions with same opcode field
 
 `define RVI         2'b11
+`define RVC_0       2'b11
+`define RVC_1       2'b11
+`define RVC_2       2'b11
 `define ANY         2'b??
 
 typedef struct packed
 {
+    logic   [1 : 0] IT;
     logic   [4 : 0] OP;
     logic   [2 : 0] F3;
     logic   [6 : 0] F7;
-} instr_cf;                 // instruction opcode, function3, function7 fields
+} instr_cf;                 // instruction type, opcode, function3, function7 fields
 
 `ifndef COMMANDS
 `define COMMANDS
 // LUI      -    Load Upper Immediate
 //          rd = Immed << 12
-parameter instr_cf LUI   = { 5'b01101 , 3'b??? , 7'b??????? };
+parameter instr_cf LUI   = { `RVI , 5'b01101 , 3'b??? , 7'b??????? };
 // AUIPC    -  U-type, Add upper immediate to PC
 //          rd = PC + Immed << 12
-parameter instr_cf AUIPC = { 5'b00101 , 3'b??? , 7'b??????? };
+parameter instr_cf AUIPC = { `RVI , 5'b00101 , 3'b??? , 7'b??????? };
 // JAL      -   J-type, Jump and load PC + 4 in register
 //          rd = PC + 4
 //          PC = Immed << 12
-parameter instr_cf JAL   = { 5'b11011 , 3'b??? , 7'b??????? };
+parameter instr_cf JAL   = { `RVI , 5'b11011 , 3'b??? , 7'b??????? };
 // JAL      -    J-type, Jump and load PC + 4 in register
 //          rd = PC + 4
 //          PC = Immed << 12
-parameter instr_cf JALR  = { 5'b11001 , 3'b??? , 7'b??????? };
+parameter instr_cf JALR  = { `RVI , 5'b11001 , 3'b??? , 7'b??????? };
 // BEQ      -    B-type, Branch if equal
 // 
-parameter instr_cf BEQ   = { 5'b11000 , 3'b000 , 7'b??????? };
+parameter instr_cf BEQ   = { `RVI , 5'b11000 , 3'b000 , 7'b??????? };
 // BNE      -    B-type, Branch if not equal
 // 
-parameter instr_cf BNE   = { 5'b11000 , 3'b001 , 7'b??????? };
+parameter instr_cf BNE   = { `RVI , 5'b11000 , 3'b001 , 7'b??????? };
 // BLT      -    B-type, Branch if less
 // 
-parameter instr_cf BLT   = { 5'b11000 , 3'b100 , 7'b??????? };
+parameter instr_cf BLT   = { `RVI , 5'b11000 , 3'b100 , 7'b??????? };
 // BGE      -    B-type, Branch if greater
 // 
-parameter instr_cf BGE   = { 5'b11000 , 3'b101 , 7'b??????? };
+parameter instr_cf BGE   = { `RVI , 5'b11000 , 3'b101 , 7'b??????? };
 // BLTU     -   B-type, Branch if less unsigned
 // 
-parameter instr_cf BLTU  = { 5'b11000 , 3'b110 , 7'b??????? };
+parameter instr_cf BLTU  = { `RVI , 5'b11000 , 3'b110 , 7'b??????? };
 // BGEU     -   B-type, Branch if greater unsigned
 //
-parameter instr_cf BGEU  = { 5'b11000 , 3'b111 , 7'b??????? };
+parameter instr_cf BGEU  = { `RVI , 5'b11000 , 3'b111 , 7'b??????? };
 // LB       -     I-type, Load byte
 //          rd = mem[addr]
-parameter instr_cf LB    = { 5'b00000 , 3'b000 , 7'b??????? };
+parameter instr_cf LB    = { `RVI , 5'b00000 , 3'b000 , 7'b??????? };
 // LH       -     I-type, Load half word
 //          rd = mem[addr]
-parameter instr_cf LH    = { 5'b00000 , 3'b001 , 7'b??????? };
+parameter instr_cf LH    = { `RVI , 5'b00000 , 3'b001 , 7'b??????? };
 // LW       -     I-type, Load word
 //          rd = mem[addr]
-parameter instr_cf LW    = { 5'b00000 , 3'b010 , 7'b??????? };
+parameter instr_cf LW    = { `RVI , 5'b00000 , 3'b010 , 7'b??????? };
 // LBU      -    I-type, Load byte unsigned
 //          rd = mem[addr]
-parameter instr_cf LBU   = { 5'b00000 , 3'b100 , 7'b??????? };
+parameter instr_cf LBU   = { `RVI , 5'b00000 , 3'b100 , 7'b??????? };
 // LHU      -    I-type, Load half word unsigned
 //          rd = mem[addr]
-parameter instr_cf LHU   = { 5'b00000 , 3'b101 , 7'b??????? };
+parameter instr_cf LHU   = { `RVI , 5'b00000 , 3'b101 , 7'b??????? };
 // SB       -     S-type, Store byte
 //          mem[addr] = rs1
-parameter instr_cf SB    = { 5'b01000 , 3'b000 , 7'b??????? };
+parameter instr_cf SB    = { `RVI , 5'b01000 , 3'b000 , 7'b??????? };
 // SH       -     S-type, Store half word
 //          mem[addr] = rs1
-parameter instr_cf SH    = { 5'b01000 , 3'b001 , 7'b??????? };
+parameter instr_cf SH    = { `RVI , 5'b01000 , 3'b001 , 7'b??????? };
 // SW       -     S-type, Store word
 //          mem[addr] = rs1
-parameter instr_cf SW    = { 5'b01000 , 3'b010 , 7'b??????? };
+parameter instr_cf SW    = { `RVI , 5'b01000 , 3'b010 , 7'b??????? };
 // ADDI     -   I-type, Adding with immidiate
 //          rd = rs1 + Immed
-parameter instr_cf ADDI  = { 5'b00100 , 3'b000 , 7'b??????? };
+parameter instr_cf ADDI  = { `RVI , 5'b00100 , 3'b000 , 7'b??????? };
 // SLTI     -   I-type, Set less immidiate
 //          rd = rs1 < signed   ( Immed ) ? '0 : '1
-parameter instr_cf SLTI  = { 5'b00100 , 3'b010 , 7'b??????? };
+parameter instr_cf SLTI  = { `RVI , 5'b00100 , 3'b010 , 7'b??????? };
 // SLTIU    -  I-type, Set less unsigned immidiate
 //          rd = rs1 < unsigned ( Immed ) ? '0 : '1
-parameter instr_cf SLTIU = { 5'b00100 , 3'b011 , 7'b??????? };
+parameter instr_cf SLTIU = { `RVI , 5'b00100 , 3'b011 , 7'b??????? };
 // XORI     -   I-type, Excluding Or operation with immidiate
 //          rd = rs1 ^ Immed
-parameter instr_cf XORI  = { 5'b00100 , 3'b100 , 7'b??????? };
+parameter instr_cf XORI  = { `RVI , 5'b00100 , 3'b100 , 7'b??????? };
 // ORI      -    I-type, Or operation with immidiate
 //          rd = rs1 | Immed
-parameter instr_cf ORI   = { 5'b00100 , 3'b110 , 7'b??????? };
+parameter instr_cf ORI   = { `RVI , 5'b00100 , 3'b110 , 7'b??????? };
 // ANDI     -   I-type, And operation with immidiate
 //          rd = rs1 & Immed
-parameter instr_cf ANDI  = { 5'b00100 , 3'b111 , 7'b??????? };
+parameter instr_cf ANDI  = { `RVI , 5'b00100 , 3'b111 , 7'b??????? };
 // SLLI     -   I-type, Shift Left Logical
 //          rd = rs1 << shamt
-parameter instr_cf SLLI  = { 5'b00100 , 3'b001 , 7'b0000000 };
+parameter instr_cf SLLI  = { `RVI , 5'b00100 , 3'b001 , 7'b0000000 };
 // SRLI     -   I-type, Shift Right Logical
 //          rd = rs1 >> shamt
-parameter instr_cf SRLI  = { 5'b00100 , 3'b101 , 7'b0000000 };
+parameter instr_cf SRLI  = { `RVI , 5'b00100 , 3'b101 , 7'b0000000 };
 // SRAI     -   I-type, Shift Right Arifmetical
 //          rd = rs1 >> shamt
-parameter instr_cf SRAI  = { 5'b00100 , 3'b101 , 7'b0100000 };
+parameter instr_cf SRAI  = { `RVI , 5'b00100 , 3'b101 , 7'b0100000 };
 // ADD      -    R-type, Adding with register
 //          rd = rs1 + rs2
-parameter instr_cf ADD   = { 5'b01100 , 3'b000 , 7'b0000000 };
+parameter instr_cf ADD   = { `RVI , 5'b01100 , 3'b000 , 7'b0000000 };
 // SUB      -    R-type, Adding with register
 //          rd = rs1 - rs2
-parameter instr_cf SUB   = { 5'b01100 , 3'b000 , 7'b0100000 };
+parameter instr_cf SUB   = { `RVI , 5'b01100 , 3'b000 , 7'b0100000 };
 // SLL      -    R-type, Set left logical
 //          rd = rs1 << rs2
-parameter instr_cf SLL   = { 5'b01100 , 3'b001 , 7'b0000000 };
+parameter instr_cf SLL   = { `RVI , 5'b01100 , 3'b001 , 7'b0000000 };
 // SLT      -    R-type, Set less
 //          rd = rs1 < rs2 ? '0 : '1
-parameter instr_cf SLT   = { 5'b01100 , 3'b010 , 7'b0000000 };
+parameter instr_cf SLT   = { `RVI , 5'b01100 , 3'b010 , 7'b0000000 };
 // SLTU     -   R-type, Set less unsigned
 //          rd = rs1 < rs2 ? '0 : '1
-parameter instr_cf SLTU  = { 5'b01100 , 3'b011 , 7'b0000000 };
+parameter instr_cf SLTU  = { `RVI , 5'b01100 , 3'b011 , 7'b0000000 };
 // XOR      -    R-type, Excluding Or two register
 //          rd = rs1 ^ rs2
-parameter instr_cf XOR   = { 5'b01100 , 3'b100 , 7'b0000000 };
+parameter instr_cf XOR   = { `RVI , 5'b01100 , 3'b100 , 7'b0000000 };
 // SRL      -    R-type, Set right logical
 //          rd = rs1 >> rs2
-parameter instr_cf SRL   = { 5'b01100 , 3'b101 , 7'b0000000 };
+parameter instr_cf SRL   = { `RVI , 5'b01100 , 3'b101 , 7'b0000000 };
 // SRA      -    R-type, Set right arifmetical
 //          rd = rs1 >> rs2
-parameter instr_cf SRA   = { 5'b01100 , 3'b101 , 7'b0100000 };
+parameter instr_cf SRA   = { `RVI , 5'b01100 , 3'b101 , 7'b0100000 };
 // OR       -     R-type, Or two register
 //          rd = rs1 | rs2
-parameter instr_cf OR    = { 5'b01100 , 3'b110 , 7'b0000000 };
+parameter instr_cf OR    = { `RVI , 5'b01100 , 3'b110 , 7'b0000000 };
 // AND      -    R-type, And two register
 //          rd = rs1 & rs2
-parameter instr_cf AND   = { 5'b01100 , 3'b111 , 7'b0000000 };
+parameter instr_cf AND   = { `RVI , 5'b01100 , 3'b111 , 7'b0000000 };
 // VER      -    For verification
-parameter instr_cf VER   = { 5'b????? , 3'b??? , 7'b??????? };
+parameter instr_cf VER   = { `RVI , 5'b????? , 3'b??? , 7'b??????? };
 `endif
 
+`ifndef ALU_TYPES
+`define ALU_TYPES
 //ALU commands
-`define ALU_ADD     'b000
-`define ALU_OR      'b001
-`define ALU_LUI     'b010
-`define ALU_SLLI    'b011
-`define ALU_SUB     'b100
+typedef enum logic [4 : 0]
+{
+    ALU_ADD,
+    ALU_OR, 
+    ALU_LUI,
+    ALU_SLL,
+    ALU_SUB,
+    ALU_AND
+} alu_types;
+`endif
 
-//sign imm select
-`define I_SEL       'b00        // for i type instruction
-`define U_SEL       'b01        // for u type instruction
-`define B_SEL       'b10        // for b type instruction
-`define S_SEL       'b11        // for s type instruction
-
+`ifndef IMM_SEL_TYPES
+`define IMM_SEL_TYPES
 //branch type constants
-`define B_NONE      'b0
-`define B_EQ_NEQ    'b1
+typedef enum logic [4 : 0]  // one hot
+{
+    //sign imm select
+    I_NONE      =   5'h00,
+    I_SEL       =   5'h01,       // for i type instruction
+    U_SEL       =   5'h02,       // for u type instruction
+    B_SEL       =   5'h04,       // for b type instruction
+    S_SEL       =   5'h08,       // for s type instruction
+    J_SEL       =   5'h10        // for s type instruction
+} imm_sel_types;
+`endif
 
+`ifndef BRANCH_TYPES
+`define BRANCH_TYPES
+//branch type constants
+typedef enum logic [2 : 0]  // one hot
+{
+    B_NONE      =   3'h0,
+    B_EQ_NEQ    =   3'h1,
+    B_GE_LT     =   3'h2,
+    B_GEU_LTU   =   3'h4
+} b_types;
+`endif
+
+`ifndef SRCB_TYPES
+`define SRCB_TYPES
 //srcB select constants
-`define SRCB_IMM    'b0
-`define SRCB_RD1    'b1
+typedef enum logic [0 : 0]
+{
+    SRCB_IMM    =   1'b0,
+    SRCB_RD1    =   1'b1
+} srcb_types;
+`endif
 
-//RF src constants
-`define RF_ALUR     'b0         // RF write data is ALU result
-`define RF_DMEM     'b1         // RF write data is data memory read data
+`ifndef RF_SRC_TYPES
+`define RF_SRC_TYPES
+//srcB select constants
+typedef enum logic [0 : 0]
+{
+    RF_ALUR     =   1'b0,   // RF write data is ALU result
+    RF_DMEM     =   1'b1    // RF write data is data memory read data
+} rf_src_types;
+`endif

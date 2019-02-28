@@ -47,6 +47,6 @@ module nf_i_fu
     nf_register_we_r    #( 1 ) reg_flush_id_ifu     ( clk, resetn, '1, '1, '0,      flush_id_ifu     );
 
     // creating program counter
-    nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ( ~ stall_if ) , '0, pc_i, pc_if      );
+    nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ( ~ stall_if ) , '0, pc_i, pc_if  );
 
 endmodule : nf_i_fu

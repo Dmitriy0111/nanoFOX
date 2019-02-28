@@ -36,16 +36,12 @@ module nf_cpu
     // program counter wires
     logic   [31 : 0]    pc_branch;
     logic   [0  : 0]    pc_src;
-    logic   [0  : 0]    branch_type;
+    logic   [2  : 0]    branch_type;
     // register file wires
     logic   [4  : 0]    wa3;
     logic   [31 : 0]    wd3;
     logic   [0  : 0]    we_rf;
     //hazard's wires
-    logic   [1  : 0]    rd1_bypass;
-    logic   [1  : 0]    rd2_bypass;
-    logic   [0  : 0]    cmp_d1_bypass;
-    logic   [0  : 0]    cmp_d2_bypass;
     logic   [31 : 0]    cmp_d1;
     logic   [31 : 0]    cmp_d2;
     logic   [0  : 0]    stall_if;
@@ -172,7 +168,7 @@ module nf_cpu
     logic   [4  : 0]    shamt_iexe;
     logic   [31 : 0]    result_iexe;
 
-    // data and address wires (not flushed)
+    // data and address wires (flushed)
     nf_register_we_clr  #( 5  ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , wa3_id      , wa3_iexe      );
     nf_register_we_clr  #( 5  ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra1_id      , ra1_iexe      );
     nf_register_we_clr  #( 5  ) ra2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra2_id      , ra2_iexe      );
@@ -251,21 +247,12 @@ module nf_cpu
     assign wa3   = wa3_iwb;
     assign wd3   = rf_src_iwb ? rd_dm_iwb : result_iwb;
     assign we_rf = we_rf_iwb;
+
     // creating hazard unit
-    nf_hazard_unit nf_hazard_unit_0
+    nf_hz_stall_unit nf_hz_stall_unit_0
     (
-        // forwarding/bypassing
-        .wa3_imem       ( wa3_imem      ),
-        .we_rf_imem     ( we_rf_imem    ),
-        .wa3_iwb        ( wa3_iwb       ),
-        .we_rf_iwb      ( we_rf_iwb     ),
-        .ra1_iexe       ( ra1_iexe      ),
-        .ra2_iexe       ( ra2_iexe      ),
-        .rd1_bypass     ( rd1_bypass    ),
-        .rd2_bypass     ( rd2_bypass    ),
-        .cmp_d1_bypass  ( cmp_d1_bypass ),
-        .cmp_d2_bypass  ( cmp_d2_bypass ),
         // lw hazard stall and flush
+        .we_rf_imem     ( we_rf_imem    ),
         .wa3_iexe       ( wa3_iexe      ),
         .we_rf_iexe     ( we_rf_iexe    ),
         .rf_src_iexe    ( rf_src_iexe   ),
@@ -284,25 +271,29 @@ module nf_cpu
         .rf_src_imem    ( rf_src_imem   )
     );
 
-    assign cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;
-    assign cmp_d2 = cmp_d2_bypass ? result_imem : rd2_id;
-
-    always_comb
-    begin
-        rd1_i_exu = rd1_iexe;
-        rd2_i_exu = rd2_iexe;
-        case( rd1_bypass )
-            `HU_BP_NONE : rd1_i_exu = rd1_iexe;
-            `HU_BP_MEM  : rd1_i_exu = result_imem;
-            `HU_BP_WB   : rd1_i_exu = result_iwb;
-            default     : ;
-        endcase
-        case( rd2_bypass )
-            `HU_BP_NONE : rd2_i_exu = rd2_iexe;
-            `HU_BP_MEM  : rd2_i_exu = result_imem;
-            `HU_BP_WB   : rd2_i_exu = result_iwb;
-            default     : ;
-        endcase
-    end
+    nf_hz_bypass_unit nf_hz_bypass_unit_0
+    (
+        // scan wires
+        .wa3_imem       ( wa3_imem      ),
+        .we_rf_imem     ( we_rf_imem    ),
+        .wa3_iwb        ( wa3_iwb       ),
+        .we_rf_iwb      ( we_rf_iwb     ),
+        .ra1_id         ( ra1_id        ),
+        .ra2_id         ( ra2_id        ),
+        .ra1_iexe       ( ra1_iexe      ),
+        .ra2_iexe       ( ra2_iexe      ),
+        // bypass inputs
+        .rd1_iexe       ( rd1_iexe      ),
+        .rd2_iexe       ( rd2_iexe      ),
+        .result_imem    ( result_imem   ),
+        .result_iwb     ( result_iwb    ),
+        .rd1_id         ( rd1_id        ),
+        .rd2_id         ( rd2_id        ),
+        // bypass outputs
+        .rd1_i_exu      ( rd1_i_exu     ),
+        .rd2_i_exu      ( rd2_i_exu     ),
+        .cmp_d1         ( cmp_d1        ),
+        .cmp_d2         ( cmp_d2        )
+    );
     
 endmodule : nf_cpu

@@ -23,13 +23,19 @@ module nf_reg_file
 
     logic [31 : 0] reg_file [`reg_number-1 : 0];
 
-    assign  rd1 = ( ra1 == '0 ) ? '0 : 
+    assign  rd1 = //( ra1 == '0 ) ? '0 : 
                   ( ( ra1 == wa3) ? wd3 : reg_file[ra1] );
-    assign  rd2 = ( ra2 == '0 ) ? '0 : 
+    assign  rd2 = //( ra2 == '0 ) ? '0 : 
                   ( ( ra2 == wa3) ? wd3 : reg_file[ra2] );
     
-    always_ff @(posedge clk)
+    always @(posedge clk)
         if( we3 )
             reg_file[wa3] <= wd3;
+
+    initial
+    begin
+        for( int i = 0; i < `reg_number; i = i + 1'b1 )
+            reg_file[i] = '0;
+    end
 
 endmodule : nf_reg_file

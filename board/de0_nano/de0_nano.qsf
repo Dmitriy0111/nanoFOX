@@ -423,7 +423,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_fu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_exu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_du.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hazard_unit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hz_stall_unit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hz_bypass_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_dp_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_pwm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_gpio.sv

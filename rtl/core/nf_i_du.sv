@@ -25,7 +25,7 @@ module nf_i_du
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
     output  logic   [0  : 0]    rf_src,     // decoded source register file signal
-    output  logic   [0  : 0]    branch_type // branch type
+    output  logic   [2  : 0]    branch_type // branch type
 );
 
     // sign extend wires
@@ -33,18 +33,20 @@ module nf_i_du
     logic   [19 : 0]    imm_data_u; // for U-type command's
     logic   [11 : 0]    imm_data_b; // for B-type command's
     logic   [11 : 0]    imm_data_s; // for S-type command's
+    logic   [19 : 0]    imm_data_j; // for J-type command's
     // control unit wires
     logic   [1  : 0]    instr_type;
     logic   [4  : 0]    opcode;
     logic   [2  : 0]    funct3;
     logic   [6  : 0]    funct7;
-    logic   [0  : 0]    eq_neq;
-    logic   [1  : 0]    imm_src;
+    logic   [0  : 0]    branch_hf;      // branch help field
+    logic   [4  : 0]    imm_src;
     // immediate data in instruction
     assign imm_data_i = instr[20 +: 12];
     assign imm_data_u = instr[12 +: 20];
     assign imm_data_b = { instr[31] , instr[7] , instr[25 +: 6] , instr[8 +: 4] };
     assign imm_data_s = { instr[25 +: 7] , instr[7 +: 5] };
+    assign imm_data_j = { instr[31] , instr[12 +: 8] , instr[20] , instr[21 +: 10] };
     // shamt value in instruction
     assign shamt = instr[20  +: 5];
     // register file wires
@@ -66,7 +68,7 @@ module nf_i_du
         .funct7         ( funct7                ),  // funct 7 field in instruction code
         .srcBsel        ( srcB_sel              ),  // for enable immediate data
         .branch_type    ( branch_type           ),  // for selecting srcB ALU
-        .eq_neq         ( eq_neq                ),  // for executing branch instructions
+        .branch_hf      ( branch_hf             ),  // branch help field
         .we_rf          ( we_rf                 ),  // equal and not equal control
         .we_dm          ( we_dm_en              ),  // write enable signal for register file
         .rf_src         ( rf_src                ),  // write enable signal for data memory and others
@@ -81,6 +83,7 @@ module nf_i_du
         .imm_data_u     ( imm_data_u            ),  // immediate data in u-type instruction
         .imm_data_b     ( imm_data_b            ),  // immediate data in b-type instruction
         .imm_data_s     ( imm_data_s            ),  // immediate data in s-type instruction
+        .imm_data_j     ( imm_data_j            ),  // immediate data in j-type instruction
         .imm_src        ( imm_src               ),  // selection immediate data input
         .imm_ex         ( ext_data              )   // extended immediate data
     );
@@ -89,9 +92,9 @@ module nf_i_du
     nf_branch_unit nf_branch_unit_0
     (
         .branch_type    ( branch_type           ),  // from control unit, '1 if branch instruction
-        .d0             ( rd1                   ),  // from control unit for beq and bne commands (equal and not equal)
-        .d1             ( rd2                   ),  // from register file (rd1)
-        .eq_neq         ( eq_neq                ),  // from register file (rd2)
+        .d0             ( rd1                   ),  // from register file (rd1)
+        .d1             ( rd2                   ),  // from register file (rd2)
+        .branch_hf      ( branch_hf             ),  // branch help field
         .pc_src         ( pc_src                )   // next program counter
     );
 
