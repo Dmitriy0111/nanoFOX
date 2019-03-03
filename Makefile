@@ -36,7 +36,8 @@ show_pwd:
 clean: \
 	sim_clean \
 	board_clean \
-	log_clean
+	log_clean \
+	prog_clean
 
 sim_all: \
 	sim_cmd 
@@ -91,19 +92,19 @@ PROG_NAME ?= 00_counter
 COMP_KEY  ?= -march=rv32i -mabi=ilp32
 
 prog_form:
-	rm -rfd program/$(PROG_NAME)/main
+	rm -rfd program/$(PROG_NAME)/main.o
 	echo @00000000 > program_file/program.hex
 	cat program_file/main.elf | sed -rn 's/\s+[a-f0-9]+:\s+([a-f0-9]*)\s+.*/\1/p' >> program_file/program.hex
 
 prog_compile_win:
-	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main $(COMP_KEY)
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main.o $(COMP_KEY)
 	mkdir -p program_file
-	riscv-none-embed-objdump -D -z program/$(PROG_NAME)/main > program_file/main.elf
+	riscv-none-embed-objdump -D -z -l program/$(PROG_NAME)/main > program_file/main.elf
 	
 prog_compile_lin:
 	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main $(COMP_KEY)
 	mkdir -p program_file
-	riscv64-unknown-elf-objdump -D -z program/$(PROG_NAME)/main > program_file/main.elf
+	riscv64-unknown-elf-objdump -D -z -l program/$(PROG_NAME)/main > program_file/main.elf
 
 prog_comp_win: \
 	prog_compile_win \
@@ -112,6 +113,17 @@ prog_comp_win: \
 prog_comp_lin: \
 	prog_compile_lin \
 	prog_form 
+
+test_comp_win:
+	mkdir -p program_file
+	riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o -march=rv32i -mabi=ilp32
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.c -c -o program_file/main.o -march=rv32i -mabi=ilp32
+	riscv-none-embed-ld -o program_file/main.elf -T program/startup/program.ld program_file/boot.o program_file/main.o -b elf32-littleriscv
+	riscv-none-embed-objdump -D -z program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objcopy program_file/main.elf program_file/main.bin -O binary
+
+prog_clean:
+	rm -rfd $(PWD)/program_file
 
 ########################################################
 # synthesis - default board only
