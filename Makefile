@@ -114,13 +114,24 @@ prog_comp_lin: \
 	prog_compile_lin \
 	prog_form 
 
-test_comp_win:
+test_comp_win_c:
 	mkdir -p program_file
 	riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o -march=rv32i -mabi=ilp32
 	riscv-none-embed-gcc program/$(PROG_NAME)/main.c -c -o program_file/main.o -march=rv32i -mabi=ilp32
-	riscv-none-embed-ld -o program_file/main.elf -T program/startup/program.ld program_file/boot.o program_file/main.o -b elf32-littleriscv
-	riscv-none-embed-objdump -D -z program_file/main.elf > program_file/main.lst
-	riscv-none-embed-objcopy program_file/main.elf program_file/main.bin -O binary
+	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o -b elf32-littleriscv
+	riscv-none-embed-objdump -x -s -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objcopy program_file/main.elf program_file/program.ihex -O ihex
+	python program/startup/ihex2hex.py
+
+test_comp_win_asm:
+	mkdir -p program_file
+	#riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o -march=rv32i -mabi=ilp32
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o -march=rv32i -mabi=ilp32
+	#riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o -b elf32-littleriscv
+	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o -b elf32-littleriscv
+	riscv-none-embed-objdump -x -s -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objcopy program_file/main.elf program_file/program.ihex -O ihex
+	python ihex2hex.py
 
 prog_clean:
 	rm -rfd $(PWD)/program_file

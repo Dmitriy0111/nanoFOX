@@ -22,24 +22,48 @@ module nf_ram
     output  logic   [31 : 0]    rd      // read data
 );
 
-    logic [31 : 0] ram [depth-1 : 0];
+    logic [7  : 0] bank_0 [depth-1 : 0];
+    logic [7  : 0] bank_1 [depth-1 : 0];
+    logic [7  : 0] bank_2 [depth-1 : 0];
+    logic [7  : 0] bank_3 [depth-1 : 0];
 
-    //always_ff @(posedge clk)
-    //begin : read_from_ran
-    //        rd <= ram[addr];  
-    //end
-    assign  rd = ram[addr];  
+    assign  rd[24 +: 8] = bank_3[addr];
+    assign  rd[16 +: 8] = bank_2[addr];
+    assign  rd[8  +: 8] = bank_1[addr];
+    assign  rd[0  +: 8] = bank_0[addr];
 
-    always_ff @(posedge clk)
-    begin : write_to_ram
+    always @(posedge clk)
+    begin : write_to_bank_3
         if( we )
-            ram[addr] <= wd;  
+            bank_3[addr] <= wd[24 +: 8]; 
+    end
+    
+    always @(posedge clk)
+    begin : write_to_bank_2
+        if( we )
+            bank_2[addr] <= wd[16 +: 8]; 
+    end
+    
+    always @(posedge clk)
+    begin : write_to_bank_1
+        if( we )
+            bank_1[addr] <= wd[8  +: 8]; 
+    end
+    
+    always @(posedge clk)
+    begin : write_to_bank_0
+        if( we )
+            bank_0[addr] <= wd[0  +: 8]; 
     end
 
     initial
     begin
         if( load )
-            $readmemh( path2file, ram );
+        begin
+            $readmemh( { path2file , "_3" , ".hex" } , bank_3 );
+            $readmemh( { path2file , "_2" , ".hex" } , bank_2 );
+            $readmemh( { path2file , "_1" , ".hex" } , bank_1 );
+            $readmemh( { path2file , "_0" , ".hex" } , bank_0 );
+        end
     end
-
 endmodule : nf_ram

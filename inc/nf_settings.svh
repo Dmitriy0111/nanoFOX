@@ -25,7 +25,7 @@
 //depth of ram module
 `define ram_depth  64
 //path to program file
-`define path2file "../../program_file/program.hex"
+`define path2file "../../program_file/program"
 //number of slave device's
 `define SLAVE_COUNT 4
 

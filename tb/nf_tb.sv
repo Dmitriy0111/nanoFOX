@@ -52,7 +52,7 @@ module nf_tb();
         .*
     );
 
-    defparam nf_top_0.nf_ram_i_d_0.path2file = "../program_file/program.hex";
+    defparam nf_top_0.nf_ram_i_d_0.path2file = "../program_file/program";
 
     // reset all register's in '0
     initial
