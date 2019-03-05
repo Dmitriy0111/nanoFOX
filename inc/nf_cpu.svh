@@ -173,8 +173,10 @@ typedef enum logic [4 : 0]
     ALU_OR, 
     ALU_LUI,
     ALU_SLL,
+    ALU_SRL,
     ALU_SUB,
-    ALU_AND
+    ALU_AND,
+    ALU_XOR
 } alu_types;
 `endif
 
@@ -189,19 +191,20 @@ typedef enum logic [4 : 0]  // one hot
     U_SEL       =   5'h02,       // for u type instruction
     B_SEL       =   5'h04,       // for b type instruction
     S_SEL       =   5'h08,       // for s type instruction
-    J_SEL       =   5'h10        // for s type instruction
+    J_SEL       =   5'h10        // for j type instruction
 } imm_sel_types;
 `endif
 
 `ifndef BRANCH_TYPES
 `define BRANCH_TYPES
 //branch type constants
-typedef enum logic [2 : 0]  // one hot
+typedef enum logic [3 : 0]  // one hot
 {
-    B_NONE      =   3'h0,
-    B_EQ_NEQ    =   3'h1,
-    B_GE_LT     =   3'h2,
-    B_GEU_LTU   =   3'h4
+    B_NONE      =   4'h0,
+    B_EQ_NEQ    =   4'h1,
+    B_GE_LT     =   4'h2,
+    B_GEU_LTU   =   4'h4,
+    B_UB        =   4'h8
 } b_types;
 `endif
 
@@ -211,8 +214,18 @@ typedef enum logic [2 : 0]  // one hot
 typedef enum logic [0 : 0]
 {
     SRCB_IMM    =   1'b0,
-    SRCB_RD1    =   1'b1
+    SRCB_RD2    =   1'b1
 } srcb_types;
+`endif
+
+`ifndef RES_TYPES
+`define RES_TYPES
+//result select constants
+typedef enum logic [0 : 0]
+{
+    RES_ALU     =   1'b0,
+    RES_UB      =   1'b1
+} res_types;
 `endif
 
 `ifndef RF_SRC_TYPES

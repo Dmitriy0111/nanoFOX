@@ -13,26 +13,26 @@
 module nf_hz_bypass_unit
 (
     // scan wires
-    input   logic   [4  : 0]    wa3_imem,
-    input   logic   [0  : 0]    we_rf_imem,
-    input   logic   [4  : 0]    wa3_iwb,
-    input   logic   [0  : 0]    we_rf_iwb,
-    input   logic   [4  : 0]    ra1_id,
-    input   logic   [4  : 0]    ra2_id,
-    input   logic   [4  : 0]    ra1_iexe,
-    input   logic   [4  : 0]    ra2_iexe,
+    input   logic   [4  : 0]    wa3_imem,       // write address from mem stage
+    input   logic   [0  : 0]    we_rf_imem,     // write enable register from mem stage
+    input   logic   [4  : 0]    wa3_iwb,        // write address from write back stage
+    input   logic   [0  : 0]    we_rf_iwb,      // write enable register from write back stage
+    input   logic   [4  : 0]    ra1_id,         // read address 1 from decode stage
+    input   logic   [4  : 0]    ra2_id,         // read address 2 from decode stage
+    input   logic   [4  : 0]    ra1_iexe,       // read address 1 from execution stage
+    input   logic   [4  : 0]    ra2_iexe,       // read address 2 from execution stage
     // bypass inputs
-    input   logic   [31 : 0]    rd1_iexe,
-    input   logic   [31 : 0]    rd2_iexe,
-    input   logic   [31 : 0]    result_imem,
-    input   logic   [31 : 0]    result_iwb,
-    input   logic   [31 : 0]    rd1_id,
-    input   logic   [31 : 0]    rd2_id,
+    input   logic   [31 : 0]    rd1_iexe,       // read data 1 from execution stage
+    input   logic   [31 : 0]    rd2_iexe,       // read data 2 from execution stage
+    input   logic   [31 : 0]    result_imem,    // ALU result from mem stage
+    input   logic   [31 : 0]    result_iwb,     // ALU result from write back stage
+    input   logic   [31 : 0]    rd1_id,         // read data 1 from decode stage
+    input   logic   [31 : 0]    rd2_id,         // read data 2 from decode stage
     // bypass outputs
-    output  logic   [31 : 0]    rd1_i_exu,
-    output  logic   [31 : 0]    rd2_i_exu,
-    output  logic   [31 : 0]    cmp_d1,
-    output  logic   [31 : 0]    cmp_d2
+    output  logic   [31 : 0]    rd1_i_exu,      // bypass data 1 for execution stage
+    output  logic   [31 : 0]    rd2_i_exu,      // bypass data 2 for execution stage
+    output  logic   [31 : 0]    cmp_d1,         // bypass data 1 for decode stage (branch)
+    output  logic   [31 : 0]    cmp_d2          // bypass data 2 for decode stage (branch)
 );
 
     logic   [1  : 0]    rd1_bypass;

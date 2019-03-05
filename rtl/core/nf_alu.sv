@@ -26,7 +26,9 @@ module nf_alu
             ALU_ADD     : begin result = srcA + srcB;       end
             ALU_SUB     : begin result = srcA - srcB;       end
             ALU_SLL     : begin result = srcA << shamt;     end
+            ALU_SRL     : begin result = srcA >> shamt;     end
             ALU_OR      : begin result = srcA | srcB;       end
+            ALU_XOR     : begin result = srcA ^ srcB;       end
             ALU_AND     : begin result = srcA & srcB;       end
             default     : ;
         endcase

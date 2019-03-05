@@ -14,6 +14,7 @@ module nf_i_du
     input   logic   [31 : 0]    instr,      // Instruction input
     output  logic   [31 : 0]    ext_data,   // decoded extended data
     output  logic   [0  : 0]    srcB_sel,   // decoded source B selection for ALU
+    output  logic   [0  : 0]    res_sel,    // for selecting result
     output  logic   [31 : 0]    ALU_Code,   // decoded ALU code
     output  logic   [4  : 0]    shamt,      // decoded for shift command's
     output  logic   [4  : 0]    ra1,        // decoded read address 1 for register file
@@ -25,7 +26,7 @@ module nf_i_du
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
     output  logic   [0  : 0]    rf_src,     // decoded source register file signal
-    output  logic   [2  : 0]    branch_type // branch type
+    output  logic   [3  : 0]    branch_type // branch type
 );
 
     // sign extend wires
@@ -66,13 +67,14 @@ module nf_i_du
         .opcode         ( opcode                ),  // operation code field in instruction code
         .funct3         ( funct3                ),  // funct 3 field in instruction code
         .funct7         ( funct7                ),  // funct 7 field in instruction code
-        .srcBsel        ( srcB_sel              ),  // for enable immediate data
-        .branch_type    ( branch_type           ),  // for selecting srcB ALU
+        .srcBsel        ( srcB_sel              ),  // for selecting srcB ALU
+        .res_sel        ( res_sel               ),  // for selecting result
+        .branch_type    ( branch_type           ),  // branch type 
         .branch_hf      ( branch_hf             ),  // branch help field
-        .we_rf          ( we_rf                 ),  // equal and not equal control
-        .we_dm          ( we_dm_en              ),  // write enable signal for register file
-        .rf_src         ( rf_src                ),  // write enable signal for data memory and others
-        .imm_src        ( imm_src               ),  // write data select for register file
+        .we_rf          ( we_rf                 ),  // write enable signal for register file
+        .we_dm          ( we_dm_en              ),  // write enable signal for data memory and others
+        .rf_src         ( rf_src                ),  // write data select for register file
+        .imm_src        ( imm_src               ),  // selection immediate data input
         .ALU_Code       ( ALU_Code              )   // output code for ALU unit
     );
 

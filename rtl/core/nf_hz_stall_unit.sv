@@ -12,24 +12,25 @@
 
 module nf_hz_stall_unit
 (
-    // lw hazard stall and flush
-    input   logic   [0 : 0]     we_rf_imem,
-    input   logic   [4 : 0]     wa3_iexe,
-    input   logic   [0 : 0]     we_rf_iexe,
-    input   logic   [0 : 0]     rf_src_iexe,
-    input   logic   [4 : 0]     ra1_id,
-    input   logic   [4 : 0]     ra2_id,
-    output  logic   [0 : 0]     stall_if,
-    output  logic   [0 : 0]     stall_id,
-    output  logic   [0 : 0]     stall_iexe,
-    output  logic   [0 : 0]     stall_imem,
-    output  logic   [0 : 0]     stall_iwb,
-    output  logic   [0 : 0]     flush_iexe,
-    input   logic   [2 : 0]     branch_type,
-    input   logic   [0 : 0]     we_dm_imem,
-    input   logic   [0 : 0]     req_ack_dm,
-    input   logic   [0 : 0]     req_ack_i,
-    input   logic   [0 : 0]     rf_src_imem
+    // scan wires
+    input   logic   [0 : 0]     we_rf_imem,     // write enable register from memory stage
+    input   logic   [4 : 0]     wa3_iexe,       // write address from execution stage
+    input   logic   [0 : 0]     we_rf_iexe,     // write enable register from memory stage
+    input   logic   [0 : 0]     rf_src_iexe,    // register source from execution stage
+    input   logic   [4 : 0]     ra1_id,         // read address 1 from decode stage
+    input   logic   [4 : 0]     ra2_id,         // read address 2 from decode stage
+    input   logic   [3 : 0]     branch_type,    // branch type
+    input   logic   [0 : 0]     we_dm_imem,     // write data memory from memory stage
+    input   logic   [0 : 0]     req_ack_dm,     // request acknowledge data memory
+    input   logic   [0 : 0]     req_ack_i,      // request acknowledge instruction
+    input   logic   [0 : 0]     rf_src_imem,    // register source from memory stage
+    // control wires
+    output  logic   [0 : 0]     stall_if,       // stall fetch stage
+    output  logic   [0 : 0]     stall_id,       // stall decode stage
+    output  logic   [0 : 0]     stall_iexe,     // stall execution stage
+    output  logic   [0 : 0]     stall_imem,     // stall memory stage
+    output  logic   [0 : 0]     stall_iwb,      // stall write back stage
+    output  logic   [0 : 0]     flush_iexe      // flush execution stage
 );
 
     logic   lw_stall;
