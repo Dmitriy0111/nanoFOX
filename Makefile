@@ -177,7 +177,7 @@ board_clean:
 	rm -rfd $(PWD)/synth_*
 
 ########################################################
-# log 
+# log dir
 
 log_clean:
 	rm -rfd $(PWD)/log/*

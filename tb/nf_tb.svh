@@ -11,3 +11,5 @@
 `define debug_lev0  0
 // enable logging
 `define log_en      1
+// enable html logging
+`define log_html    1

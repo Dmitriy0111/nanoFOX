@@ -12,17 +12,17 @@
 module nf_top
 (
     // clock and reset
-    input   logic   [0  : 0]                clk,        // clock input
-    input   logic   [0  : 0]                resetn,     // reset input
+    input   logic   [0  : 0]    clk,        // clock input
+    input   logic   [0  : 0]    resetn,     // reset input
     // GPIO side
-    input   logic   [7  : 0]                gpio_i_0,   // GPIO_0 input
-    output  logic   [7  : 0]                gpio_o_0,   // GPIO_0 output
-    output  logic   [7  : 0]                gpio_d_0,   // GPIO_0 direction
+    input   logic   [7  : 0]    gpio_i_0,   // GPIO_0 input
+    output  logic   [7  : 0]    gpio_o_0,   // GPIO_0 output
+    output  logic   [7  : 0]    gpio_d_0,   // GPIO_0 direction
     // PWM side
-    output  logic   [0  : 0]                pwm,        // PWM output signal
+    output  logic   [0  : 0]    pwm,        // PWM output signal
     // UART side
-    output  logic   [0  : 0]                uart_tx,    // UART tx wire
-    input   logic   [0  : 0]                uart_rx     // UART rx wire
+    output  logic   [0  : 0]    uart_tx,    // UART tx wire
+    input   logic   [0  : 0]    uart_rx     // UART rx wire
 );
 
     localparam          gpio_w  = `NF_GPIO_WIDTH,

@@ -66,4 +66,28 @@ module nf_ram
             $readmemh( { path2file , "_0" , ".hex" } , bank_0 );
         end
     end
+
+    // for verification
+    // synthesis translate_off
+    
+    logic [31 : 0] ram  [depth-1 : 0];
+
+    always @(posedge clk)
+    begin
+        if( we )
+            ram[addr][24 +: 8] <= wd[24 +: 8];
+        if( we )
+            ram[addr][16 +: 8] <= wd[16 +: 8];
+        if( we )
+            ram[addr][8  +: 8] <= wd[8  +: 8];
+        if( we )
+            ram[addr][0  +: 8] <= wd[0  +: 8];
+    end
+    
+    initial
+        if( load )
+            $readmemh( { path2file , ".hex" } , ram );
+            
+    // synthesis translate_on
+
 endmodule : nf_ram

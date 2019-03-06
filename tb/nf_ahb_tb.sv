@@ -75,8 +75,9 @@ module nf_ahb_tb();
     )
     nf_ahb_top_0
     (
-        .clk            ( clk           ),
-        .resetn         ( resetn        ),
+        // clock and reset
+        .clk            ( clk           ),      // clk
+        .resetn         ( resetn        ),      // resetn
         // AHB slaves side
         .haddr_s        ( haddr_s       ),      // AHB - Slave HADDR 
         .hwdata_s       ( hwdata_s      ),      // AHB - Slave HWDATA 
@@ -103,8 +104,9 @@ module nf_ahb_tb();
     )
     nf_ahb_gpio_a
     (
-        .hclk           ( clk           ),
-        .hresetn        ( resetn        ),
+        // clock and reset
+        .hclk           ( clk           ),      // hclk
+        .hresetn        ( resetn        ),      // hresetn
         // Slaves side
         .haddr_s        ( haddr_s   [0] ),      // AHB - Slave HADDR
         .hwdata_s       ( hwdata_s  [0] ),      // AHB - Slave HWDATA
@@ -128,8 +130,9 @@ module nf_ahb_tb();
     )
     nf_ahb_gpio_b
     (
-        .hclk           ( clk           ),
-        .hresetn        ( resetn        ),
+        // clock and reset
+        .hclk           ( clk           ),      // hclk
+        .hresetn        ( resetn        ),      // hresetn
         // Slaves side
         .haddr_s        ( haddr_s   [1] ),      // AHB - Slave HADDR
         .hwdata_s       ( hwdata_s  [1] ),      // AHB - Slave HWDATA
@@ -153,8 +156,9 @@ module nf_ahb_tb();
     )
     nf_ahb_pwm_0
     (
-        .hclk           ( clk           ),
-        .hresetn        ( resetn        ),
+        // clock and reset
+        .hclk           ( clk           ),      // hclk
+        .hresetn        ( resetn        ),      // hresetn
         // Slaves side
         .haddr_s        ( haddr_s   [2] ),      // AHB - Slave HADDR
         .hwdata_s       ( hwdata_s  [2] ),      // AHB - Slave HWDATA

@@ -120,7 +120,7 @@ module nf_cpu
     assign pc_branch  = pc_id + ( ext_data_id << 1 ) - 4;
 
     // creating register file
-    nf_reg_file reg_file_0
+    nf_reg_file nf_reg_file_0
     (
         .clk            ( clk               ),
         .ra1            ( ra1_id            ),  // read address 1
@@ -152,9 +152,11 @@ module nf_cpu
         .branch_type    ( branch_type       )   // branch type
     );
 
-    // for debug
+    // for verification
+    // synthesis translate_off
     logic   [31 : 0]    instr_iexe;
     nf_register_we_clr  #( 32 ) instr_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , instr_id    , instr_iexe    );
+    // synthesis translate_on
 
     logic   [4  : 0]    wa3_iexe;
     logic   [4  : 0]    ra1_iexe;
@@ -164,6 +166,7 @@ module nf_cpu
     logic   [31 : 0]    rd2_iexe;
     logic   [31 : 0]    pc_iexe;
     logic   [0  : 0]    srcB_sel_iexe;
+    logic   [0  : 0]    res_sel_iexe;
     logic   [0  : 0]    we_rf_iexe;
     logic   [0  : 0]    we_dm_iexe;
     logic   [0  : 0]    rf_src_iexe;
@@ -208,9 +211,11 @@ module nf_cpu
     /*********************************************
     **       Instruction memory stage           **
     *********************************************/
-    //for debug
+    // for verification
+    // synthesis translate_off
     logic   [31 : 0]    instr_imem;
     nf_register_we  #( 32 ) instr_iexe_imem     ( clk , resetn , ~ stall_imem , instr_iexe , instr_imem  );
+    // synthesis translate_on
 
     logic   [31 : 0]    result_imem;
     logic   [0  : 0]    we_dm_imem;
@@ -235,9 +240,11 @@ module nf_cpu
     **       Instruction write back stage       **
     *********************************************/
 
-    // for debug
+    // for verification
+    // synthesis translate_off
     logic   [31 : 0]    instr_iwb;
     nf_register_we  #( 32 ) instr_imem_iwb  ( clk , resetn , ~ stall_iwb , instr_imem  , instr_iwb  );
+    // synthesis translate_on
 
     logic   [4  : 0]    wa3_iwb;
     logic   [0  : 0]    we_rf_iwb;
