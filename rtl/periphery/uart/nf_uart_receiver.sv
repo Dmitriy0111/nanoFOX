@@ -61,9 +61,10 @@ module nf_uart_receiver
     begin
         if( !resetn )
         begin
-            counter <= '0;
-            bit_counter <= '0;
+            counter  <= '0;
+            int_reg  <= '0;
             rx_valid <= '0;
+            bit_counter <= '0;
         end
         else
         begin

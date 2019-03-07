@@ -35,7 +35,7 @@ module nf_tb();
     bit     [31 : 0]    cycle_counter;
 
     logic   [31 : 0]    reg_list_local   [31 : 0];
-    logic               reg_list_changed [31 : 0];
+    logic   [1  : 0]    reg_list_changed [31 : 0];
 
     integer             log;
     integer             p_html;
@@ -45,13 +45,15 @@ module nf_tb();
     string  instruction_iexe_stage;
     string  instruction_imem_stage;
     string  instruction_iwb_stage;
-
+    // string for debug_lev0
     string  instr_sep_s_id_stage;
     string  instr_sep_s_iexe_stage;
     string  instr_sep_s_imem_stage;
     string  instr_sep_s_iwb_stage;
-
+    // string for txt logging
     string  reg_list;
+    // string for txt, html and terminal logging
+    string  log_str = "";
 
     nf_top nf_top_0
     (   
@@ -76,10 +78,10 @@ module nf_tb();
         .*
     );
     */
-
+    // overload path to program file
     defparam nf_top_0.nf_ram_i_d_0.path2file = "../program_file/program";
 
-    // reset all register's in '0
+    // reset all registers in '0
     initial
         for( int i=0 ; i<32 ; i++ )
         begin
@@ -111,146 +113,150 @@ module nf_tb();
             log = $fopen("../log/.log","w");
             if( !log )
                 begin
-                    $display("Error! File not open.");
+                    $display("Error! File .log not open.");
                     $stop;
                 end
         end
         if( `log_html )
             p_html = $fopen("../log/log.html","w");
+            if( !p_html )
+                begin
+                    $display("Error! File log.html not open.");
+                    $stop;
+                end
         forever
         begin
             @( posedge nf_top_0.clk );
             if( resetn )
             begin
-                $display("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                $write("cycle = %d, pc = %h ", cycle_counter,nf_top_0.nf_cpu_0.addr_i );
-                $display("%t", $time);
-                $write("Instruction decode stage        : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage     );
-                if( `debug_lev0 )
-                    $write("                                  %s \n" , instr_sep_s_id_stage     );
-                $write("Instruction execute stage       : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage   );
-                if( `debug_lev0 )
-                    $write("                                  %s \n" , instr_sep_s_iexe_stage   );
-                $write("Instruction memory stage        : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage   );
-                if( `debug_lev0 )
-                    $write("                                  %s \n" , instr_sep_s_imem_stage   );
-                $write("Instruction write back stage    : ");
-                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage  , instr_sep_s_iwb_stage    );
-                if( `debug_lev0 )
-                    $write("                                  %s \n" , instr_sep_s_iwb_stage    );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage   );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage );
+                pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage  , instr_sep_s_iwb_stage  );
+                // form title
+                log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+                log_str = { log_str , $psprintf("cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.addr_i     ) };
+                log_str = { log_str , $psprintf("%t\n", $time                                                         ) };
+                // form instruction decode stage output
+                log_str = { log_str , "Instruction decode stage        : "                                              };
+                log_str = { log_str , $psprintf("%s\n", instruction_id_stage                                          ) };
+                if( `debug_lev0 ) 
+                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_id_stage   ) };
+                // form instruction execution stage output
+                log_str = { log_str , "Instruction execute stage       : "                                              };
+                log_str = { log_str , $psprintf("%s\n", instruction_iexe_stage                                        ) };
+                if( `debug_lev0 ) 
+                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_iexe_stage ) };
+                // form instruction memory stage output
+                log_str = { log_str , "Instruction memory stage        : "                                              };
+                log_str = { log_str , $psprintf("%s\n", instruction_imem_stage                                        ) };
+                if( `debug_lev0 ) 
+                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_imem_stage ) };
+                // form instruction write back stage output
+                log_str = { log_str , "Instruction write back stage    : "                                              };
+                log_str = { log_str , $psprintf("%s\n", instruction_iwb_stage                                         ) };
+                if( `debug_lev0 ) 
+                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_iwb_stage  ) };
+                // write debug info in simulator terminal
+                $write(log_str);
+                // write debug info in txt log file
                 if( `log_en )
                 begin
-                    $fwrite(log,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-                    $fwrite(log,"cycle = %d, pc = 0x%h \n", cycle_counter, nf_top_0.nf_cpu_0.addr_i);
-                    $fwrite(log,"Instruction decode stage        : ");
-                    $fwrite(log,"%s\n", instruction_id_stage);
-                    if( `debug_lev0 )
-                    $fwrite(log,"                                  %s \n" , instr_sep_s_id_stage     );
-                    $fwrite(log,"Instruction execute stage       : ");
-                    $fwrite(log,"%s\n", instruction_iexe_stage);
-                    if( `debug_lev0 )
-                    $fwrite(log,"                                  %s \n" , instr_sep_s_iexe_stage   );
-                    $fwrite(log,"Instruction memory stage        : ");
-                    $fwrite(log,"%s\n", instruction_imem_stage);
-                    if( `debug_lev0 )
-                    $fwrite(log,"                                  %s \n" , instr_sep_s_imem_stage   );
-                    $fwrite(log,"Instruction write back stage    : ");
-                    $fwrite(log,"%s\n", instruction_iwb_stage);
-                    if( `debug_lev0 )
-                    $fwrite(log,"                                  %s \n" , instr_sep_s_iwb_stage    );
+                    $fwrite( log, log_str );
+                    pars_reg_list();
+                    $fwrite( log,"register list :\n%s\n" , reg_list );
                 end
-                pars_reg_list();
-                write_info_html();
+                // write debug info in html log file
                 if( `log_html )
-                    $fwrite(log,"register list :\n%s\n" , reg_list );
+                    write_info_html();
+                // increment cycle counter
                 cycle_counter++;
-            end
-            if( cycle_counter == repeat_cycles )
-            begin
-                $stop;
+                if( cycle_counter == repeat_cycles )
+                    $stop;
             end
         end
     end
 
     task pars_reg_list();
 
-        automatic logic  [4  : 0] reg_addr  = '0;
+        integer reg_addr;
+        reg_addr = '0;
 
         reg_list = "";
         do
         begin
-            reg_list =  {    
+            reg_list =  {
                             reg_list , 
-                            $psprintf( "%5s", pars_instr_0.reg_list[reg_addr] ) , 
+                            $psprintf("%5s", pars_instr_0.reg_list[reg_addr] ) , 
                             $psprintf(" = 0x%h ", nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[reg_addr] ) , 
                             reg_addr[0 +: 2] == 3 ? "\n" : "" 
                         };
             reg_addr++;
         end
-        while( reg_addr != '0 );
+        while( reg_addr != 32 );
 
     endtask : pars_reg_list
 
     task write_info_html();
 
-        integer tr_i;
-        integer td_i;
+        integer i;
+        i = 0;
 
-        tr_i = 0;
-        td_i = 0;
+        for( i = 0 ; i < 32 ; i++ )
+        begin
+            reg_list_changed[i] =   reg_list_local[i] == nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[i] ? 2'b00 : 2'b01;
+            if( $isunknown( | nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[i] ) )
+                reg_list_changed[i] = 2'b10;
+            reg_list_local[i]   =   reg_list_changed[i] == 2'b00 ? 
+                                    reg_list_local[i] : 
+                                    nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[i];
+        end
         $fwrite(p_html,"%s", "<font size = \"4\">");
         $fwrite(p_html,"<pre>");
-        $fwrite(p_html,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-        $fwrite(p_html,"cycle = %d, pc = 0x%h \n", cycle_counter, nf_top_0.nf_cpu_0.addr_i);
-        $fwrite(p_html,"Instruction decode stage        : ");
-        $fwrite(p_html,"%s\n", instruction_id_stage);
-        if( `debug_lev0 )
-            $fwrite(p_html,"                                  %s \n" , instr_sep_s_id_stage     );
-        $fwrite(p_html,"Instruction execute stage       : ");
-        $fwrite(p_html,"%s\n", instruction_iexe_stage);
-        if( `debug_lev0 )
-            $fwrite(p_html,"                                  %s \n" , instr_sep_s_iexe_stage   );
-        $fwrite(p_html,"Instruction memory stage        : ");
-        $fwrite(p_html,"%s\n", instruction_imem_stage);
-        if( `debug_lev0 )
-            $fwrite(p_html,"                                  %s \n" , instr_sep_s_imem_stage   );
-        $fwrite(p_html,"Instruction write back stage    : ");
-        $fwrite(p_html,"%s\n", instruction_iwb_stage);
-        if( `debug_lev0 )
-            $fwrite(p_html,"                                  %s \n" , instr_sep_s_iwb_stage    );
+        $fwrite(p_html, log_str );
         $fwrite(p_html,"</pre>\n");
+
+        print_html_table( 8 , 4 , pars_instr_0.reg_list , reg_list_local , reg_list_changed );
+
+        $fwrite(p_html,"%s", "</font>");
+
+    endtask : write_info_html
+        
+    task print_html_table( integer row, integer col, string reg_list_ [0 : 31], logic [31 : 0] table_[31 : 0], logic [1 : 0] table_c_[31 : 0] );
+
+        integer tr_i;
+        integer td_i;
+        string  reg_value;
+        reg_value = "";
+        tr_i = 0;
+        td_i = 0;
+
         $fwrite(p_html,"<table border=\"1\">\n");
+
         do
         begin
             $fwrite(p_html,"    <tr>\n");
             do
             begin
-                reg_list_changed[ tr_i * 4 + td_i ] = reg_list_local[ tr_i * 4 + td_i ] == nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[tr_i * 4 + td_i];
-                reg_list_local[ tr_i * 4 + td_i ]   = reg_list_local[ tr_i * 4 + td_i ] == nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[tr_i * 4 + td_i] ? 
-                                                      reg_list_local[tr_i * 4 + td_i] : 
-                                                      nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[tr_i * 4 + td_i];
-                $fwrite(p_html,"        <td %s>", reg_list_changed[ tr_i * 4 + td_i ] ? "bgcolor = \"white\"":"bgcolor = \"green\"");
+                $fwrite(p_html,"        <td %s>",   table_c_[ tr_i * col + td_i ] == 2'b00 ? "bgcolor = \"white\"" : ( 
+                                                    table_c_[ tr_i * col + td_i ] == 2'b01 ? "bgcolor = \"green\"" : 
+                                                                                             "bgcolor = \"red\"" ) );
                 $fwrite(p_html,"<pre>");
-                //$fwrite(p_html,"%s", "<font size = \"4\">");
-                $fwrite(p_html," %5s 0x%h ", pars_instr_0.reg_list[ tr_i * 4 + td_i ], reg_list_local[tr_i * 4 + td_i]);
-                //$fwrite(p_html,"%s", "</font>" );
+                reg_value = $psprintf("%h",table_[ tr_i * col + td_i ]);
+                $fwrite(p_html," %5s 0x%H ", reg_list_[ tr_i * col + td_i ], reg_value.toupper() );
                 $fwrite(p_html,"</pre>");
                 $fwrite(p_html,"</td>\n");
-                reg_list_changed[ tr_i * 4 + td_i ] = '0;
                 td_i++;
             end
-            while( td_i != 4);
+            while( td_i != col );
             $fwrite(p_html,"    </tr>\n");
             tr_i++;
             td_i = 0;
         end
-        while( tr_i != 8);
-        $fwrite(p_html,"</table>\n");
-        $fwrite(p_html,"%s", "</font>");
+        while( tr_i != row );
 
-    endtask : write_info_html
+        $fwrite(p_html,"</table>\n");
+
+    endtask : print_html_table
 
 endmodule : nf_tb

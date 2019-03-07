@@ -11,8 +11,9 @@ module nf_pwm
 #(
     parameter                   pwm_width = 8
 )(
-    input   logic   [0  : 0]    clk,
-    input   logic   [0  : 0]    resetn,
+    // clock and reset
+    input   logic   [0  : 0]    clk,        // clk  
+    input   logic   [0  : 0]    resetn,     // resetn
     // bus side
     input   logic   [31 : 0]    addr,       // address
     input   logic   [0  : 0]    we,         // write enable

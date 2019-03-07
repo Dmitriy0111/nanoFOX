@@ -270,7 +270,7 @@ module nf_top
     )
     nf_ram_i_d_0
     (
-        .clk            ( clk           ),
+        .clk            ( clk           ),      // clk
         .addr           ( ram_addr >> 2 ),      // addr memory (world addressable)
         .we             ( ram_we        ),      // write enable
         .wd             ( ram_wd        ),      // write data

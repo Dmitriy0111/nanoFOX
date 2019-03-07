@@ -61,11 +61,11 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hz_stall_unit.s
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hz_bypass_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_dp_ram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_ram.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_pwm.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_gpio.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_transmitter.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_receiver.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_uart_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/pwm/nf_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/gpio/nf_gpio.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/uart/nf_uart_transmitter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/uart/nf_uart_receiver.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/uart/nf_uart_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_cdc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb2core.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/ahb/nf_ahb_top.sv
