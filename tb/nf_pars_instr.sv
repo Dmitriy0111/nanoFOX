@@ -1,5 +1,5 @@
 /*
-*  File            :   pars_instr.sv
+*  File            :   nf_pars_instr.sv
 *  Autor           :   Vlasov D.V.
 *  Data            :   2018.11.23
 *  Language        :   SystemVerilog
@@ -10,44 +10,11 @@
 `include "nf_tb.svh"
 `include "../inc/nf_cpu.svh" 
 
-class pars_instr;
+import   NF_BTC::*;
 
-    static string reg_list [0  : 31] =  {
-                                            "zero",
-                                            "ra",
-                                            "sp",
-                                            "gp",
-                                            "tp",
-                                            "t0",
-                                            "t1",
-                                            "t2",
-                                            "s0/fp",
-                                            "s1",
-                                            "a0",
-                                            "a1",
-                                            "a2",
-                                            "a3",
-                                            "a4",
-                                            "a5",
-                                            "a6",
-                                            "a7",
-                                            "s2",
-                                            "s3",
-                                            "s4",
-                                            "s5",
-                                            "s6",
-                                            "s7",
-                                            "s8",
-                                            "s9",
-                                            "s10",
-                                            "s11",
-                                            "t3",
-                                            "t4",
-                                            "t5",
-                                            "t6"
-                                        };
+class nf_pars_instr ;
 
-    class insrt_cf_name;
+    class insrt_cf_name extends nf_bt_class;
     
         string      instr_name;
         instr_cf    instr_cf_;
@@ -235,9 +202,7 @@ class pars_instr;
             else if( instr == '0 )
                 instr_sep = $psprintf("Flushed : %b", instr );
         end
-        
-        $display("%s", instruction_s);
 
     endtask : pars
 
-endclass : pars_instr
+endclass : nf_pars_instr
