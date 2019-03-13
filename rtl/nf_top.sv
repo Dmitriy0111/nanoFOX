@@ -264,7 +264,7 @@ module nf_top
     //creating one instruction/data memory
     nf_ram
     #(
-        .depth          ( 256           ),
+        .depth          ( 'h400         ),
         .load           ( 1             ),
         .path2file      ( `path2file    )
     )

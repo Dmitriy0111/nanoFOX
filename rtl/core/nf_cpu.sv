@@ -69,11 +69,11 @@ module nf_cpu
     nf_i_fu nf_i_fu_0
     (
         // clock and reset
-        .clk            ( clk               ),
-        .resetn         ( resetn            ),
+        .clk            ( clk               ),  // clock
+        .resetn         ( resetn            ),  // reset
         // instruction ram
-        .req_ack_i      ( req_ack_i         ),
-        .req_i          ( req_i             ),
+        .req_ack_i      ( req_ack_i         ),  // request instruction acknowledge
+        .req_i          ( req_i             ),  // request instruction
         // instruction fetch  stage
         .pc_if          ( pc_if             ),  // program counter from fetch stage
         // program counter inputs
@@ -122,7 +122,7 @@ module nf_cpu
     // creating register file
     nf_reg_file nf_reg_file_0
     (
-        .clk            ( clk               ),
+        .clk            ( clk               ),  // clock
         .ra1            ( ra1_id            ),  // read address 1
         .rd1            ( rd1_id            ),  // read data 1
         .ra2            ( ra2_id            ),  // read address 2
@@ -262,7 +262,7 @@ module nf_cpu
     assign wd3   = rf_src_iwb ? rd_dm_iwb : result_iwb;
     assign we_rf = we_rf_iwb;
 
-    // creating hazard unit
+    // creating stall and flush unit (hazard)
     nf_hz_stall_unit nf_hz_stall_unit_0
     (   
         // scan wires
@@ -285,7 +285,7 @@ module nf_cpu
         .stall_iwb      ( stall_iwb     ),  // stall write back stage
         .flush_iexe     ( flush_iexe    )   // flush execution stage
     );
-
+    // creating bypass unit (hazard)
     nf_hz_bypass_unit nf_hz_bypass_unit_0
     (
         // scan wires

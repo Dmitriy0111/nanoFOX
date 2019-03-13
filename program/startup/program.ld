@@ -1,6 +1,6 @@
 stack_words = 64;
 stack_size  = 4 * stack_words;
-ram_depth   = 256;
+ram_depth   = 0x400;
 ram_size    = 4 * ram_depth;
 
 MEMORY

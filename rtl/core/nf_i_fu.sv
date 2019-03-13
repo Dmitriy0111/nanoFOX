@@ -12,11 +12,11 @@
 module nf_i_fu
 (
     // clock and reset
-    input   logic   [0  : 0]    clk,
-    input   logic   [0  : 0]    resetn,
+    input   logic   [0  : 0]    clk,        // clock
+    input   logic   [0  : 0]    resetn,     // reset
     // instruction ram
-    input   logic   [0  : 0]    req_ack_i,
-    output  logic   [0  : 0]    req_i,
+    input   logic   [0  : 0]    req_ack_i,  // request instruction acknowledge
+    output  logic   [0  : 0]    req_i,      // request instruction
     // instruction fetch stage
     output  logic   [31 : 0]    pc_if,      // program counter from fetch stage
     // program counter inputs
