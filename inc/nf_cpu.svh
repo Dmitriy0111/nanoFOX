@@ -39,129 +39,130 @@
 
 typedef struct packed
 {
-    logic   [1 : 0] IT;
-    logic   [4 : 0] OP;
-    logic   [2 : 0] F3;
-    logic   [6 : 0] F7;
-} instr_cf;                 // instruction type, opcode, function3, function7 fields
+    logic   [39 : 0]    I_NAME; // instruction name
+    logic   [1  : 0]    IT;     // instruction type
+    logic   [4  : 0]    OP;     // instruction opcode
+    logic   [2  : 0]    F3;     // instruction function field 3
+    logic   [6  : 0]    F7;     // instruction function field 7
+} instr_cf;                     // instruction typedef
 
 `ifndef COMMANDS
 `define COMMANDS
 // LUI      -    Load Upper Immediate
 //          rd = Immed << 12
-parameter instr_cf LUI   = { `RVI , 5'b01101 , 3'b??? , 7'b??????? };
+parameter instr_cf LUI   = { "  LUI",`RVI , 5'b01101 , 3'b??? , 7'b??????? };
 // AUIPC    -  U-type, Add upper immediate to PC
 //          rd = PC + Immed << 12
-parameter instr_cf AUIPC = { `RVI , 5'b00101 , 3'b??? , 7'b??????? };
+parameter instr_cf AUIPC = { "AUIPC",`RVI , 5'b00101 , 3'b??? , 7'b??????? };
 // JAL      -   J-type, Jump and load PC + 4 in register
 //          rd = PC + 4
 //          PC = Immed << 12
-parameter instr_cf JAL   = { `RVI , 5'b11011 , 3'b??? , 7'b??????? };
+parameter instr_cf JAL   = { "  JAL",`RVI , 5'b11011 , 3'b??? , 7'b??????? };
 // JAL      -    J-type, Jump and load PC + 4 in register
 //          rd = PC + 4
 //          PC = Immed << 12
-parameter instr_cf JALR  = { `RVI , 5'b11001 , 3'b??? , 7'b??????? };
+parameter instr_cf JALR  = { " JALR",`RVI , 5'b11001 , 3'b??? , 7'b??????? };
 // BEQ      -    B-type, Branch if equal
 // 
-parameter instr_cf BEQ   = { `RVI , 5'b11000 , 3'b000 , 7'b??????? };
+parameter instr_cf BEQ   = { "  BEQ",`RVI , 5'b11000 , 3'b000 , 7'b??????? };
 // BNE      -    B-type, Branch if not equal
 // 
-parameter instr_cf BNE   = { `RVI , 5'b11000 , 3'b001 , 7'b??????? };
+parameter instr_cf BNE   = { "  BNE",`RVI , 5'b11000 , 3'b001 , 7'b??????? };
 // BLT      -    B-type, Branch if less
 // 
-parameter instr_cf BLT   = { `RVI , 5'b11000 , 3'b100 , 7'b??????? };
+parameter instr_cf BLT   = { "  BLT",`RVI , 5'b11000 , 3'b100 , 7'b??????? };
 // BGE      -    B-type, Branch if greater
 // 
-parameter instr_cf BGE   = { `RVI , 5'b11000 , 3'b101 , 7'b??????? };
+parameter instr_cf BGE   = { "  BGE",`RVI , 5'b11000 , 3'b101 , 7'b??????? };
 // BLTU     -   B-type, Branch if less unsigned
 // 
-parameter instr_cf BLTU  = { `RVI , 5'b11000 , 3'b110 , 7'b??????? };
+parameter instr_cf BLTU  = { " BLTU",`RVI , 5'b11000 , 3'b110 , 7'b??????? };
 // BGEU     -   B-type, Branch if greater unsigned
 //
-parameter instr_cf BGEU  = { `RVI , 5'b11000 , 3'b111 , 7'b??????? };
+parameter instr_cf BGEU  = { " BGEU",`RVI , 5'b11000 , 3'b111 , 7'b??????? };
 // LB       -     I-type, Load byte
 //          rd = mem[addr]
-parameter instr_cf LB    = { `RVI , 5'b00000 , 3'b000 , 7'b??????? };
+parameter instr_cf LB    = { "   LB",`RVI , 5'b00000 , 3'b000 , 7'b??????? };
 // LH       -     I-type, Load half word
 //          rd = mem[addr]
-parameter instr_cf LH    = { `RVI , 5'b00000 , 3'b001 , 7'b??????? };
+parameter instr_cf LH    = { "   LH",`RVI , 5'b00000 , 3'b001 , 7'b??????? };
 // LW       -     I-type, Load word
 //          rd = mem[addr]
-parameter instr_cf LW    = { `RVI , 5'b00000 , 3'b010 , 7'b??????? };
+parameter instr_cf LW    = { "   LW",`RVI , 5'b00000 , 3'b010 , 7'b??????? };
 // LBU      -    I-type, Load byte unsigned
 //          rd = mem[addr]
-parameter instr_cf LBU   = { `RVI , 5'b00000 , 3'b100 , 7'b??????? };
+parameter instr_cf LBU   = { "  LBU",`RVI , 5'b00000 , 3'b100 , 7'b??????? };
 // LHU      -    I-type, Load half word unsigned
 //          rd = mem[addr]
-parameter instr_cf LHU   = { `RVI , 5'b00000 , 3'b101 , 7'b??????? };
+parameter instr_cf LHU   = { "  LHU",`RVI , 5'b00000 , 3'b101 , 7'b??????? };
 // SB       -     S-type, Store byte
 //          mem[addr] = rs1
-parameter instr_cf SB    = { `RVI , 5'b01000 , 3'b000 , 7'b??????? };
+parameter instr_cf SB    = { "   SB",`RVI , 5'b01000 , 3'b000 , 7'b??????? };
 // SH       -     S-type, Store half word
 //          mem[addr] = rs1
-parameter instr_cf SH    = { `RVI , 5'b01000 , 3'b001 , 7'b??????? };
+parameter instr_cf SH    = { "   SH",`RVI , 5'b01000 , 3'b001 , 7'b??????? };
 // SW       -     S-type, Store word
 //          mem[addr] = rs1
-parameter instr_cf SW    = { `RVI , 5'b01000 , 3'b010 , 7'b??????? };
+parameter instr_cf SW    = { "   SW",`RVI , 5'b01000 , 3'b010 , 7'b??????? };
 // ADDI     -   I-type, Adding with immidiate
 //          rd = rs1 + Immed
-parameter instr_cf ADDI  = { `RVI , 5'b00100 , 3'b000 , 7'b??????? };
+parameter instr_cf ADDI  = { " ADDI",`RVI , 5'b00100 , 3'b000 , 7'b??????? };
 // SLTI     -   I-type, Set less immidiate
 //          rd = rs1 < signed   ( Immed ) ? '0 : '1
-parameter instr_cf SLTI  = { `RVI , 5'b00100 , 3'b010 , 7'b??????? };
+parameter instr_cf SLTI  = { " SLTI",`RVI , 5'b00100 , 3'b010 , 7'b??????? };
 // SLTIU    -  I-type, Set less unsigned immidiate
 //          rd = rs1 < unsigned ( Immed ) ? '0 : '1
-parameter instr_cf SLTIU = { `RVI , 5'b00100 , 3'b011 , 7'b??????? };
+parameter instr_cf SLTIU = { "SLTIU",`RVI , 5'b00100 , 3'b011 , 7'b??????? };
 // XORI     -   I-type, Excluding Or operation with immidiate
 //          rd = rs1 ^ Immed
-parameter instr_cf XORI  = { `RVI , 5'b00100 , 3'b100 , 7'b??????? };
+parameter instr_cf XORI  = { " XORI",`RVI , 5'b00100 , 3'b100 , 7'b??????? };
 // ORI      -    I-type, Or operation with immidiate
 //          rd = rs1 | Immed
-parameter instr_cf ORI   = { `RVI , 5'b00100 , 3'b110 , 7'b??????? };
+parameter instr_cf ORI   = { "  ORI",`RVI , 5'b00100 , 3'b110 , 7'b??????? };
 // ANDI     -   I-type, And operation with immidiate
 //          rd = rs1 & Immed
-parameter instr_cf ANDI  = { `RVI , 5'b00100 , 3'b111 , 7'b??????? };
+parameter instr_cf ANDI  = { " ANDI",`RVI , 5'b00100 , 3'b111 , 7'b??????? };
 // SLLI     -   I-type, Shift Left Logical
 //          rd = rs1 << shamt
-parameter instr_cf SLLI  = { `RVI , 5'b00100 , 3'b001 , 7'b0000000 };
+parameter instr_cf SLLI  = { " SLLI",`RVI , 5'b00100 , 3'b001 , 7'b0000000 };
 // SRLI     -   I-type, Shift Right Logical
 //          rd = rs1 >> shamt
-parameter instr_cf SRLI  = { `RVI , 5'b00100 , 3'b101 , 7'b0000000 };
+parameter instr_cf SRLI  = { " SRLI",`RVI , 5'b00100 , 3'b101 , 7'b0000000 };
 // SRAI     -   I-type, Shift Right Arifmetical
 //          rd = rs1 >> shamt
-parameter instr_cf SRAI  = { `RVI , 5'b00100 , 3'b101 , 7'b0100000 };
+parameter instr_cf SRAI  = { " SRAI",`RVI , 5'b00100 , 3'b101 , 7'b0100000 };
 // ADD      -    R-type, Adding with register
 //          rd = rs1 + rs2
-parameter instr_cf ADD   = { `RVI , 5'b01100 , 3'b000 , 7'b0000000 };
+parameter instr_cf ADD   = { "  ADD",`RVI , 5'b01100 , 3'b000 , 7'b0000000 };
 // SUB      -    R-type, Adding with register
 //          rd = rs1 - rs2
-parameter instr_cf SUB   = { `RVI , 5'b01100 , 3'b000 , 7'b0100000 };
+parameter instr_cf SUB   = { "  SUB",`RVI , 5'b01100 , 3'b000 , 7'b0100000 };
 // SLL      -    R-type, Set left logical
 //          rd = rs1 << rs2
-parameter instr_cf SLL   = { `RVI , 5'b01100 , 3'b001 , 7'b0000000 };
+parameter instr_cf SLL   = { "  SLL",`RVI , 5'b01100 , 3'b001 , 7'b0000000 };
 // SLT      -    R-type, Set less
 //          rd = rs1 < rs2 ? '0 : '1
-parameter instr_cf SLT   = { `RVI , 5'b01100 , 3'b010 , 7'b0000000 };
+parameter instr_cf SLT   = { "  SLT",`RVI , 5'b01100 , 3'b010 , 7'b0000000 };
 // SLTU     -   R-type, Set less unsigned
 //          rd = rs1 < rs2 ? '0 : '1
-parameter instr_cf SLTU  = { `RVI , 5'b01100 , 3'b011 , 7'b0000000 };
+parameter instr_cf SLTU  = { " SLTU",`RVI , 5'b01100 , 3'b011 , 7'b0000000 };
 // XOR      -    R-type, Excluding Or two register
 //          rd = rs1 ^ rs2
-parameter instr_cf XOR   = { `RVI , 5'b01100 , 3'b100 , 7'b0000000 };
+parameter instr_cf XOR   = { "  XOR",`RVI , 5'b01100 , 3'b100 , 7'b0000000 };
 // SRL      -    R-type, Set right logical
 //          rd = rs1 >> rs2
-parameter instr_cf SRL   = { `RVI , 5'b01100 , 3'b101 , 7'b0000000 };
+parameter instr_cf SRL   = { "  SRL",`RVI , 5'b01100 , 3'b101 , 7'b0000000 };
 // SRA      -    R-type, Set right arifmetical
 //          rd = rs1 >> rs2
-parameter instr_cf SRA   = { `RVI , 5'b01100 , 3'b101 , 7'b0100000 };
+parameter instr_cf SRA   = { "  SRA",`RVI , 5'b01100 , 3'b101 , 7'b0100000 };
 // OR       -     R-type, Or two register
 //          rd = rs1 | rs2
-parameter instr_cf OR    = { `RVI , 5'b01100 , 3'b110 , 7'b0000000 };
+parameter instr_cf OR    = { "   OR",`RVI , 5'b01100 , 3'b110 , 7'b0000000 };
 // AND      -    R-type, And two register
 //          rd = rs1 & rs2
-parameter instr_cf AND   = { `RVI , 5'b01100 , 3'b111 , 7'b0000000 };
+parameter instr_cf AND   = { "  AND",`RVI , 5'b01100 , 3'b111 , 7'b0000000 };
 // VER      -    For verification
-parameter instr_cf VER   = { `RVI , 5'b????? , 3'b??? , 7'b??????? };
+parameter instr_cf VER   = { "  VER",`RVI , 5'b????? , 3'b??? , 7'b??????? };
 `endif
 
 `ifndef ALU_TYPES

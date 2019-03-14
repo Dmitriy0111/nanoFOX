@@ -4,8 +4,9 @@
 
 void delay(void)
 {
-    int del;
-    for(del = 0; del < 10; del++);
+    int del = 10;
+    while(del != 0)
+        del--;
 }
 
 void main (void)

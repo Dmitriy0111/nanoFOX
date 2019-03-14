@@ -33,7 +33,7 @@ for lines in pars_file:
         lines = lines[2:]
         i = 0
         # write addr
-        st_addr = str("@%s\n" %( hex( ( ( hi_addr << 16 ) + lo_addr ) >> 2 )[2:] ))
+        st_addr = str("@{:s}\n".format( hex( ( ( hi_addr << 16 ) + lo_addr ) >> 2 )[2:] ))
         out_file_f.write(st_addr)
         out_file_0.write(st_addr)
         out_file_1.write(st_addr)
@@ -50,5 +50,7 @@ for lines in pars_file:
             i += 4
             if( i >= lenght ):
                 break
+    else:
+        ...
 
 print("Conversion comlete!")

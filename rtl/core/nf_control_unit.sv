@@ -20,6 +20,7 @@ module nf_control_unit
     output  logic   [0  : 0]    res_sel,        // for selecting result
     output  logic   [3  : 0]    branch_type,    // for executing branch instructions
     output  logic   [0  : 0]    branch_hf,      // branch help field
+    output  logic   [0  : 0]    branch_src,     // for selecting branch source (JALR)
     output  logic   [0  : 0]    we_rf,          // write enable signal for register file
     output  logic   [0  : 0]    we_dm,          // write enable signal for data memory and others
     output  logic   [0  : 0]    rf_src,         // write data select for register file
@@ -33,12 +34,13 @@ module nf_control_unit
             instr_cf_0.F3 = funct3,
             instr_cf_0.F7 = funct7;
 
-    assign  branch_hf = ~ instr_cf_0.F3[0];
+    assign  branch_hf  = ~ instr_cf_0.F3[0];
+    assign  branch_src = instr_cf_0.OP == JALR.OP;
+    assign  we_dm      = instr_cf_0.OP == SW.OP;
 
     always_comb
     begin
         we_rf       = '0;
-        we_dm       = '0;
         rf_src      = RF_ALUR;
         ALU_Code    = ALU_ADD;
         srcBsel     = SRCB_IMM;
@@ -49,26 +51,26 @@ module nf_control_unit
             `RVI :
                 casex( ret_code( instr_cf_0 ) )
                     //  R - type commands
-                    ret_code( ADD   ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                                        end
-                    ret_code( AND   ) : begin we_rf = '1; ALU_Code = ALU_AND; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                                        end
-                    ret_code( SUB   ) : begin we_rf = '1; ALU_Code = ALU_SUB; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                                        end
-                    ret_code( SLL   ) : begin we_rf = '1; ALU_Code = ALU_SLL; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                                        end
-                    ret_code( OR    ) : begin we_rf = '1; ALU_Code = ALU_OR;  srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                                        end
+                    ret_code( ADD   ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
+                    ret_code( AND   ) : begin we_rf = '1; ALU_Code = ALU_AND; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
+                    ret_code( SUB   ) : begin we_rf = '1; ALU_Code = ALU_SUB; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
+                    ret_code( SLL   ) : begin we_rf = '1; ALU_Code = ALU_SLL; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
+                    ret_code( OR    ) : begin we_rf = '1; ALU_Code = ALU_OR;  srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
                     //  I - type commands
-                    ret_code( ADDI  ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                                       end
-                    ret_code( ORI   ) : begin we_rf = '1; ALU_Code = ALU_OR;  srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                                       end
-                    ret_code( SLLI  ) : begin we_rf = '1; ALU_Code = ALU_SLL; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                                       end
-                    ret_code( LW    ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                     rf_src = RF_DMEM; end
-                    ret_code( JALR  ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_UB ; imm_src = I_SEL; branch_type = B_UB;     we_dm = '0;                   end
+                    ret_code( ADDI  ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                           end
+                    ret_code( ORI   ) : begin we_rf = '1; ALU_Code = ALU_OR;  srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                           end
+                    ret_code( SLLI  ) : begin we_rf = '1; ALU_Code = ALU_SLL; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                           end
+                    ret_code( LW    ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                         rf_src = RF_DMEM; end
+                    ret_code( JALR  ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_UB ; imm_src = I_SEL; branch_type = B_UB;                       end
                     //  U - type commands
-                    ret_code( LUI   ) : begin we_rf = '1; ALU_Code = ALU_LUI; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = U_SEL;                                                       end
+                    ret_code( LUI   ) : begin we_rf = '1; ALU_Code = ALU_LUI; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = U_SEL;                                           end
                     //  B - type commands
-                    ret_code( BEQ   ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU; imm_src = B_SEL; branch_type = B_EQ_NEQ;                               end
-                    ret_code( BNE   ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU; imm_src = B_SEL; branch_type = B_EQ_NEQ;                               end
+                    ret_code( BEQ   ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU; imm_src = B_SEL; branch_type = B_EQ_NEQ;                   end
+                    ret_code( BNE   ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU; imm_src = B_SEL; branch_type = B_EQ_NEQ;                   end
                     //  S - type commands
-                    ret_code( SW    ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = S_SEL;                         we_dm = '1;                   end
+                    ret_code( SW    ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = S_SEL;                                           end
                     //  J - type commands
-                    ret_code( JAL   ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_UB ; imm_src = J_SEL; branch_type = B_UB;     we_dm = '0;                   end
+                    ret_code( JAL   ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_UB ; imm_src = J_SEL; branch_type = B_UB;                       end
                     //  in the future
                     default : ;
                 endcase

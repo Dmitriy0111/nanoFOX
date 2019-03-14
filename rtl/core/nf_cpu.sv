@@ -115,9 +115,10 @@ module nf_cpu
     logic   [0  : 0]    rf_src_id;
     logic   [31 : 0]    ALU_Code_id;
     logic   [4  : 0]    shamt_id;
+    logic   [0  : 0]    branch_src;
 
     // next program counter value for branch command
-    assign pc_branch  = pc_id + ( ext_data_id << 1 ) - 4;
+    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
 
     // creating register file
     nf_reg_file nf_reg_file_0
@@ -149,6 +150,7 @@ module nf_cpu
         .we_rf          ( we_rf_id          ),  // decoded write register file
         .we_dm_en       ( we_dm_id          ),  // decoded write data memory
         .rf_src         ( rf_src_id         ),  // decoded source register file signal
+        .branch_src     ( branch_src        ),  // for selecting branch source (JALR)
         .branch_type    ( branch_type       )   // branch type
     );
 

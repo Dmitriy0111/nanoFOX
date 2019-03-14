@@ -26,6 +26,7 @@ module nf_i_du
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
     output  logic   [0  : 0]    rf_src,     // decoded source register file signal
+    output  logic   [0  : 0]    branch_src, // for selecting branch source (JALR)
     output  logic   [3  : 0]    branch_type // branch type
 );
 
@@ -71,6 +72,7 @@ module nf_i_du
         .res_sel        ( res_sel               ),  // for selecting result
         .branch_type    ( branch_type           ),  // branch type 
         .branch_hf      ( branch_hf             ),  // branch help field
+        .branch_src     ( branch_src            ),  // for selecting branch source (JALR)
         .we_rf          ( we_rf                 ),  // write enable signal for register file
         .we_dm          ( we_dm_en              ),  // write enable signal for data memory and others
         .rf_src         ( rf_src                ),  // write data select for register file
