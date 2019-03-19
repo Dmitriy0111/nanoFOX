@@ -1,4 +1,11 @@
-# this is program example for working with ram
+# 
+#  File            :   main.S
+#  Autor           :   Vlasov D.V.
+#  Data            :   2018.12.02
+#  Language        :   Assembler
+#  Description     :   This is example for working with ram
+#  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+# 
 
 .equ NF_RAM_ADDR ,  0x00000
 .equ NF_GPIO_ADDR,  0x00010

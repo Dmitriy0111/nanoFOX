@@ -1,3 +1,13 @@
+#
+#  File            :   ihex2hex.py
+#  Autor           :   Vlasov D.V.
+#  Data            :   2019.03.04
+#  Language        :   Python
+#  Description     :   This is script for converting ihex format to hex
+#  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+#
+
+
 pars_file  = open("program_file/program.ihex" , "r")
 
 out_file_f = open("program_file/program.hex"  , "w")    # full mem [31:0]

@@ -1,3 +1,12 @@
+/*
+*  File            :   main.c
+*  Autor           :   Vlasov D.V.
+*  Data            :   2019.02.25
+*  Language        :   C
+*  Description     :   This is examples for working with UART
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+*/
+
 #include "../nf_drivers/nf_uart.h"
 
 void inline uart_init()

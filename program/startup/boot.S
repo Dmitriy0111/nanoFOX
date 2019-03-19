@@ -1,3 +1,12 @@
+#
+#  File            :   boot.S
+#  Autor           :   Vlasov D.V.
+#  Data            :   2019.03.03
+#  Language        :   Assembler
+#  Description     :   This is Assembler file for first initialization nanoFOX
+#  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+#
+
 .equ    _main_addr,     0x00000040
 .equ    _stack_start,   0x00000400
 

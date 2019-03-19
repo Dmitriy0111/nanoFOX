@@ -275,7 +275,7 @@ module nf_cpu
         .ra1_id         ( ra1_id        ),  // read address 1 from decode stage
         .ra2_id         ( ra2_id        ),  // read address 2 from decode stage
         .branch_type    ( branch_type   ),  // branch type
-        .we_dm_imem     ( we_dm_imem    ),  // write data memory from memory stage
+        .we_dm_imem     ( we_dm_imem    ),  // write enable data memory from memory stage
         .req_ack_dm     ( req_ack_dm    ),  // request acknowledge data memory
         .req_ack_i      ( req_ack_i     ),  // request acknowledge instruction
         .rf_src_imem    ( rf_src_imem   ),  // register source from memory stage

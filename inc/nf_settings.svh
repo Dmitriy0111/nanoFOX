@@ -7,21 +7,6 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`define debug 1
-
-`define RV32I
-
-`ifdef RV32I
-`define reg_number 32
-`endif
-
-`ifdef RV32E
-`define reg_number 16
-`endif
-
-`ifndef reg_number
-`define reg_number 32
-`endif
 //depth of ram module
 `define ram_depth  64
 //path to program file

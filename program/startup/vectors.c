@@ -1,5 +1,10 @@
 /*
-    This is vectors for nanoFOX
+*  File            :   vectors.c
+*  Autor           :   Vlasov D.V.
+*  Data            :   2019.03.14
+*  Language        :   C
+*  Description     :   This is source file for working with vectors
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 void __attribute__((noreturn)) vector_1(void)

@@ -1,4 +1,11 @@
-# this is leonardo program example
+# 
+#  File            :   main.S
+#  Autor           :   Vlasov D.V.
+#  Data            :   2018.11.30
+#  Language        :   Assembler
+#  Description     :   This is number's of leonardo example
+#  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+# 
 
 .section    .text   
 

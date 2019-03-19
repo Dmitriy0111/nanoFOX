@@ -41,8 +41,8 @@ module nf_hz_bypass_unit
     logic   [0  : 0]    cmp_d1_bypass;
     logic   [0  : 0]    cmp_d2_bypass;
 
-    assign  cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem;
-    assign  cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem;
+    assign  cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem && ( | ra1_id );   // zero without bypass ( | ra1_id )
+    assign  cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem && ( | ra2_id );   // zero without bypass ( | ra2_id )
 
     assign  cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;
     assign  cmp_d2 = cmp_d2_bypass ? result_imem : rd2_id;
@@ -52,14 +52,14 @@ module nf_hz_bypass_unit
         rd1_bypass = `HU_BP_NONE;
         rd2_bypass = `HU_BP_NONE;
         case( 1 )
-            ( ( wa3_imem == ra1_iexe ) && we_rf_imem ) : rd1_bypass = `HU_BP_MEM;
-            ( ( wa3_iwb  == ra1_iexe ) && we_rf_iwb  ) : rd1_bypass = `HU_BP_WB;
-            default                                    : ;
+            ( ( wa3_imem == ra1_iexe ) && we_rf_imem && ( | ra1_iexe ) ) : rd1_bypass = `HU_BP_MEM; // zero without bypass ( | ra1_iexe )
+            ( ( wa3_iwb  == ra1_iexe ) && we_rf_iwb  && ( | ra1_iexe ) ) : rd1_bypass = `HU_BP_WB;  // zero without bypass ( | ra1_iexe )
+            default : ;
         endcase
         case( 1 )
-            ( ( wa3_imem == ra2_iexe ) && we_rf_imem ) : rd2_bypass = `HU_BP_MEM;
-            ( ( wa3_iwb  == ra2_iexe ) && we_rf_iwb  ) : rd2_bypass = `HU_BP_WB;
-            default                                    : ;
+            ( ( wa3_imem == ra2_iexe ) && we_rf_imem && ( | ra2_iexe ) ) : rd2_bypass = `HU_BP_MEM; // zero without bypass ( | ra2_iexe )
+            ( ( wa3_iwb  == ra2_iexe ) && we_rf_iwb  && ( | ra2_iexe ) ) : rd2_bypass = `HU_BP_WB;  // zero without bypass ( | ra2_iexe )
+            default : ;
         endcase
     end
 

@@ -1,3 +1,12 @@
+/*
+*  File            :   nf_uart.h
+*  Autor           :   Vlasov D.V.
+*  Data            :   2019.02.25
+*  Language        :   C
+*  Description     :   This is constants for working with UART
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+*/
+
 // UART registers addr
 #define     NF_UART_CR_ADDR     0x00030000
 #define     NF_UART_TX_ADDR     0x00030004
