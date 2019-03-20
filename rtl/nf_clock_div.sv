@@ -9,14 +9,16 @@
 
 module nf_clock_div
 (
-    input   logic               clk,
-    input   logic               resetn, 
+    // clock and reset
+    input   logic               clk,    // clock
+    input   logic               resetn, // reset
+    // strobbing
     input   logic   [25 : 0]    div,    // div_number
     output  logic   [0  : 0]    en      // enable strobe
 );
 
-    logic   [25 : 0]  int_div;    //internal divider register
-    logic   [25 : 0]  int_c;      //internal compare register
+    logic   [25 : 0]  int_div;    // internal divider register
+    logic   [25 : 0]  int_c;      // internal compare register
 
     assign en = (int_div == int_c);
 

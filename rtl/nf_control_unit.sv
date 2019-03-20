@@ -35,22 +35,22 @@ begin
     imm_src     = `I_SEL;
     branch_type = `B_NONE;
     casex( { opcode , funct3 , funct7 } )
-        //  R - type command's
+        // R - type command's
         { `C_ADD  , `F3_ADD  , `F7_ADD } : begin we_rf = '1; ALU_Code = `ALU_ADD;  srcBsel = `SRCB_RD1;                                                                                        end
         { `C_SUB  , `F3_SUB  , `F7_SUB } : begin we_rf = '1; ALU_Code = `ALU_SUB;  srcBsel = `SRCB_RD1;                                                                                        end
         { `C_OR   , `F3_OR   , `F7_ANY } : begin we_rf = '1; ALU_Code = `ALU_OR;   srcBsel = `SRCB_RD1;                                                                                        end
-        //  I - type command's
+        // I - type command's
         { `C_SLLI , `F3_SLLI , `F7_ANY } : begin we_rf = '1; ALU_Code = `ALU_SLLI; srcBsel = `SRCB_IMM; imm_src = `I_SEL;                                                                      end
         { `C_ADDI , `F3_ADDI , `F7_ANY } : begin we_rf = '1; ALU_Code = `ALU_ADD;  srcBsel = `SRCB_IMM; imm_src = `I_SEL;                                                                      end
         { `C_LW   , `F3_LW   , `F7_ANY } : begin we_rf = '1; ALU_Code = `ALU_ADD;  srcBsel = `SRCB_IMM; imm_src = `I_SEL;                                                   rf_src = `RF_DMEM; end
-        //  U - type command's
+        // U - type command's
         { `C_LUI  , `F3_ANY  , `F7_ANY } : begin we_rf = '1; ALU_Code = `ALU_LUI;  srcBsel = `SRCB_IMM; imm_src = `U_SEL;                                                                      end
-        //  B - type command's
+        // B - type command's
         { `C_BEQ  , `F3_BEQ  , `F7_ANY } : begin we_rf = '0; ALU_Code = `ALU_ADD;  srcBsel = `SRCB_RD1; imm_src = `B_SEL; branch_type = `B_EQ_NEQ; eq_neq = '1;                                end
-        //  S - type command's
+        // S - type command's
         { `C_SW   , `F3_SW   , `F7_ANY } : begin we_rf = '0; ALU_Code = `ALU_ADD;  srcBsel = `SRCB_IMM; imm_src = `S_SEL;                                       we_dm = '1;                    end
-        //  J - type command's
-        //  in the future
+        // J - type command's
+        // in the future
         default                          : ;
     endcase
 end

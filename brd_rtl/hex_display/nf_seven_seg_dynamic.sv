@@ -12,7 +12,7 @@ module nf_seven_seg_dynamic
     input   logic               clk,        // clock
     input   logic               resetn,     // reset
     input   logic   [31 : 0]    hex,        // hexadecimal value input
-    input   logic               cc_ca,      // common cathode or common anode
+    input   logic   [0  : 0]    cc_ca,      // common cathode or common anode
     output  logic   [7  : 0]    seven_seg,  // seven segments output
     output  logic   [3  : 0]    dig         // digital tube selector
 );
@@ -50,12 +50,12 @@ module nf_seven_seg_dynamic
             if( counter[17] )
                 digit_enable <= digit_enable + 1'b1;
         end
-
+    // creating one nf_seven_seg_0 unit
     nf_seven_seg nf_seven_seg_0
     (
-        .hex        ( hex[digit_enable*4 +: 4]  ),
-        .cc_ca      ( cc_ca                     ),
-        .seven_seg  ( seven_seg                 )
+        .hex        ( hex[digit_enable*4 +: 4]  ),  // hexadecimal value input
+        .cc_ca      ( cc_ca                     ),  // common cathode or common anode
+        .seven_seg  ( seven_seg                 )   // seven segments output
     );
 
 endmodule : nf_seven_seg_dynamic

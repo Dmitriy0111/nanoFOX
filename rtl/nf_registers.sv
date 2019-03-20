@@ -12,8 +12,8 @@ module nf_register
 #(
     parameter                       width = 1
 )(
-    input   logic                   clk,
-    input   logic                   resetn,
+    input   logic                   clk,    // clock
+    input   logic                   resetn, // reset
     input   logic   [width-1 : 0]   datai,  // input data
     output  logic   [width-1 : 0]   datao   // output data
 );
@@ -28,13 +28,13 @@ module nf_register
 
 endmodule : nf_register
 
-//register with write enable input
+// register with write enable input
 module nf_register_we
 #(
     parameter                       width = 1
 )(
-    input   logic                   clk,
-    input   logic                   resetn,
+    input   logic                   clk,    // clock
+    input   logic                   resetn, // reset
     input   logic                   we,     // write enable
     input   logic   [width-1 : 0]   datai,  // input data
     output  logic   [width-1 : 0]   datao   // output data
@@ -50,14 +50,14 @@ module nf_register_we
 
 endmodule : nf_register_we
 
-//register with write enable input and not zero reset value
+// register with write enable input and not zero reset value
 module nf_register_we_r
 #(
     parameter                       width = 1
 )(
-    input   logic                   clk,
-    input   logic                   resetn,
-    input   logic                   we,     // write enable
+    input   logic                   clk,    // clock
+    input   logic                   resetn, // reset
+    input   logic   [0       : 0]   we,     // write enable
     input   logic   [width-1 : 0]   datar,  // reset value
     input   logic   [width-1 : 0]   datai,  // input data
     output  logic   [width-1 : 0]   datao   // output data

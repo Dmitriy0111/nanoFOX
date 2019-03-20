@@ -1,4 +1,11 @@
-# this is program example for working with ram
+# 
+#  File            :   main.S
+#  Autor           :   Vlasov D.V.
+#  Data            :   2018.12.02
+#  Language        :   Assembler
+#  Description     :   This is example for working with ram
+#  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+# 
 
 .section    .text
 
@@ -17,3 +24,4 @@ read:       lw      t1, 0x0 (zero)          # t1 = mem[zero + 0x0];
             lw      t1, 0x8 (zero)          # t1 = mem[zero + 0x8];
             lw      t1, 0xc (zero)          # t1 = mem[zero + 0xc];
             beq     zero, zero, _start      # go to _start label
+            

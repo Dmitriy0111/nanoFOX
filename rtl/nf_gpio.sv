@@ -13,11 +13,12 @@ module nf_gpio
 #(
     parameter                       gpio_w = `NF_GPIO_WIDTH
 )(
-    input   logic                   clk,
-    input   logic                   resetn,
+    // clock and reset
+    input   logic                   clk,    // clock
+    input   logic                   resetn, // reset
     //nf_router side
     input   logic   [31        : 0] addr,   // address
-    input   logic                   we,     // write enable
+    input   logic   [0         : 0] we,     // write enable
     input   logic   [31        : 0] wd,     // write data
     output  logic   [31        : 0] rd,     // read data
     //gpio_side
