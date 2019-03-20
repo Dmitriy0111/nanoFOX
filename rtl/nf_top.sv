@@ -7,18 +7,13 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../inc/nf_settings.svh"
-
 module nf_top
 (
-    input   logic               clk,
-    input   logic               resetn,
-    input   logic   [25 : 0]    div
-`ifdef debug
-    ,
-    input   logic   [4  : 0]    reg_addr,
-    output  logic   [31 : 0]    reg_data
-`endif
+    input   logic               clk,        // clock
+    input   logic               resetn,     // reset
+    input   logic   [25 : 0]    div,        // clock divide input
+    input   logic   [4  : 0]    reg_addr,   // scan register address
+    output  logic   [31 : 0]    reg_data    // scan register data
 );
 
     logic   [31 : 0]    instr_addr;
@@ -27,16 +22,13 @@ module nf_top
 
     nf_cpu nf_cpu_0
     (
-        .clk            ( clk               ),
-        .resetn         ( resetn            ),
+        .clk            ( clk               ),  // clock
+        .resetn         ( resetn            ),  // reset
         .instr_addr     ( instr_addr        ),  // cpu enable signal
         .instr          ( instr             ),  // instruction address
-        .cpu_en         ( cpu_en            )   // instruction data
-    `ifdef debug
-        ,
+        .cpu_en         ( cpu_en            ),  // instruction data
         .reg_addr       ( reg_addr          ),  // register address
         .reg_data       ( reg_data          )   // register data
-    `endif
     );
 
     // creating instruction memory 
@@ -53,8 +45,8 @@ module nf_top
     // creating strob generating unit for "dividing" clock
     nf_clock_div nf_clock_div_0
     (
-        .clk            ( clk               ),
-        .resetn         ( resetn            ),
+        .clk            ( clk               ),  // clock
+        .resetn         ( resetn            ),  // reset
         .div            ( div               ),  // div_number
         .en             ( cpu_en            )   // enable strobe
     );

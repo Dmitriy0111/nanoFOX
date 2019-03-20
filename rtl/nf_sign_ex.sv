@@ -11,10 +11,10 @@
 
 module nf_sign_ex
 (
-    input           [11 : 0]    imm_data_i, // immediate data in i-type instruction
-    input           [19 : 0]    imm_data_u, // immediate data in u-type instruction
-    input           [11 : 0]    imm_data_b, // immediate data in b-type instruction
-    input           [1  : 0]    imm_src,    // selection immediate data input
+    input   logic   [11 : 0]    imm_data_i, // immediate data in i-type instruction
+    input   logic   [19 : 0]    imm_data_u, // immediate data in u-type instruction
+    input   logic   [11 : 0]    imm_data_b, // immediate data in b-type instruction
+    input   logic   [1  : 0]    imm_src,    // selection immediate data input
     output  logic   [31 : 0]    imm_ex      // extended immediate data
 );
 

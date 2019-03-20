@@ -7,30 +7,25 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../inc/nf_settings.svh"
-
 module nf_cpu
 (
     // clock and reset
-    input   logic               clk,
-    input   logic               resetn,
-    input   logic               cpu_en,         // cpu enable signal
+    input   logic               clk,            // clock
+    input   logic               resetn,         // reset
+    input   logic   [0  : 0]    cpu_en,         // cpu enable signal
     // instruction memory
     output  logic   [31 : 0]    instr_addr,     // instruction address
-    input   logic   [31 : 0]    instr           // instruction data
-`ifdef debug
+    input   logic   [31 : 0]    instr,          // instruction data
     // for debug
-    ,
     input   logic   [4  : 0]    reg_addr,       // register address
     output  logic   [31 : 0]    reg_data        // register data
-`endif
 );
 
     // program counter wires
     logic   [31 : 0]    pc_i;
     logic   [31 : 0]    pc_nb;
     logic   [31 : 0]    pc_b;
-    logic               next_pc_sel;
+    logic   [0  : 0]    next_pc_sel;
     // register file wires
     logic   [4  : 0]    ra1;
     logic   [31 : 0]    rd1;
@@ -38,7 +33,7 @@ module nf_cpu
     logic   [31 : 0]    rd2;
     logic   [4  : 0]    wa3;
     logic   [31 : 0]    wd3;
-    logic               we3;
+    logic   [0  : 0]    we3;
     // sign extend wires
     logic   [11 : 0]    imm_data_i;
     logic   [19 : 0]    imm_data_u;
@@ -54,11 +49,11 @@ module nf_cpu
     logic   [6  : 0]    opcode;
     logic   [2  : 0]    funct3;
     logic   [6  : 0]    funct7;
-    logic               branch_type;
-    logic               eq_neq;
+    logic   [0  : 0]    branch_type;
+    logic   [0  : 0]    eq_neq;
     logic   [1  : 0]    imm_src;
-    logic               srcBsel;
-    logic               pc_src;
+    logic   [0  : 0]    srcBsel;
+    logic   [0  : 0]    pc_src;
 
     // register's address finding from instruction
     assign ra1  = instr[15 +: 5];
@@ -92,28 +87,25 @@ module nf_cpu
     )
     register_pc
     (
-        .clk            ( clk           ),
-        .resetn         ( resetn        ),
-        .datai          ( pc_i          ),
-        .datao          ( instr_addr    ),
-        .we             ( cpu_en        )
+        .clk            ( clk           ),  // clock
+        .resetn         ( resetn        ),  // reset 
+        .datai          ( pc_i          ),  // input data
+        .datao          ( instr_addr    ),  // output data
+        .we             ( cpu_en        )   // write enable
     );
     // creating register file
     nf_reg_file reg_file_0
     (
-        .clk            ( clk           ),
+        .clk            ( clk           ),  // clock
         .ra1            ( ra1           ),  // read address 1
         .rd1            ( rd1           ),  // read data 1
         .ra2            ( ra2           ),  // read address 2
         .rd2            ( rd2           ),  // read data 2
         .wa3            ( wa3           ),  // write address 
         .wd3            ( wd3           ),  // write data
-        .we3            ( we3 && cpu_en )   // write enable signal
-        `ifdef debug
-        ,
+        .we3            ( we3 && cpu_en ),  // write enable signal
         .ra0            ( reg_addr      ),  // read address 0
         .rd0            ( reg_data      )   // read data 0
-        `endif
     );
     // creating ALU unit
     nf_alu alu_0

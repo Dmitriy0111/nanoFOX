@@ -7,8 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../inc/nf_settings.svh"
-`include "../tb/pars_instr.sv"
+`include "../tb/nf_pars.sv"
 
 module nf_tb();
 
@@ -30,6 +29,8 @@ module nf_tb();
 
     string              instruction;
     string              instr_sep;
+    string              log_str;
+    string              reg_str;
 
     nf_top nf_top_0
     (
@@ -55,11 +56,13 @@ module nf_tb();
         $display("Reset is in inactive state");
     end
     // creating pars_instruction class
-    pars_instr pars_instr_0 = new();
+    nf_pars nf_pars_0 = new();
     // parsing instruction
     initial
     begin
         div = 3;
+        if( `log_html )
+            nf_pars_0.build_html_loger("../log/log");
         if( `log_en )
         begin
             log = $fopen("../log/.log","w");
@@ -74,18 +77,21 @@ module nf_tb();
             @(posedge nf_top_0.nf_cpu_0.cpu_en);
             if( resetn )
             begin
-                $display("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                $write("cycle = %d, pc = %h ", cycle_counter,nf_top_0.nf_cpu_0.instr_addr);
-                pars_instr_0.pars(nf_top_0.nf_cpu_0.instr, instruction, instr_sep);
+                nf_pars_0.pars(nf_top_0.nf_cpu_0.instr, instruction, instr_sep);
+                nf_pars_0.write_txt_table(nf_top_0.nf_cpu_0.reg_file_0.reg_file, reg_str);
+
+                log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+                log_str = { log_str , $psprintf("cycle = %d, pc = %h, %t \n", cycle_counter, nf_top_0.nf_cpu_0.instr_addr, $time) };
+                log_str = { log_str , $psprintf("               %s\n", instruction) };
+                if( `debug_lev0 )
+                    log_str = { log_str , $psprintf("               %s\n", instr_sep) };
                 if( `log_en )
-                begin
-                    $fwrite(log,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-                    $fwrite(log,"cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.instr_addr);
-                    $fwrite(log,"\n                    ");
-                    $fwrite(log,"%s\n", instruction);
-                    if( `debug_lev0)
-                        $fwrite(log,"                    %s\n", instr_sep);
-                end
+                    $fwrite(log,"%s",log_str);
+                if( `log_html )
+                    nf_pars_0.write_html_log( nf_top_0.nf_cpu_0.reg_file_0.reg_file, log_str);
+                log_str = { log_str , $psprintf("%s", reg_str) };
+                $display(log_str);
+
                 cycle_counter++;
             end
             if( cycle_counter == repeat_cycles )

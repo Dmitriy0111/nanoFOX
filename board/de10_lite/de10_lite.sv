@@ -22,12 +22,14 @@ module de10_lite
 );
 
     // wires & inputs
-
-    logic               clk;
-    logic               resetn;
-    logic   [4  : 0]    reg_addr;
-    logic   [31 : 0]    reg_data;
-    logic   [25 : 0]    div;
+    // clock and reset
+    logic               clk;        // clock
+    logic               resetn;     // reset
+    logic   [25 : 0]    div;        // clock divide input
+    // for debug
+    logic   [4  : 0]    reg_addr;   // scan register address
+    logic   [31 : 0]    reg_data;   // scan register data
+    // hex
     logic   [6*8-1 : 0] hex;
     
     assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
@@ -35,25 +37,27 @@ module de10_lite
     assign resetn   = key[0];
     assign reg_addr = sw[0 +: 5];
     assign div      = { sw[5 +: 5] , { 20 { 1'b1 } } };
-
+    // creating one nf_top_0 unit
     nf_top nf_top_0
     (
-        .clk        ( clk       ),
-        .resetn     ( resetn    ),
-        .div        ( div       ),
-        .reg_addr   ( reg_addr  ),
-        .reg_data   ( reg_data  )
+        // clock and reset
+        .clk        ( clk       ),  // clock
+        .resetn     ( resetn    ),  // reset
+        .div        ( div       ),  // clock divide input
+        // for debug
+        .reg_addr   ( reg_addr  ),  // scan register address
+        .reg_data   ( reg_data  )   // scan register data
     );
-
+    // creating one nf_seven_seg_static_0 unit
     nf_seven_seg_static 
     #(
         .hn         ( 6         )
     )
     nf_seven_seg_static_0
     (
-        .hex        ( reg_data  ),
-        .cc_ca      ( '0        ),
-        .seven_seg  ( hex       )
+        .hex        ( reg_data  ),  // hexadecimal value input
+        .cc_ca      ( '0        ),  // common cathode or common anode
+        .seven_seg  ( hex       )   // seven segments output
     );
 
 endmodule : de10_lite
