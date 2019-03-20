@@ -55,7 +55,7 @@ for lines in pars_file:
             out_file_1.write(lines[2:4] + "\n")
             out_file_2.write(lines[4:6] + "\n")
             out_file_3.write(lines[6:8] + "\n")
-            out_file_f.write(lines[0:8] + "\n")
+            out_file_f.write(lines[6:8] + lines[4:6] + lines[2:4] + lines[0:2] + "\n")
             lines = lines[8:]
             i += 4
             if( i >= lenght ):

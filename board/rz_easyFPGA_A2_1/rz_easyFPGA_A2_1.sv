@@ -24,7 +24,7 @@ module rz_easyFPGA_A2_1
     assign clk      = clk50mhz;
     assign resetn   = rst_key;
     assign gpio2hex = {'0,gpio_o_0};
-
+    // creating one nf_top_0 unit
     nf_top nf_top_0
     (
         .clk        ( clk       ),
@@ -34,7 +34,7 @@ module rz_easyFPGA_A2_1
         .gpio_d_0   ( gpio_d_0  ),
         .pwm        ( pwm       ) 
     );
-
+    // creating one nf_seven_seg_dynamic_0 unit
     nf_seven_seg_dynamic nf_seven_seg_dynamic_0
     (
         .clk        ( clk       ),

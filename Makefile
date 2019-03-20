@@ -90,47 +90,44 @@ sim_gui: sim_dir
 
 PROG_NAME ?= 00_counter
 COMP_KEY  ?= -march=rv32i -mabi=ilp32
+CCF	= -march=rv32i -mabi=ilp32
+LDF	= -b elf32-littleriscv
+CPF = ihex -O ihex
 
-prog_form:
-	rm -rfd program/$(PROG_NAME)/main.o
-	echo @00000000 > program_file/program.hex
-	cat program_file/main.elf | sed -rn 's/\s+[a-f0-9]+:\s+([a-f0-9]*)\s+.*/\1/p' >> program_file/program.hex
-
-prog_compile_win:
-	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main.o $(COMP_KEY)
+comp_lin_c:
 	mkdir -p program_file
-	riscv-none-embed-objdump -D -z -l program/$(PROG_NAME)/main > program_file/main.elf
-	
-prog_compile_lin:
-	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program/$(PROG_NAME)/main $(COMP_KEY)
-	mkdir -p program_file
-	riscv64-unknown-elf-objdump -D -z -l program/$(PROG_NAME)/main > program_file/main.elf
-
-prog_comp_win: \
-	prog_compile_win \
-	prog_form 
-	
-prog_comp_lin: \
-	prog_compile_lin \
-	prog_form 
-
-test_comp_win_c:
-	mkdir -p program_file
-	riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o -march=rv32i -mabi=ilp32
-	riscv-none-embed-gcc program/$(PROG_NAME)/main.c -c -o program_file/main.o -march=rv32i -mabi=ilp32
-	riscv-none-embed-gcc program/startup/vectors.c -c -o program_file/vectors.o -march=rv32i -mabi=ilp32
-	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o program_file/vectors.o -b elf32-littleriscv
-	riscv-none-embed-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
-	riscv-none-embed-objcopy program_file/main.elf program_file/program.ihex -O ihex
+	riscv64-unknown-elf-as program/startup/boot.S -c -o program_file/boot.o $(CCF)
+	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
+	riscv64-unknown-elf-gcc program/startup/vectors.c -c -o program_file/vectors.o $(CCF)
+	riscv64-unknown-elf-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o program_file/vectors.o $(LDF)
+	riscv64-unknown-elf-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv64-unknown-elf-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py
 
-test_comp_win_asm:
+comp_lin_asm:
 	mkdir -p program_file
-	riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o -march=rv32i -mabi=ilp32
-	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o -march=rv32i -mabi=ilp32
-	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o -b elf32-littleriscv
+	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
+	riscv64-unknown-elf-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o $(LDF)
+	riscv64-unknown-elf-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv64-unknown-elf-objcopy program_file/main.elf program_file/program.$(CPF)
+	python program/startup/ihex2hex.py
+
+comp_win_c:
+	mkdir -p program_file
+	riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o $(CCF)
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
+	riscv-none-embed-gcc program/startup/vectors.c -c -o program_file/vectors.o $(CCF)
+	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o program_file/vectors.o $(LDF)
 	riscv-none-embed-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
-	riscv-none-embed-objcopy program_file/main.elf program_file/program.ihex -O ihex
+	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
+	python program/startup/ihex2hex.py
+
+comp_win_asm:
+	mkdir -p program_file
+	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
+	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o $(LDF)
+	riscv-none-embed-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py
 
 prog_clean:

@@ -40,7 +40,7 @@ module de10_lite
     assign clk      = max10_clk1_50;
     assign resetn   = key[0];
     assign gpio_i_0 = sw[0 +: 5];
-
+    // creating one nf_top_0 unit
     nf_top nf_top_0
     (
         .clk        ( clk       ),
@@ -50,7 +50,7 @@ module de10_lite
         .gpio_o_0   ( gpio_o_0  ),
         .gpio_d_0   ( gpio_d_0  )
     );
-
+    // creating one nf_seven_seg_static_0 unit
     nf_seven_seg_static 
     #(
         .hn         ( 6         )

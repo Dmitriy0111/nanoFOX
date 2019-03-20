@@ -8,7 +8,7 @@
 # 
 
 .section    .text
-
+main:
 _start:     lui     t0, 0                   # t0 = 0 ; clear t0   
             lui     t1, 0                   # t0 = 0 ; clear t0  
             addi    t1, t1, %lo(-3)      

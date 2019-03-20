@@ -145,7 +145,7 @@ input 		     [1:0]		GPIO_1_IN;
 
     assign LED      = gpio_o_0;
     assign gpio_i_0 = '0 | SW;
-
+	// creating one nf_top_0 unit
     nf_top nf_top_0
     (
         .clk        ( clk       ),

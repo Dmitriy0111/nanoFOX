@@ -53,9 +53,9 @@ module nf_seven_seg_dynamic
 
     nf_seven_seg nf_seven_seg_0
     (
-        .hex        ( hex[digit_enable*4 +: 4]  ),
-        .cc_ca      ( cc_ca                     ),
-        .seven_seg  ( seven_seg                 )
+        .hex        ( hex[digit_enable*4 +: 4]  ),  // hexadecimal value input
+        .cc_ca      ( cc_ca                     ),  // common cathode or common anode
+        .seven_seg  ( seven_seg                 )   // seven segments output
     );
 
 endmodule : nf_seven_seg_dynamic
