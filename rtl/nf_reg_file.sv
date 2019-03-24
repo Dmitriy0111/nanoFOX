@@ -11,7 +11,7 @@
 
 module nf_reg_file
 (
-    input   logic               clk,    // clock
+    input   logic   [0  : 0]    clk,    // clock
     input   logic   [4  : 0]    ra1,    // read address 1
     output  logic   [31 : 0]    rd1,    // read data 1
     input   logic   [4  : 0]    ra2,    // read address 2

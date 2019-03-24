@@ -12,8 +12,8 @@
 module nf_top
 (
     // clock and reset
-    input   logic                           clk,        // clock
-    input   logic                           resetn,     // reset
+    input   logic   [0                : 0]  clk,        // clock
+    input   logic   [0                : 0]  resetn,     // reset
     input   logic   [25               : 0]  div,        // clock divide input
     // pwm side
     output  logic   [0                : 0]  pwm,        // PWM output
@@ -48,13 +48,14 @@ module nf_top
     assign  rd_dm_s[3]  = '0;
 
     // creating one nf_cpu_0 unit 
-    nf_cpu nf_cpu_0
+    nf_cpu 
+    nf_cpu_0
     (
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset
-        .instr_addr     ( instr_addr        ),  // cpu enable signal
-        .instr          ( instr             ),  // instruction address
-        .cpu_en         ( cpu_en            ),  // instruction data
+        .instr_addr     ( instr_addr        ),  // instruction address
+        .instr          ( instr             ),  // instruction data
+        .cpu_en         ( cpu_en            ),  // cpu enable signal
         .addr_dm        ( addr_dm           ),  // data memory address
         .we_dm          ( we_dm             ),  // data memory write enable
         .wd_dm          ( wd_dm             ),  // data memory write data
@@ -75,7 +76,8 @@ module nf_top
     );
 
     // creating strob generating unit for "dividing" clock
-    nf_clock_div nf_clock_div_0
+    nf_clock_div 
+    nf_clock_div_0
     (
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset

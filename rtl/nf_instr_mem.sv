@@ -20,8 +20,6 @@ module nf_instr_mem
     assign instr = mem[addr];
 
     initial
-    begin
         $readmemh("../program_file/program.hex",mem);
-    end
 
 endmodule : nf_instr_mem

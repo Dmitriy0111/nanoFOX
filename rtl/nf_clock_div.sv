@@ -10,8 +10,8 @@
 module nf_clock_div
 (
     // clock and reset
-    input   logic               clk,    // clock
-    input   logic               resetn, // reset
+    input   logic   [0  : 0]    clk,    // clock
+    input   logic   [0  : 0]    resetn, // reset
     // strobbing
     input   logic   [25 : 0]    div,    // div_number
     output  logic   [0  : 0]    en      // enable strobe

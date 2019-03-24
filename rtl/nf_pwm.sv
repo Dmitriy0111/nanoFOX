@@ -12,8 +12,8 @@ module nf_pwm
     parameter                   pwm_width = 8
 )(
     // clock and reset
-    input   logic               clk,        // clock
-    input   logic               resetn,     // reset
+    input   logic   [0  : 0]    clk,        // clock
+    input   logic   [0  : 0]    resetn,     // reset
     // nf_router side
     input   logic   [31 : 0]    addr,       // address
     input   logic   [0  : 0]    we,         // write enable

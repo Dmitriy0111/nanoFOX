@@ -14,16 +14,16 @@ module nf_router
     parameter                                   Slave_n = `slave_number
 )(
     // clock and reset
-    input   logic                               clk,        // clock
-    input   logic                               resetn,     // reset
+    input   logic   [0  : 0]                    clk,        // clock
+    input   logic   [0  : 0]                    resetn,     // reset
     // cpu side (master)
     input   logic   [31 : 0]                    addr_dm_m,  // master address
     input   logic   [0  : 0]                    we_dm_m,    // master write enable
     input   logic   [31 : 0]                    wd_dm_m,    // master write data
     output  logic   [31 : 0]                    rd_dm_m,    // master read data
     // devices side (slave's)
-    output  logic                               clk_s,      // slave clock
-    output  logic                               resetn_s,   // slave reset
+    output  logic                  [0  : 0]     clk_s,      // slave clock
+    output  logic                  [0  : 0]     resetn_s,   // slave reset
     output  logic   [Slave_n-1 : 0][31 : 0]     addr_dm_s,  // slave address
     output  logic   [Slave_n-1 : 0][0  : 0]     we_dm_s,    // slave write enable
     output  logic   [Slave_n-1 : 0][31 : 0]     wd_dm_s,    // slave write data

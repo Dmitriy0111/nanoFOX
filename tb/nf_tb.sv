@@ -37,6 +37,7 @@ module nf_tb();
     integer             log;
 
     string              instruction;
+    string              last_instr="";
     string              instr_sep;
     string              log_str;
     string              reg_str;
@@ -105,16 +106,18 @@ module nf_tb();
 
                 log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
                 log_str = { log_str , $psprintf("cycle = %d, pc = %h, %t \n", cycle_counter, nf_top_0.nf_cpu_0.instr_addr, $time) };
-                log_str = { log_str , $psprintf("               %s\n", instruction) };
+                log_str = { log_str , $psprintf("               Current instruction : %s\n", instruction) };
+                log_str = { log_str , $psprintf("               Last instruction    : %s\n", last_instr ) };
                 if( `debug_lev0 )
                     log_str = { log_str , $psprintf("               %s\n", instr_sep) };
-                if( `log_en )
-                    $fwrite(log,"%s",log_str);
                 if( `log_html )
                     nf_pars_0.write_html_log( nf_top_0.nf_cpu_0.reg_file_0.reg_file, log_str);
                 log_str = { log_str , $psprintf("%s", reg_str) };
                 $display(log_str);
-                
+                if( `log_en )
+                    $fwrite(log,"%s",log_str);
+
+                last_instr = instruction;
                 cycle_counter++;
             end
             if( cycle_counter == repeat_cycles )
