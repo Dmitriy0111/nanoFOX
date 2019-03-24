@@ -10,8 +10,8 @@
 module nf_cpu
 (
     // clock and reset
-    input   logic               clk,            // clock
-    input   logic               resetn,         // reset
+    input   logic   [0  : 0]    clk,            // clock
+    input   logic   [0  : 0]    resetn,         // reset
     input   logic   [0  : 0]    cpu_en,         // cpu enable signal
     // instruction memory
     output  logic   [31 : 0]    instr_addr,     // instruction address
@@ -50,7 +50,7 @@ module nf_cpu
     logic   [2  : 0]    funct3;
     logic   [6  : 0]    funct7;
     logic   [0  : 0]    branch_type;
-    logic   [0  : 0]    eq_neq;
+    logic   [0  : 0]    branch_hf;
     logic   [1  : 0]    imm_src;
     logic   [0  : 0]    srcBsel;
     logic   [0  : 0]    pc_src;
@@ -85,7 +85,7 @@ module nf_cpu
     #(
         .width          ( 32            )
     )
-    register_pc
+    PC
     (
         .clk            ( clk           ),  // clock
         .resetn         ( resetn        ),  // reset 
@@ -94,7 +94,8 @@ module nf_cpu
         .we             ( cpu_en        )   // write enable
     );
     // creating register file
-    nf_reg_file reg_file_0
+    nf_reg_file 
+    reg_file_0
     (
         .clk            ( clk           ),  // clock
         .ra1            ( ra1           ),  // read address 1
@@ -108,7 +109,8 @@ module nf_cpu
         .rd0            ( reg_data      )   // read data 0
     );
     // creating ALU unit
-    nf_alu alu_0
+    nf_alu 
+    alu_0
     (
         .srcA           ( srcA          ),  // source A for ALU unit
         .srcB           ( srcB          ),  // source B for ALU unit
@@ -117,35 +119,38 @@ module nf_cpu
         .result         ( result        )   // result of ALU operation
     );
     // creating control unit for cpu
-    nf_control_unit nf_control_unit_0
+    nf_control_unit 
+    nf_control_unit_0
     (
         .opcode         ( opcode        ),  // operation code field in instruction code
         .funct3         ( funct3        ),  // funct 3 field in instruction code
         .funct7         ( funct7        ),  // funct 7 field in instruction code
-        .srcBsel        ( srcBsel       ),  // for enable immediate data
-        .branch_type    ( branch_type   ),  // for selecting srcB ALU
-        .eq_neq         ( eq_neq        ),  // for executing branch instructions
-        .we             ( we3           ),  // equal and not equal control
-        .imm_src        ( imm_src       ),  // write enable signal for register file
+        .srcBsel        ( srcBsel       ),  // for selecting srcB ALU
+        .branch_type    ( branch_type   ),  // for executing branch instructions
+        .branch_hf      ( branch_hf     ),  // branch help field
+        .we             ( we3           ),  // write enable signal for register file
+        .imm_src        ( imm_src       ),  // for enable immediate data
         .ALU_Code       ( ALU_Code      )   // output code for ALU unit
     );
     // creating branch unit
-    nf_branch_unit nf_branch_unit_0
+    nf_branch_unit 
+    nf_branch_unit_0
     (
         .branch_type    ( branch_type   ),  // from control unit, '1 if branch instruction
-        .d0             ( rd1           ),  // from control unit for beq and bne commands (equal and not equal)
-        .d1             ( rd2           ),  // from register file (rd1)
-        .eq_neq         ( eq_neq        ),  // from register file (rd2)
-        .pc_src         ( pc_src        )   // next program counter
+        .d1             ( rd1           ),  // from register file (rd1)
+        .d2             ( rd2           ),  // from register file (rd2)
+        .branch_hf      ( branch_hf     ),  // branch help field
+        .pc_src         ( pc_src        )   // next program counter selection
     );
     // creating sign extending unit
-    nf_sign_ex nf_sign_ex_0
+    nf_sign_ex 
+    nf_sign_ex_0
     (
-        .imm_data_i     ( imm_data_i    ),  // from control unit, '1 if branch instruction
-        .imm_data_u     ( imm_data_u    ),  // from control unit for beq and bne commands (equal and not equal)
-        .imm_data_b     ( imm_data_b    ),  // from register file (rd1)
-        .imm_src        ( imm_src       ),  // from register file (rd2)
-        .imm_ex         ( ext_data      )   // next program counter
+        .imm_data_i     ( imm_data_i    ),  // immediate data in i-type instruction
+        .imm_data_u     ( imm_data_u    ),  // immediate data in u-type instruction
+        .imm_data_b     ( imm_data_b    ),  // immediate data in b-type instruction
+        .imm_src        ( imm_src       ),  // selection immediate data input
+        .imm_ex         ( ext_data      )   // extended immediate data
     );
 
 endmodule : nf_cpu

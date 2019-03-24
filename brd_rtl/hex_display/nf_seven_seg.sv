@@ -10,7 +10,7 @@
 module nf_seven_seg
 (
     input   logic   [3 : 0]     hex,        // hexadecimal value input
-    input   logic               cc_ca,      // common cathode or common anode
+    input   logic   [0 : 0]     cc_ca,      // common cathode or common anode
     output  logic   [7 : 0]     seven_seg   // seven segments output
 );
 

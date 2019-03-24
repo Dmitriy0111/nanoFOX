@@ -10,8 +10,8 @@
 module nf_clock_div
 (
     // clock and reset
-    input   logic               clk,    // clock
-    input   logic               resetn, // reset
+    input   logic   [0  : 0]    clk,    // clock
+    input   logic   [0  : 0]    resetn, // reset
     // strobbing
     input   logic   [25 : 0]    div,    // div_number
     output  logic   [0  : 0]    en      // enable strobe
@@ -23,7 +23,7 @@ module nf_clock_div
     assign en = ( int_div == int_c );
 
     always_ff @(posedge clk, negedge resetn)
-    begin : name
+    begin
         if( !resetn )
         begin
             int_div <= '0;

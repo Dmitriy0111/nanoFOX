@@ -12,19 +12,17 @@ module nf_register
 #(
     parameter                       width = 1
 )(
-    input   logic                   clk,    // clock
-    input   logic                   resetn, // reset
+    input   logic   [0       : 0]   clk,    // clock
+    input   logic   [0       : 0]   resetn, // reset
     input   logic   [width-1 : 0]   datai,  // input data
     output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)
-    begin
         if( !resetn )
             datao <= '0;
         else
             datao <= datai;
-    end
 
 endmodule : nf_register
 
@@ -33,19 +31,17 @@ module nf_register_we
 #(
     parameter                       width = 1
 )(
-    input   logic                   clk,    // clock
-    input   logic                   resetn, // reset
-    input   logic                   we,     // write enable
+    input   logic   [0       : 0]   clk,    // clock
+    input   logic   [0       : 0]   resetn, // reset
+    input   logic   [0       : 0]   we,     // write enable
     input   logic   [width-1 : 0]   datai,  // input data
     output  logic   [width-1 : 0]   datao   // output data
 );
 
     always_ff @(posedge clk, negedge resetn)
-    begin
         if( !resetn )
             datao <= '0;
         else if( we )
             datao <= datai;
-    end
 
 endmodule : nf_register_we

@@ -28,7 +28,6 @@ class nf_pars;
     string              html_str = "";
     integer             html_p;
 
-
     string registers_list [0:31] =  {
                                         "zero",
                                         "ra",
@@ -198,6 +197,7 @@ class nf_pars;
         html_str = { html_str , "<font size = \"4\">" };
         html_str = { html_str , "<pre>" };
         html_str = { html_str , log_str };
+        html_str = { html_str , "register list :" };
         html_str = { html_str , "</pre>" };
         html_str = { html_str , "</font>\n" };
 

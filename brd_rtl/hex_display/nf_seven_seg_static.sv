@@ -12,7 +12,7 @@ module nf_seven_seg_static
     parameter                       hn = 8      // number of seven segments unit
 )(
     input   logic   [31     : 0]    hex,        // hexadecimal value input
-    input   logic                   cc_ca,      // common cathode or common anode
+    input   logic   [0      : 0]    cc_ca,      // common cathode or common anode
     output  logic   [hn*8-1 : 0]    seven_seg   // seven segments output
 );
 
