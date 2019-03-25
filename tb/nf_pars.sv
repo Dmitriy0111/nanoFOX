@@ -23,7 +23,6 @@ class nf_pars;
     logic   [11 : 0]    imm_data_b ;
 
     logic   [31 : 0]    reg_file_l  [31 : 0];
-    logic   [31 : 0]    table_html  [31 : 0];
     logic   [1  : 0]    table_c     [31 : 0];
     string              html_str = "";
     integer             html_p;
@@ -175,13 +174,6 @@ class nf_pars;
     task write_html_log( logic [31 : 0] reg_file[31 : 0], string log_str);
 
         html_str = "";
-        write_info_html(reg_file,log_str);
-        write_html_table(8, 4);
-        $fwrite(html_p,html_str);
-
-    endtask : write_html_log
-
-    task write_info_html(logic [31 : 0] reg_file[31 : 0], string log_str);
 
         integer i;
         i = 0;
@@ -194,6 +186,15 @@ class nf_pars;
                                 reg_file_l[i] : 
                                 reg_file[i];
         end
+
+        form_info_html(log_str);
+        form_html_table(8, 4);
+        $fwrite(html_p,html_str);
+
+    endtask : write_html_log
+
+    task form_info_html(string log_str);
+
         html_str = { html_str , "<font size = \"4\">" };
         html_str = { html_str , "<pre>" };
         html_str = { html_str , log_str };
@@ -201,9 +202,9 @@ class nf_pars;
         html_str = { html_str , "</pre>" };
         html_str = { html_str , "</font>\n" };
 
-    endtask : write_info_html
+    endtask : form_info_html
 
-    task write_html_table(integer row, integer col);
+    task form_html_table(integer row, integer col);
 
         integer tr_i;
         integer td_i;
@@ -238,6 +239,6 @@ class nf_pars;
 
         html_str = { html_str , "</table>" };
 
-    endtask : write_html_table
+    endtask : form_html_table
 
 endclass : nf_pars

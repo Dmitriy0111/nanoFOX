@@ -2,7 +2,10 @@
 
     A small RISC-V CPU core.
 
-![cpu_system](doc/cpu_system.jpg) 
+![cpu_system](doc/cpu_system.jpg)
+
+# Quickstart
+    $ git submodule update --init --recursive
 
 nanoFOX simple cpu currently works on these FPGA boards:
 <ol>

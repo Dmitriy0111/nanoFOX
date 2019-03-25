@@ -1,0 +1,3 @@
+[submodule "brd_rtl/DebugScreenCore"]
+	path = brd_rtl/DebugScreenCore
+	url = https://github.com/Dmitriy0111/DebugScreenCore

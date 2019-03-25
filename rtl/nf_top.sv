@@ -9,8 +9,8 @@
 
 module nf_top
 (
-    input   logic               clk,        // clock
-    input   logic               resetn,     // reset
+    input   logic   [0  : 0]    clk,        // clock
+    input   logic   [0  : 0]    resetn,     // reset
     input   logic   [25 : 0]    div,        // clock divide input
     input   logic   [4  : 0]    reg_addr,   // scan register address
     output  logic   [31 : 0]    reg_data    // scan register data
@@ -18,7 +18,7 @@ module nf_top
 
     logic   [31 : 0]    instr_addr;
     logic   [31 : 0]    instr;
-    logic               cpu_en;
+    logic   [0  : 0]    cpu_en;
 
     nf_cpu nf_cpu_0
     (

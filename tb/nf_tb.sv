@@ -18,8 +18,8 @@ module nf_tb();
                         resetn_delay = 7,
                         repeat_cycles = 200;
     
-    bit                 clk;
-    bit                 resetn;
+    bit     [0  : 0]    clk;
+    bit     [0  : 0]    resetn;
     bit     [4  : 0]    reg_addr;
     bit     [31 : 0]    reg_data;
     bit     [25 : 0]    div;
