@@ -294,6 +294,35 @@ set_location_assignment PIN_AB3 -to gpio[32]
 set_location_assignment PIN_Y3 -to gpio[33]
 set_location_assignment PIN_AB2 -to gpio[34]
 set_location_assignment PIN_AA2 -to gpio[35]
+# VGA
+set_location_assignment PIN_AA1 -to R[0]
+set_location_assignment PIN_V1 -to R[1]
+set_location_assignment PIN_Y2 -to R[2]
+set_location_assignment PIN_Y1 -to R[3]
+set_location_assignment PIN_W1 -to G[0]
+set_location_assignment PIN_T2 -to G[1]
+set_location_assignment PIN_R2 -to G[2]
+set_location_assignment PIN_R1 -to G[3]
+set_location_assignment PIN_P1 -to B[0]
+set_location_assignment PIN_T1 -to B[1]
+set_location_assignment PIN_P4 -to B[2]
+set_location_assignment PIN_N2 -to B[3]
+set_location_assignment PIN_N3 -to hsync
+set_location_assignment PIN_N1 -to vsync
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to hsync
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to vsync
 
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_signal.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_pix_symbol.sv

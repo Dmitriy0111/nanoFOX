@@ -27,35 +27,31 @@ module de10_lite
     inout   [35 : 0]    gpio
 );
 
-    localparam          debug_type  = "vga";
-    localparam          cpu         = "nanoFOX";
+    localparam              debug_type  = "hex";
+    localparam              cpu         = "nanoFOX";
+    localparam              sub_path    = "../../brd_rtl/DebugScreenCore/";
 
     // wires & inputs
     // clock and reset
-    logic               clk;        // clock
-    logic               resetn;     // reset
-    logic   [25    : 0] div;        // clock divide input
+    logic   [0     : 0]     clk;        // clock
+    logic   [0     : 0]     resetn;     // reset
+    logic   [25    : 0]     div;        // clock divide input
     // for debug
-    logic   [4     : 0] reg_addr;   // scan register address
-    logic   [31    : 0] reg_data;   // scan register data
+    logic   [4     : 0]     reg_addr;   // scan register address
+    logic   [31    : 0]     reg_data;   // scan register data
     // hex
-    logic   [6*8-1 : 0] hex;
+    logic   [6*8-1 : 0]     hex;        // hex values from convertors
     // for debug ScreenCore
-    logic   [0  : 0]    en;
+    logic   [0     : 0]     en;         // enable logic for vga DebugScreenCore
     
     assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
     assign clk      = max10_clk1_50;
     assign resetn   = key[0];
     assign div      = { sw[5 +: 5] , { 20 { 1'b1 } } };
 
-    always_ff @(posedge clk, negedge resetn)
-        if( !resetn )
-            en <= '0;
-        else
-            en <= ~ en;
-
     // creating one nf_top_0 unit
-    nf_top nf_top_0
+    nf_top 
+    nf_top_0
     (
         // clock and reset
         .clk        ( clk       ),  // clock
@@ -65,7 +61,7 @@ module de10_lite
         .reg_addr   ( reg_addr  ),  // scan register address
         .reg_data   ( reg_data  )   // scan register data
     );
-
+    // generate block
     generate
 
         if( debug_type == "hex" )
@@ -91,10 +87,13 @@ module de10_lite
 
         if( debug_type == "vga" )
         begin
+            // creating one enable flip-flop
+            nf_register #( 1 ) en_ff    ( clk, resetn, !en , en );
             // creating one debug_screen_core
             vga_ds_top
             #(
-                .cpu        ( cpu       )
+                .cpu        ( cpu       ),
+                .sub_path   ( sub_path  )
             )
             vga_ds_top_0
             (

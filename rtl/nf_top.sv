@@ -20,7 +20,8 @@ module nf_top
     logic   [31 : 0]    instr;
     logic   [0  : 0]    cpu_en;
 
-    nf_cpu nf_cpu_0
+    nf_cpu 
+    nf_cpu_0
     (
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset
@@ -34,7 +35,7 @@ module nf_top
     // creating instruction memory 
     nf_instr_mem 
     #( 
-        .depth          ( 64                ) 
+        .depth          ( 64                )   // depth of memory array
     )
     instr_mem_0
     (
@@ -43,7 +44,8 @@ module nf_top
     );
 
     // creating strob generating unit for "dividing" clock
-    nf_clock_div nf_clock_div_0
+    nf_clock_div 
+    nf_clock_div_0
     (
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset

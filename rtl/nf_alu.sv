@@ -22,12 +22,12 @@ module nf_alu
     begin
         result = 0;
         casex( ALU_Code )
-            `ALU_LUI    : begin result = srcB << 12;        end
-            `ALU_ADD    : begin result = srcA + srcB;       end
-            `ALU_SUB    : begin result = srcA - srcB;       end
-            `ALU_SLLI   : begin result = srcA << shamt;     end
-            `ALU_OR     : begin result = srcA | srcB;       end
-            default     : ;
+            `ALU_LUI    : result = srcB << 12;
+            `ALU_ADD    : result = srcA + srcB;
+            `ALU_SUB    : result = srcA - srcB;
+            `ALU_SLL    : result = srcA << shamt;
+            `ALU_OR     : result = srcA | srcB;
+            default     : result = 0;
         endcase
     end
 
