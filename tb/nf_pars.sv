@@ -133,7 +133,7 @@ class nf_pars;
             'b1101111 :
                 instr_sep = $psprintf("J-type : %b_%b_%b_%b_%b_%b", instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode );
             'b??????? :
-                instr_sep = $psprintf("%b", instr );
+                instr_sep = $psprintf("Unknown : %b", instr );
         endcase
 
     endtask : instr_separation

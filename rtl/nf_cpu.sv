@@ -22,38 +22,37 @@ module nf_cpu
 );
 
     // program counter wires
-    logic   [31 : 0]    pc_i;
-    logic   [31 : 0]    pc_nb;
-    logic   [31 : 0]    pc_b;
-    logic   [0  : 0]    next_pc_sel;
+    logic   [31 : 0]    pc_i;           // program counter -> instruction memory address
+    logic   [31 : 0]    pc_nb;          // program counter for non branch instructions
+    logic   [31 : 0]    pc_b;           // program counter for branch instructions
     // register file wires
-    logic   [4  : 0]    ra1;
-    logic   [31 : 0]    rd1;
-    logic   [4  : 0]    ra2;
-    logic   [31 : 0]    rd2;
-    logic   [4  : 0]    wa3;
-    logic   [31 : 0]    wd3;
-    logic   [0  : 0]    we3;
+    logic   [4  : 0]    ra1;            // read address 1 from RF
+    logic   [31 : 0]    rd1;            // read data 1 from RF
+    logic   [4  : 0]    ra2;            // read address 2 from RF
+    logic   [31 : 0]    rd2;            // read data 2 from RF
+    logic   [4  : 0]    wa3;            // write address for RF
+    logic   [31 : 0]    wd3;            // write data for RF
+    logic   [0  : 0]    we3;            // write enable for RF
     // sign extend wires
-    logic   [11 : 0]    imm_data_i;
-    logic   [19 : 0]    imm_data_u;
-    logic   [11 : 0]    imm_data_b;
-    logic   [31 : 0]    ext_data;
+    logic   [11 : 0]    imm_data_i;     // immediate data for i-type commands
+    logic   [19 : 0]    imm_data_u;     // immediate data for u-type commands
+    logic   [11 : 0]    imm_data_b;     // immediate data for b-type commands
+    logic   [31 : 0]    ext_data;       // sign extended data
     // ALU wires
-    logic   [31 : 0]    srcA;
-    logic   [31 : 0]    srcB;
-    logic   [4  : 0]    shamt;
-    logic   [31 : 0]    ALU_Code;
-    logic   [31 : 0]    result;
+    logic   [31 : 0]    srcA;           // source A for ALU
+    logic   [31 : 0]    srcB;           // source B for ALU
+    logic   [4  : 0]    shamt;          // for operations with shift
+    logic   [31 : 0]    ALU_Code;       // code for ALU
+    logic   [31 : 0]    result;         // result of ALU operation
     // control unit wires
-    logic   [6  : 0]    opcode;
-    logic   [2  : 0]    funct3;
-    logic   [6  : 0]    funct7;
-    logic   [0  : 0]    branch_type;
-    logic   [0  : 0]    branch_hf;
-    logic   [1  : 0]    imm_src;
-    logic   [0  : 0]    srcBsel;
-    logic   [0  : 0]    pc_src;
+    logic   [6  : 0]    opcode;         // opcode instruction field
+    logic   [2  : 0]    funct3;         // funct 3 instruction field
+    logic   [6  : 0]    funct7;         // funct 7 instruction field
+    logic   [0  : 0]    branch_type;    // branch type
+    logic   [0  : 0]    branch_hf;      // branch help field
+    logic   [1  : 0]    imm_src;        // immediate data selecting
+    logic   [0  : 0]    srcBsel;        // source B for ALU selecting
+    logic   [0  : 0]    pc_src;         // program counter selecting pc_nb or pc_b
 
     // register's address finding from instruction
     assign ra1  = instr[15 +: 5];

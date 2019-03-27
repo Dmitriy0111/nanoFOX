@@ -20,7 +20,8 @@ module nf_reg_file
     input   logic   [4  : 0]    ra0,    // read address 0
     output  logic   [31 : 0]    rd0     // read data 0
 );
-    logic [31 : 0] reg_file [31 : 0];
+
+    logic [31 : 0] reg_file [31 : 0];   // register file
 
     assign  rd0 = ( ra0 == '0 ) ? '0 : reg_file[ra0];
     assign  rd1 = ( ra1 == '0 ) ? '0 : reg_file[ra1];

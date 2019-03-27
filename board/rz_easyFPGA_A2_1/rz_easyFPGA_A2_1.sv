@@ -73,6 +73,8 @@ module rz_easyFPGA_A2_1
 
         if( debug_type == "vga" )
         begin
+            assign hex = '0;
+            assign dig = '0;
             // creating one enable flip-flop
             nf_register #( 1 ) en_ff    ( clk, resetn, !en , en );
             // creating one debug_screen_core

@@ -19,7 +19,7 @@ module nf_top
     logic   [31 : 0]    instr_addr;
     logic   [31 : 0]    instr;
     logic   [0  : 0]    cpu_en;
-
+    // creating one nf_cpu unit
     nf_cpu 
     nf_cpu_0
     (
@@ -31,7 +31,6 @@ module nf_top
         .reg_addr       ( reg_addr          ),  // register address
         .reg_data       ( reg_data          )   // register data
     );
-
     // creating instruction memory 
     nf_instr_mem 
     #( 
@@ -42,7 +41,6 @@ module nf_top
         .addr           ( instr_addr >> 2   ),  // instruction address
         .instr          ( instr             )   // instruction data
     );
-
     // creating strob generating unit for "dividing" clock
     nf_clock_div 
     nf_clock_div_0
