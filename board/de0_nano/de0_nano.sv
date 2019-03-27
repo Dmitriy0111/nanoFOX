@@ -149,7 +149,8 @@ input 		     [1:0]		GPIO_1_IN;
 	assign LED[7]		= pwm;
     assign gpi = '0 | SW[2 +: 2];
 	// creating one nf_top_0 unit
-    nf_top nf_top_0
+    nf_top 
+	nf_top_0
     (
         .clk        ( clk       ),  // clock
         .resetn     ( resetn    ),  // reset

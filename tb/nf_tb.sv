@@ -98,13 +98,13 @@ module nf_tb();
         end
         forever
         begin
-            @(posedge nf_top_0.cpu_en);
+            @(posedge nf_top_0.nf_cpu_0.cpu_en);
             if( resetn )
             begin
                 nf_pars_0.pars(nf_top_0.nf_cpu_0.instr, instruction, instr_sep);
                 nf_pars_0.write_txt_table(nf_top_0.nf_cpu_0.reg_file_0.reg_file, reg_str);
 
-                log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+                log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
                 log_str = { log_str , $psprintf("cycle = %d, pc = %h, %t \n", cycle_counter, nf_top_0.nf_cpu_0.instr_addr, $time) };
                 log_str = { log_str , $psprintf("               Current instruction : %s\n", instruction) };
                 log_str = { log_str , $psprintf("               Last instruction    : %s\n", last_instr ) };

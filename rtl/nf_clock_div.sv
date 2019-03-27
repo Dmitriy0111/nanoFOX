@@ -23,7 +23,6 @@ module nf_clock_div
     assign en = (int_div == int_c);
 
     always_ff @(posedge clk, negedge resetn)
-    begin 
         if( !resetn )
         begin
             int_div <= '0;
@@ -38,6 +37,5 @@ module nf_clock_div
                 int_c   <= div;
             end
         end 
-    end
 
 endmodule : nf_clock_div

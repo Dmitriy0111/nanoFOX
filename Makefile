@@ -133,7 +133,7 @@ synth_gui_q:
 	quartus $(PWD)/synth_$(BOARD)/$(BOARD).qpf &
 
 synth_load_q:
-	quartus_pgm -c $(CABLE_NAME) -m JTAG -o "p;synth_$(BOARD)/output_files/$(BOARD).sof"
+	quartus_pgm -c $(CABLE_NAME) -m JTAG -o "p;synth_$(BOARD)/$(BOARD).sof"
 
 ########################################################
 # synthesis - all the supported boards

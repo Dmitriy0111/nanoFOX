@@ -21,22 +21,28 @@ module de10_lite
     inout   [35 : 0]    gpio
 );
 
+    localparam              debug_type  = "hex";
+    localparam              cpu         = "nanoFOX";
+    localparam              sub_path    = "../../brd_rtl/DebugScreenCore/";
+
     // wires & inputs
     // clock and reset
-    logic               clk;        // clock
-    logic               resetn;     // reset
-    logic   [25 : 0]    div;        // clock divide input
+    logic   [0     : 0]     clk;        // clock
+    logic   [0     : 0]     resetn;     // reset
+    logic   [25    : 0]     div;        // clock divide input
     // pwm side
-    logic               pwm;        // PWM output
+    logic                   pwm;        // PWM output
     // gpio side
-    logic   [7 : 0]     gpi;        // GPIO input
-    logic   [7 : 0]     gpo;        // GPIO output
-    logic   [7 : 0]     gpd;        // GPIO direction
+    logic   [7     : 0]     gpi;        // GPIO input
+    logic   [7     : 0]     gpo;        // GPIO output
+    logic   [7     : 0]     gpd;        // GPIO direction
     // for debug
-    logic   [4  : 0]    reg_addr;   // scan register address
-    logic   [31 : 0]    reg_data;   // scan register data
+    logic   [4     : 0]     reg_addr;   // scan register address
+    logic   [31    : 0]     reg_data;   // scan register data
     // hex
-    logic   [6*8-1 : 0] hex;
+    logic   [6*8-1 : 0]     hex;
+        // for debug ScreenCore
+    logic   [0     : 0]     en;         // enable logic for vga DebugScreenCore
 
     assign ledr[0 +: 8] = gpo;
     assign ledr[8]      = pwm;
@@ -44,10 +50,11 @@ module de10_lite
     assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
     assign clk      = max10_clk1_50;
     assign resetn   = key[0];
-    assign reg_addr = sw[0 +: 5];
     assign div      = { sw[5 +: 5] , { 20 { 1'b1 } } };
+
     // creating one nf_top_0 unit
-    nf_top nf_top_0
+    nf_top 
+    nf_top_0
     (
         // clock and reset
         .clk        ( clk       ),  // clock
@@ -63,16 +70,59 @@ module de10_lite
         .gpo        ( gpo       ),  // scan register address
         .gpd        ( gpd       )   // scan register data
     );
-    // creating one nf_seven_seg_static_0 unit
-    nf_seven_seg_static 
-    #(
-        .hn         ( 6         )
-    )
-    nf_seven_seg_static_0
-    (
-        .hex        ( reg_data  ),  // hexadecimal value input
-        .cc_ca      ( '0        ),  // common cathode or common anode
-        .seven_seg  ( hex       )   // seven segments output
-    );
+
+    // generate block
+    generate
+
+        if( debug_type == "hex" )
+        begin
+            assign reg_addr = sw[0 +: 5];
+            assign R        = '0;
+            assign G        = '0;
+            assign B        = '0;
+            assign hsync    = '0;
+            assign vsync    = '0;
+            // creating one nf_seven_seg_static_0 unit
+            nf_seven_seg_static 
+            #(
+                .hn         ( 6         )
+            )
+            nf_seven_seg_static_0
+            (
+                .hex        ( reg_data  ),  // hexadecimal value input
+                .cc_ca      ( '0        ),  // common cathode or common anode
+                .seven_seg  ( hex       )   // seven segments output
+            );
+        end
+
+        if( debug_type == "vga" )
+        begin
+            assign hex = '0;
+            // creating one enable flip-flop
+            nf_register #( 1 ) en_ff    ( clk, resetn, !en , en );
+            // creating one debug_screen_core
+            vga_ds_top
+            #(
+                .cpu        ( cpu       ),
+                .sub_path   ( sub_path  )
+            )
+            vga_ds_top_0
+            (
+                .clk        ( clk       ),  // clock
+                .resetn     ( resetn    ),  // reset
+                .en         ( en        ),  // enable input
+                .hsync      ( hsync     ),  // hsync output
+                .vsync      ( vsync     ),  // vsync output
+                .bgColor    ( 12'h00f   ),  // Background color
+                .fgColor    ( 12'hf00   ),  // Foreground color
+                .regData    ( reg_data  ),  // Register data input from cpu
+                .regAddr    ( reg_addr  ),  // Register data output to cpu
+                .R          ( R         ),  // R-color
+                .G          ( G         ),  // G-color
+                .B          ( B         )   // B-color
+            );
+        end
+
+    endgenerate
 
 endmodule : de10_lite

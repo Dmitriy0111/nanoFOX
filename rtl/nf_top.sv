@@ -38,8 +38,8 @@ module nf_top
     // slave's side
     localparam                          Slave_n = `slave_number ;
 
-    logic                               clk_s;
-    logic                               resetn_s;
+    logic                  [0  : 0]     clk_s;
+    logic                  [0  : 0]     resetn_s;
     logic   [Slave_n-1 : 0][31 : 0]     addr_dm_s;
     logic   [Slave_n-1 : 0][0  : 0]     we_dm_s;
     logic   [Slave_n-1 : 0][31 : 0]     wd_dm_s;

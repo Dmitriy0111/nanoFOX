@@ -124,22 +124,25 @@ class nf_pars;
         funct3 = instr[12 +: 3];
         funct7 = instr[25 +: 7];
 
-        if( opcode == 'b0110011 )
-            instr_sep = $psprintf("R-type : %b_%b_%b_%b_%b_%b", funct7, ra2, ra1, funct3, wa3, opcode );
-        if( ( opcode == 'b0010011 ) || ( opcode == 'b0000011 ) || ( opcode == 'b1100111 ) )
-            instr_sep = $psprintf("I-type : %b_%b_%b_%b_%b", instr[20 +: 12], ra1, funct3, wa3, opcode );
-        if( opcode == 'b0100011 )
-            instr_sep = $psprintf("S-type : %b_%b_%b_%b_%b_%b", instr[25 +: 7], ra2, ra1, funct3, instr[7  +: 5], opcode );
-        if( opcode == 'b1100011 )
-            instr_sep = $psprintf("B-type : %b_%b_%b_%b_%b_%b_%b_%b", instr[31], instr[25 +: 6], ra2, ra1, funct3, instr[8  +: 5], instr[7], opcode );
-        if( ( opcode == 'b0110111 ) || ( opcode == 'b0010111 ) )
-            instr_sep = $psprintf("U-type : %b_%b_%b", instr[12 +: 20], wa3, opcode );
-        if( opcode == 'b1101111 )
-            instr_sep = $psprintf("J-type : %b_%b_%b_%b_%b_%b", instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode );
-        if( instr_sep == "" )
-            instr_sep = $psprintf("%b", instr );
-        if( $isunknown( opcode ) )
-            instr_sep = $psprintf("%b", instr );
+        casex( opcode )
+            'b0110011 :
+                instr_sep = $psprintf("R-type : %b_%b_%b_%b_%b_%b", funct7, ra2, ra1, funct3, wa3, opcode );
+            'b0010011 , 
+            'b0000011 , 
+            'b1100111 :
+                instr_sep = $psprintf("I-type : %b_%b_%b_%b_%b", instr[20 +: 12], ra1, funct3, wa3, opcode );
+            'b0100011 :
+                instr_sep = $psprintf("S-type : %b_%b_%b_%b_%b_%b", instr[25 +: 7], ra2, ra1, funct3, instr[7  +: 5], opcode );
+            'b1100011 :
+                instr_sep = $psprintf("B-type : %b_%b_%b_%b_%b_%b_%b_%b", instr[31], instr[25 +: 6], ra2, ra1, funct3, instr[8  +: 5], instr[7], opcode );
+            'b0110111 , 
+            'b0010111 :
+                instr_sep = $psprintf("U-type : %b_%b_%b", instr[12 +: 20], wa3, opcode );
+            'b1101111 :
+                instr_sep = $psprintf("J-type : %b_%b_%b_%b_%b_%b", instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode );
+            'b??????? :
+                instr_sep = $psprintf("Unknown : %b", instr );
+        endcase
 
     endtask : instr_separation
 
@@ -167,7 +170,11 @@ class nf_pars;
 
     task build_html_loger(string out_file);
 
-        for(integer i = 0; i < 32; i++)
+        integer i;
+
+        i = 0;
+
+        for(i = 0; i < 32; i++)
         begin
             reg_file_l[i]   = '0;
             table_c[i]  = '0;
@@ -183,16 +190,8 @@ class nf_pars;
 
     task write_html_log( logic [31 : 0] reg_file[31 : 0], string log_str);
 
-        html_str = "";
-        write_info_html(reg_file,log_str);
-        write_html_table(8, 4);
-        $fwrite(html_p,html_str);
-
-    endtask : write_html_log
-
-    task write_info_html(logic [31 : 0] reg_file[31 : 0], string log_str);
-
         integer i;
+        html_str = "";
         i = 0;
         for( i = 0 ; i < 32 ; i++ )
         begin
@@ -203,6 +202,15 @@ class nf_pars;
                                 reg_file_l[i] : 
                                 reg_file[i];
         end
+
+        form_info_html(log_str);
+        form_html_table(8, 4);
+        $fwrite(html_p,html_str);
+
+    endtask : write_html_log
+
+    task form_info_html(string log_str);
+
         html_str = { html_str , "<font size = \"4\">" };
         html_str = { html_str , "<pre>" };
         html_str = { html_str , log_str };
@@ -210,9 +218,9 @@ class nf_pars;
         html_str = { html_str , "</pre>" };
         html_str = { html_str , "</font>\n" };
 
-    endtask : write_info_html
+    endtask : form_info_html
 
-    task write_html_table(integer row, integer col);
+    task form_html_table(integer row, integer col);
 
         integer tr_i;
         integer td_i;
@@ -247,6 +255,6 @@ class nf_pars;
 
         html_str = { html_str , "</table>" };
 
-    endtask : write_html_table
+    endtask : form_html_table
 
 endclass : nf_pars

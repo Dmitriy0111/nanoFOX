@@ -294,14 +294,48 @@ set_location_assignment PIN_AB3 -to gpio[32]
 set_location_assignment PIN_Y3 -to gpio[33]
 set_location_assignment PIN_AB2 -to gpio[34]
 set_location_assignment PIN_AA2 -to gpio[35]
+# VGA
+set_location_assignment PIN_AA1 -to R[0]
+set_location_assignment PIN_V1 -to R[1]
+set_location_assignment PIN_Y2 -to R[2]
+set_location_assignment PIN_Y1 -to R[3]
+set_location_assignment PIN_W1 -to G[0]
+set_location_assignment PIN_T2 -to G[1]
+set_location_assignment PIN_R2 -to G[2]
+set_location_assignment PIN_R1 -to G[3]
+set_location_assignment PIN_P1 -to B[0]
+set_location_assignment PIN_T1 -to B[1]
+set_location_assignment PIN_P4 -to B[2]
+set_location_assignment PIN_N2 -to B[3]
+set_location_assignment PIN_N3 -to hsync
+set_location_assignment PIN_N1 -to vsync
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to B[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to R[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to hsync
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to vsync
 
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_branch_unit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_signal.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_pix_symbol.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_ds_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/symbol_mem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/display_mem.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_static.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_dynamic.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_branch_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_sign_ex.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_router_mux.sv

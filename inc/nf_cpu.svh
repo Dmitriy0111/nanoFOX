@@ -83,7 +83,7 @@
 `define ALU_ADD     'b000
 `define ALU_OR      'b001
 `define ALU_LUI     'b010
-`define ALU_SLLI    'b011
+`define ALU_SLL     'b011
 `define ALU_SUB     'b100
 
 // sign imm select
