@@ -13,8 +13,10 @@ help:
 	$(info make synth_gui_q    - open the board project with quartus)
 	$(info make synth_load_q   - program the default FPGA board with quartus)
 	$(info make board_all      - run synthesis for all the supported boards)
-	$(info make prog_comp_win  - compile program on windows and copy program.hex to program_file)
-	$(info make prog_comp_lin  - compile program on linux and copy program.hex to program_file)
+	$(info make comp_lin_c     - compile C program on windows and copy program.hex to program_file)
+	$(info make comp_win_c     - compile C program on linux and copy program.hex to program_file)
+	$(info make comp_lin_asm   - compile Assembler program on windows and copy program.hex to program_file)
+	$(info make comp_win_asm   - compile Assembler program on linux and copy program.hex to program_file)
 	$(info Open and read the Makefile for details)
 	@true
 

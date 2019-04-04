@@ -17,6 +17,10 @@ module rz_easyFPGA_A2_1
     logic   [7  : 0]    gpio_d_0;   // GPIO_0 direction
     // PWM
     logic               pwm;        // PWM output signal
+    // UART side
+    logic   [0  : 0]    uart_tx;    // UART tx wire
+    logic   [0  : 0]    uart_rx;    // UART rx wire
+
     logic   [31 : 0]    gpio2hex;
     logic   [7  : 0]    hex;
     // assigns
@@ -32,7 +36,9 @@ module rz_easyFPGA_A2_1
         .gpio_i_0   ( gpio_i_0  ),
         .gpio_o_0   ( gpio_o_0  ),
         .gpio_d_0   ( gpio_d_0  ),
-        .pwm        ( pwm       ) 
+        .pwm        ( pwm       ),
+        .uart_tx    ( uart_tx   ),
+        .uart_rx    ( uart_rx   )
     );
     // creating one nf_seven_seg_dynamic_0 unit
     nf_seven_seg_dynamic nf_seven_seg_dynamic_0

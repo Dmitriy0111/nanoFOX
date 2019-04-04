@@ -23,18 +23,15 @@ _start:     lui     t1, NF_UART_ADDR            # load upper bytes of addr UART;
             lui     t3, 0x00                    # reset t3
             addi    t3, t3, 0xD                 # load in UART tx_data register 'H'
             lui     t4, 0x00                    # reset t2
-            addi    t4, t4, NF_UART_SP_115200   # load UART speed
+            addi    t4, t4, NF_UART_SP_115200   # form UART speed
 load_data:  lui     t2, 0x00                    # reset t2
             addi    t2, t2, 72                  # load in UART tx_data register 'H'
             lui     t3, 0x00                    # reset t2
             addi    t3, t3, 0xD                 # load in UART tx_data register 'H'
             sw      t4, NF_UART_DR (t1)         # load UART speed to UART module
-            sw      t2, NF_UART_TX (t1)         # load UART speed to UART module
-            sw      t3, NF_UART_CR (t1)         # load UART speed to UART module
+            sw      t2, NF_UART_TX (t1)         # load H in UART data register
+            sw      t3, NF_UART_CR (t1)         # load TX send in UART tx module
 read_cr:    lw      t2, NF_UART_CR (t1)         # t2 = UART control register
-            nop
-            nop
-            nop
             beq     t2, t3, read_cr             # go to clean_t0;
             lui     t1, NF_GPIO_ADDR            # load upper bytes of addr UART;
             sw      t4, 0x4 (t1)                # load UART speed to UART module

@@ -32,9 +32,13 @@ module de10_lite
     logic   [7 : 0]     gpio_i_0;
     logic   [7 : 0]     gpio_o_0;
     logic   [7 : 0]     gpio_d_0;
+    // UART side
+    logic   [0  : 0]    uart_tx;    // UART tx wire
+    logic   [0  : 0]    uart_rx;    // UART rx wire
 
     assign ledr[0 +: 8] = gpio_o_0;
     assign ledr[8]      = pwm;
+    
     
     assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
     assign clk      = max10_clk1_50;
@@ -48,7 +52,9 @@ module de10_lite
         .pwm        ( pwm       ),
         .gpio_i_0   ( gpio_i_0  ),
         .gpio_o_0   ( gpio_o_0  ),
-        .gpio_d_0   ( gpio_d_0  )
+        .gpio_d_0   ( gpio_d_0  ),
+        .uart_tx    ( uart_tx   ),
+        .uart_rx    ( uart_rx   )
     );
     // creating one nf_seven_seg_static_0 unit
     nf_seven_seg_static 

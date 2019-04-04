@@ -135,6 +135,9 @@ input 		     [1:0]		GPIO_1_IN;
     logic   [7 : 0]     gpio_i_0;
     logic   [7 : 0]     gpio_o_0;
     logic   [7 : 0]     gpio_d_0;
+	// UART side
+    logic   [0  : 0]    uart_tx;    // UART tx wire
+    logic   [0  : 0]    uart_rx;    // UART rx wire
     
 //=======================================================
 //  Structural coding
@@ -153,7 +156,9 @@ input 		     [1:0]		GPIO_1_IN;
         .pwm        ( pwm       ),
         .gpio_i_0   ( gpio_i_0  ),
         .gpio_o_0   ( gpio_o_0  ),
-        .gpio_d_0   ( gpio_d_0  )
+        .gpio_d_0   ( gpio_d_0  ),
+		.uart_tx	( uart_tx	),
+		.uart_rx	( uart_rx	)
     );
 
 endmodule

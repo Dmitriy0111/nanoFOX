@@ -15,9 +15,9 @@
 // UART constants
 #define     NF_UART_SP_115200   0x1B2
 #define     NF_UART_TX_SEND     0x1
-#define     NF_UART_TX_EN       0x2
-#define     NF_UART_RX_EN       0x4
-#define     NF_UART_RX_VALID    0x8
+#define     NF_UART_TX_EN       0x4
+#define     NF_UART_RX_EN       0x8
+#define     NF_UART_RX_VALID    0x2
 // UART registers
 #define     NF_UART_CR          (* (volatile unsigned *) NF_UART_CR_ADDR )
 #define     NF_UART_TX          (* (volatile unsigned *) NF_UART_TX_ADDR )
