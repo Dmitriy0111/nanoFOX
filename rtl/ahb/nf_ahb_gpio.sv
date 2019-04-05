@@ -34,30 +34,28 @@ module nf_ahb_gpio
     output  logic   [gpio_w-1 : 0]  gpd         // GPIO direction
 );
 
-    logic   [0  : 0]    gpio_request;
-    logic   [0  : 0]    gpio_wrequest;
-    logic   [31 : 0]    gpio_addr;
-    logic   [0  : 0]    gpio_we;
+    logic   [0  : 0]    gpio_request;   // gpio request
+    logic   [0  : 0]    gpio_wrequest;  // gpio write request
+    logic   [31 : 0]    gpio_addr;      // gpio address
+    logic   [0  : 0]    gpio_we;        // gpio write enable
 
-    assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
-    assign  gpio_wrequest = gpio_request && hwrite_s;
-
-    nf_register_we  #( 32 ) gpio_addr_ff    ( hclk, hresetn, gpio_request , haddr_s, gpio_addr );
-    nf_register     #( 1  ) gpio_wreq_ff    ( hclk, hresetn, gpio_wrequest, gpio_we  );
-    nf_register     #( 1  ) hready_ff       ( hclk, hresetn, gpio_request , hready_s );
-
-    logic   [31 : 0]    addr;
-    logic   [31 : 0]    rd;
-    logic   [31 : 0]    wd;
-    logic   [0  : 0]    we;
+    logic   [31 : 0]    addr;           // address for gpio module
+    logic   [31 : 0]    rd;             // read data from gpio module
+    logic   [31 : 0]    wd;             // write data for gpio module
+    logic   [0  : 0]    we;             // write enable for gpio module
 
     assign  addr     = gpio_addr;
     assign  we       = gpio_we;
     assign  wd       = hwdata_s;
     assign  hrdata_s = rd;
-
-    assign  hresp_s   = `AHB_HRESP_OKAY;
-
+    assign  hresp_s  = `AHB_HRESP_OKAY;
+    assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
+    assign  gpio_wrequest = gpio_request && hwrite_s;
+    // creating control and address registers
+    nf_register_we  #( 32 ) gpio_addr_ff    ( hclk, hresetn, gpio_request , haddr_s, gpio_addr );
+    nf_register     #( 1  ) gpio_wreq_ff    ( hclk, hresetn, gpio_wrequest, gpio_we  );
+    nf_register     #( 1  ) hready_ff       ( hclk, hresetn, gpio_request , hready_s );
+    // creating one nf_gpio unit
     nf_gpio
     #(
         .gpio_w     ( gpio_w            )

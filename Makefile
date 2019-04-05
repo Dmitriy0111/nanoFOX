@@ -26,8 +26,8 @@ RUN_DIR  = $(PWD)/run
 RTL_DIR  = $(PWD)/rtl
 TB_DIR   = $(PWD)/tb
 
-BOARDS_SUPPORTED ?= de10_lite
-BOARD            ?= de10_lite
+BOARDS_SUPPORTED ?= de0_nano
+BOARD            ?= de0_nano
 
 ########################################################
 # common make targets

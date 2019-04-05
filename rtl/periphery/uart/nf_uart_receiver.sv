@@ -27,13 +27,13 @@ module nf_uart_receiver
     logic   [15 : 0]    counter;        // counter for baudrate
     logic   [0  : 0]    wait2rec;       // wait to receive
     logic   [0  : 0]    rec2wait;       // receive to wait
+    enum
+    logic   [1  : 0]    { WAIT_s, RECEIVE_s } state, next_state; //FSM states
 
     assign wait2rec = uart_rx == '0 ;
     assign rec2wait = bit_counter == 4'h9;
     
     assign rx_data = int_reg;
-    
-    enum logic [1 : 0] { WAIT_s, RECEIVE_s } state, next_state; //FSM states
     
     //FSM state change
     always_ff @(posedge clk or negedge resetn)
@@ -45,7 +45,6 @@ module nf_uart_receiver
             if( !rec_en )
                 state <= WAIT_s;
         end
-            
     //Finding next state for FSM
     always_comb 
     begin : next_state_finding

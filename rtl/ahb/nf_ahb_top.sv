@@ -44,7 +44,7 @@ module nf_ahb_top
     logic   [2  : 0]    hburst;
     logic   [1  : 0]    hresp;
     logic   [0  : 0]    hready;
-
+    // creating one ahb to core unit
     nf_ahb2core nf_ahb2core_0
     (
         .clk            ( clk           ),
@@ -67,7 +67,7 @@ module nf_ahb_top
         .req            ( req           ),  // request memory signal
         .req_ack        ( req_ack       )   // request acknowledge memory signal
     );
-
+    // creating one ahb router
     nf_ahb_router 
     #(
         .slave_c        ( slave_c       )

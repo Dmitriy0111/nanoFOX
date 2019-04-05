@@ -100,7 +100,6 @@ module nf_tb();
     // parsing instruction
     initial
     begin
-
         nf_log_writer_0.build("../log/log");
         
         forever
@@ -108,36 +107,39 @@ module nf_tb();
             @( posedge nf_top_0.clk );
             if( resetn )
             begin
-                nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage   );
-                nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage );
-                nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage );
-                nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage  , instr_sep_s_iwb_stage  );
-                // form title
-                log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
-                log_str = { log_str , $psprintf("cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.addr_i     ) };
-                log_str = { log_str , $psprintf("%t\n", $time                                                         ) };
-                // form instruction decode stage output
-                log_str = { log_str , "Instruction decode stage        : "                                              };
-                log_str = { log_str , $psprintf("%s\n", instruction_id_stage                                          ) };
-                if( `debug_lev0 ) 
-                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_id_stage   ) };
-                // form instruction execution stage output
-                log_str = { log_str , "Instruction execute stage       : "                                              };
-                log_str = { log_str , $psprintf("%s\n", instruction_iexe_stage                                        ) };
-                if( `debug_lev0 ) 
-                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_iexe_stage ) };
-                // form instruction memory stage output
-                log_str = { log_str , "Instruction memory stage        : "                                              };
-                log_str = { log_str , $psprintf("%s\n", instruction_imem_stage                                        ) };
-                if( `debug_lev0 ) 
-                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_imem_stage ) };
-                // form instruction write back stage output
-                log_str = { log_str , "Instruction write back stage    : "                                              };
-                log_str = { log_str , $psprintf("%s\n", instruction_iwb_stage                                         ) };
-                if( `debug_lev0 ) 
-                    log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_iwb_stage  ) };
-                // write debug info in log file
-                nf_log_writer_0.write_log(nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file, log_str);
+                if( `log_en )
+                begin
+                    nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage   );
+                    nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage );
+                    nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage );
+                    nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iwb  , instruction_iwb_stage  , instr_sep_s_iwb_stage  );
+                    // form title
+                    log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+                    log_str = { log_str , $psprintf("cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.addr_i     ) };
+                    log_str = { log_str , $psprintf("%t\n", $time                                                         ) };
+                    // form instruction decode stage output
+                    log_str = { log_str , "Instruction decode stage        : "                                              };
+                    log_str = { log_str , $psprintf("%s\n", instruction_id_stage                                          ) };
+                    if( `debug_lev0 ) 
+                        log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_id_stage   ) };
+                    // form instruction execution stage output
+                    log_str = { log_str , "Instruction execute stage       : "                                              };
+                    log_str = { log_str , $psprintf("%s\n", instruction_iexe_stage                                        ) };
+                    if( `debug_lev0 ) 
+                        log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_iexe_stage ) };
+                    // form instruction memory stage output
+                    log_str = { log_str , "Instruction memory stage        : "                                              };
+                    log_str = { log_str , $psprintf("%s\n", instruction_imem_stage                                        ) };
+                    if( `debug_lev0 ) 
+                        log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_imem_stage ) };
+                    // form instruction write back stage output
+                    log_str = { log_str , "Instruction write back stage    : "                                              };
+                    log_str = { log_str , $psprintf("%s\n", instruction_iwb_stage                                         ) };
+                    if( `debug_lev0 ) 
+                        log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_iwb_stage  ) };
+                    // write debug info in log file
+                    nf_log_writer_0.write_log(nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file, log_str);
+                end
                 // increment cycle counter
                 cycle_counter++;
                 if( cycle_counter == repeat_cycles )

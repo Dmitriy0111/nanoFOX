@@ -38,8 +38,9 @@ module nf_ahb_router
     output  logic   [slave_c-1 : 0][0  : 0]     hsel_s          // AHB - Slave HSEL
 );
     // hsel signals
-    logic   [slave_c-1 : 0]                     hsel_ff;
-    logic   [slave_c-1 : 0]                     hsel;
+    logic   [slave_c-1 : 0]     hsel_ff;
+    logic   [slave_c-1 : 0]     hsel;
+    
     assign  hsel_s = hsel;
     // generating wires for all slaves
     genvar  gen_ahb_dec;

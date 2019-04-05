@@ -127,17 +127,17 @@ input 		     [1:0]		GPIO_1_IN;
 //=======================================================
 
     // clock and reset
-    logic               clk;
-    logic               resetn;
+    logic   [0 : 0]     clk;		// clock
+    logic   [0 : 0]     resetn;		// reset
     // pwm side
-    logic               pwm;
+    logic   [0 : 0]     pwm;		// pwm output
     // gpio side
-    logic   [7 : 0]     gpio_i_0;
-    logic   [7 : 0]     gpio_o_0;
-    logic   [7 : 0]     gpio_d_0;
+    logic   [7 : 0]     gpio_i_0;	// gpio input
+    logic   [7 : 0]     gpio_o_0;	// gpio output
+    logic   [7 : 0]     gpio_d_0;	// gpio direction
 	// UART side
-    logic   [0  : 0]    uart_tx;    // UART tx wire
-    logic   [0  : 0]    uart_rx;    // UART rx wire
+    logic	[0 : 0]		uart_tx;    // UART tx wire
+    logic   [0 : 0]		uart_rx;    // UART rx wire
     
 //=======================================================
 //  Structural coding
@@ -145,9 +145,10 @@ input 		     [1:0]		GPIO_1_IN;
     
     assign clk      = CLOCK_50;
     assign resetn   = KEY[0];
-
-    assign LED      = gpio_o_0;
+    assign LED      = gpio_o_0; 
     assign gpio_i_0 = '0 | SW;
+	assign GPIO_0[4] = uart_tx;
+	assign uart_rx   = GPIO_0[5];
 	// creating one nf_top_0 unit
     nf_top nf_top_0
     (

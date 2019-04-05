@@ -25,19 +25,19 @@ module nf_uart_transmitter
     logic   [7  : 0]    int_reg;        // internal register
     logic   [3  : 0]    bit_counter;    // bit counter for internal register
     logic   [15 : 0]    counter;        // counter for baudrate
-    logic               idle2start;     // idle to start
-    logic               start2tr;       // start to transmit
-    logic               tr2stop;        // transmit to stop
-    logic               stop2wait;      // stop to wait
-    logic               wait2idle;      // wait to idle
+    logic   [0  : 0]    idle2start;     // idle to start
+    logic   [0  : 0]    start2tr;       // start to transmit
+    logic   [0  : 0]    tr2stop;        // transmit to stop
+    logic   [0  : 0]    stop2wait;      // stop to wait
+    logic   [0  : 0]    wait2idle;      // wait to idle
+    enum 
+    logic   [2  : 0]    { IDLE_s, START_s, TRANSMIT_s, STOP_s, WAIT_s} state, next_state; //FSM states
 
     assign idle2start = req;
     assign start2tr   = counter >= comp;
     assign tr2stop    = bit_counter == 4'h8;
     assign stop2wait  = counter >= comp;
     assign wait2idle  = req_ack;
-    
-    enum logic [2 : 0] { IDLE_s, START_s, TRANSMIT_s, STOP_s, WAIT_s} state, next_state; //FSM states
     
     //FSM state change
     always_ff @(posedge clk, negedge resetn)

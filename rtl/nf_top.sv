@@ -29,38 +29,49 @@ module nf_top
                         slave_c = `SLAVE_COUNT;
 
     // instruction memory (IF)
-    logic   [31 : 0]    addr_i;                 // address instruction memory
-    logic   [31 : 0]    rd_i;                   // read instruction memory
-    logic   [31 : 0]    wd_i;                   // write instruction memory
-    logic   [0  : 0]    we_i;                   // write enable instruction memory signal
-    logic   [0  : 0]    req_i;                  // request instruction memory signal
-    logic   [0  : 0]    req_ack_i;              // request acknowledge instruction memory signal
+    logic   [31 : 0]    addr_i;         // address instruction memory
+    logic   [31 : 0]    rd_i;           // read instruction memory
+    logic   [31 : 0]    wd_i;           // write instruction memory
+    logic   [0  : 0]    we_i;           // write enable instruction memory signal
+    logic   [0  : 0]    req_i;          // request instruction memory signal
+    logic   [0  : 0]    req_ack_i;      // request acknowledge instruction memory signal
     // data memory and other's
-    logic   [31 : 0]    addr_dm;                // address data memory
-    logic   [31 : 0]    rd_dm;                  // read data memory
-    logic   [31 : 0]    wd_dm;                  // write data memory
-    logic   [0  : 0]    we_dm;                  // write enable data memory signal
-    logic   [0  : 0]    req_dm;                 // request data memory signal
-    logic   [0  : 0]    req_ack_dm;             // request acknowledge data memory signal
+    logic   [31 : 0]    addr_dm;        // address data memory
+    logic   [31 : 0]    rd_dm;          // read data memory
+    logic   [31 : 0]    wd_dm;          // write data memory
+    logic   [0  : 0]    we_dm;          // write enable data memory signal
+    logic   [0  : 0]    req_dm;         // request data memory signal
+    logic   [0  : 0]    req_ack_dm;     // request acknowledge data memory signal
     // cross connect data
-    logic   [31 : 0]    addr_cc;                // address cc_data memory
-    logic   [31 : 0]    rd_cc;                  // read cc_data memory
-    logic   [31 : 0]    wd_cc;                  // write cc_data memory
-    logic   [0  : 0]    we_cc;                  // write enable cc_data memory signal
-    logic   [0  : 0]    req_cc;                 // request cc_data memory signal
-    logic   [0  : 0]    req_ack_cc;             // request acknowledge cc_data memory signal
-    // PWM 
-    logic               pwm_clk;                // PWM clock input
-    logic               pwm_resetn;             // PWM reset input   
-    // GPIO port 0
-    logic   [gpio_w-1 : 0]   gpi_0;             // GPIO input
-    logic   [gpio_w-1 : 0]   gpo_0;             // GPIO output
-    logic   [gpio_w-1 : 0]   gpd_0;             // GPIO direction
+    logic   [31 : 0]    addr_cc;        // address cc_data memory
+    logic   [31 : 0]    rd_cc;          // read cc_data memory
+    logic   [31 : 0]    wd_cc;          // write cc_data memory
+    logic   [0  : 0]    we_cc;          // write enable cc_data memory signal
+    logic   [0  : 0]    req_cc;         // request cc_data memory signal
+    logic   [0  : 0]    req_ack_cc;     // request acknowledge cc_data memory signal
     // RAM side
-    logic   [31 : 0]    ram_addr;               // addr memory
-    logic   [0  : 0]    ram_we;                 // write enable
-    logic   [31 : 0]    ram_wd;                 // write data
-    logic   [31 : 0]    ram_rd;                 // read data
+    logic   [31 : 0]    ram_addr;       // addr memory
+    logic   [0  : 0]    ram_we;         // write enable
+    logic   [31 : 0]    ram_wd;         // write data
+    logic   [31 : 0]    ram_rd;         // read data
+    // PWM 
+    logic   [0  : 0]    pwm_clk;        // PWM clock input
+    logic   [0  : 0]    pwm_resetn;     // PWM reset input   
+    // GPIO port 0
+    logic   [gpio_w-1 : 0]   gpi_0;     // GPIO input
+    logic   [gpio_w-1 : 0]   gpo_0;     // GPIO output
+    logic   [gpio_w-1 : 0]   gpd_0;     // GPIO direction
+    // AHB interconnect wires
+    logic   [slave_c-1 : 0][31 : 0]     haddr_s;    // AHB - Slave HADDR 
+    logic   [slave_c-1 : 0][31 : 0]     hwdata_s;   // AHB - Slave HWDATA 
+    logic   [slave_c-1 : 0][31 : 0]     hrdata_s;   // AHB - Slave HRDATA 
+    logic   [slave_c-1 : 0][0  : 0]     hwrite_s;   // AHB - Slave HWRITE 
+    logic   [slave_c-1 : 0][1  : 0]     htrans_s;   // AHB - Slave HTRANS 
+    logic   [slave_c-1 : 0][2  : 0]     hsize_s;    // AHB - Slave HSIZE 
+    logic   [slave_c-1 : 0][2  : 0]     hburst_s;   // AHB - Slave HBURST 
+    logic   [slave_c-1 : 0][1  : 0]     hresp_s;    // AHB - Slave HRESP 
+    logic   [slave_c-1 : 0][0  : 0]     hready_s;   // AHB - Slave HREADYOUT 
+    logic   [slave_c-1 : 0]             hsel_s;     // AHB - Slave HSEL
 
     assign  pwm_clk    = clk;
     assign  pwm_resetn = resetn;    
@@ -118,18 +129,6 @@ module nf_top
         .req_cc         ( req_cc        ),      // request cc_data memory signal
         .req_ack_cc     ( req_ack_cc    )       // request acknowledge cc_data memory signal
     );
-
-    // AHB interconnect wires
-    logic   [slave_c-1 : 0][31 : 0]         haddr_s;        // AHB - Slave HADDR 
-    logic   [slave_c-1 : 0][31 : 0]         hwdata_s;       // AHB - Slave HWDATA 
-    logic   [slave_c-1 : 0][31 : 0]         hrdata_s;       // AHB - Slave HRDATA 
-    logic   [slave_c-1 : 0][0  : 0]         hwrite_s;       // AHB - Slave HWRITE 
-    logic   [slave_c-1 : 0][1  : 0]         htrans_s;       // AHB - Slave HTRANS 
-    logic   [slave_c-1 : 0][2  : 0]         hsize_s;        // AHB - Slave HSIZE 
-    logic   [slave_c-1 : 0][2  : 0]         hburst_s;       // AHB - Slave HBURST 
-    logic   [slave_c-1 : 0][1  : 0]         hresp_s;        // AHB - Slave HRESP 
-    logic   [slave_c-1 : 0][0  : 0]         hready_s;       // AHB - Slave HREADYOUT 
-    logic   [slave_c-1 : 0]                 hsel_s;         // AHB - Slave HSEL
     // creating AHB top module
     nf_ahb_top
     #(

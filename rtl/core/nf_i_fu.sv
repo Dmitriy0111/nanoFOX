@@ -30,13 +30,13 @@ module nf_i_fu
     logic   [31 : 0]    pc_i;
     logic   [31 : 0]    pc_not_branch;
 
-    assign pc_not_branch = pc_if + 4;
-    assign pc_i  = pc_src ? pc_branch : pc_not_branch;
-
     logic   [0  : 0]    flush_id_ifu;
     logic   [0  : 0]    flush_id_branch;
     logic   [0  : 0]    flush_id_delayed;
     logic   [0  : 0]    flush_id_sw_instr;
+
+    assign pc_not_branch = pc_if + 4;
+    assign pc_i  = pc_src ? pc_branch : pc_not_branch;
 
     assign  flush_id_sw_instr = ~ req_ack_i;
     assign  flush_id_branch = pc_src;
@@ -45,7 +45,6 @@ module nf_i_fu
 
     nf_register         #( 1 ) reg_flush_id_delayed ( clk, resetn, flush_id_branch, flush_id_delayed );
     nf_register_we_r    #( 1 ) reg_flush_id_ifu     ( clk, resetn, '1, '1, '0,      flush_id_ifu     );
-
     // creating program counter
     nf_register_we_r   #( 32 ) register_pc          ( clk, resetn, ( ~ stall_if ) , '0, pc_i, pc_if  );
 

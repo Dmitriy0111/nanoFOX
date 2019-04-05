@@ -9,17 +9,25 @@
 
 #include "../nf_drivers/nf_uart.h"
 #include "../nf_drivers/nf_gpio.h"
-#include "../nf_drivers/nf_pwm.h"
+
+int message[14] = {'H','e','l','l','o',' ','W','o','r','l','d','!','\n','\r'};
+// char message[14] = "Hello World!\n\r"; doesn't work
 
 int main ()
 {
     int i;
+    i=0;
     NF_UART_DV = NF_UART_SP_115200;
     NF_UART_CR = NF_UART_TX_EN;
     NF_UART_TX = 72;
-    NF_UART_CR = NF_UART_TX_EN | NF_UART_TX_SEND;
-    while( NF_UART_CR == ( NF_UART_TX_EN | NF_UART_TX_SEND ) );
-    __asm("nop");
+    while( i != 14 )
+    {
+        NF_UART_TX = message[i];
+        NF_UART_CR = NF_UART_TX_EN | NF_UART_TX_SEND;
+        while( NF_UART_CR == ( NF_UART_TX_EN | NF_UART_TX_SEND ) );
+        __asm("nop");
+        i++;
+    }
     NF_GPIO_GPO = 0x55;
     while(1);
     return 0;

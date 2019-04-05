@@ -23,27 +23,27 @@ module de10_lite
 
     // wires & inputs
 
-    logic               clk;
-    logic               resetn;
-    logic   [6*8-1 : 0] hex;
+    logic   [0     : 0]     clk;        // clock
+    logic   [0     : 0]     resetn;     // reset
+    logic   [6*8-1 : 0]     hex;        // for hex display
     // pwm side
-    logic               pwm;
+    logic   [0     : 0]     pwm;        // pwm output
     // gpio side
-    logic   [7 : 0]     gpio_i_0;
-    logic   [7 : 0]     gpio_o_0;
-    logic   [7 : 0]     gpio_d_0;
+    logic   [7     : 0]     gpio_i_0;   // gpio input
+    logic   [7     : 0]     gpio_o_0;   // gpio output
+    logic   [7     : 0]     gpio_d_0;   // gpio direction
     // UART side
-    logic   [0  : 0]    uart_tx;    // UART tx wire
-    logic   [0  : 0]    uart_rx;    // UART rx wire
+    logic   [0     : 0]     uart_tx;    // UART tx wire
+    logic   [0     : 0]     uart_rx;    // UART rx wire
 
-    assign ledr[0 +: 8] = gpio_o_0;
-    assign ledr[8]      = pwm;
     
-    
-    assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
     assign clk      = max10_clk1_50;
     assign resetn   = key[0];
     assign gpio_i_0 = sw[0 +: 5];
+    assign ledr[8]  = pwm;
+    assign ledr[0 +: 8] = gpio_o_0;
+    assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
+
     // creating one nf_top_0 unit
     nf_top nf_top_0
     (

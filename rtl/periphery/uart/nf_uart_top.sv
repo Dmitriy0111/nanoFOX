@@ -33,19 +33,25 @@ module nf_uart_top
     logic   [0  : 0]    tr_en;
     logic   [0  : 0]    rec_en;
     logic   [0  : 0]    rx_valid;
-
     // write enable signals 
-    logic  uart_cr_we;
-    logic  uart_tx_we;
-    logic  uart_dv_we;
-    logic  wait_2;
+    logic   [0  : 0]    uart_cr_we;     // UART control register write enable
+    logic   [0  : 0]    uart_tx_we;     // UART transmitter register write enable
+    logic   [0  : 0]    uart_dv_we;     // UART divider register write enable
+    // uart transmitter
+    logic   [0  : 0]    req;            // request transmit
+    logic   [0  : 0]    req_ack;        // request acknowledge transmit
+    
     // assign write enable signals
     assign uart_cr_we = we && ( addr[0 +: 4] == `NF_UART_CR );
     assign uart_tx_we = we && ( addr[0 +: 4] == `NF_UART_TX );
     assign uart_dv_we = we && ( addr[0 +: 4] == `NF_UART_DR );
-    
-    nf_register_we #( 8  ) nf_uart_tx_reg    ( clk, resetn, uart_tx_we, wd, tx_data          );
-    nf_register_we #( 16 ) nf_uart_dv_reg    ( clk, resetn, uart_dv_we, wd, comp             );
+
+    assign req    = ctrl_cdc_out[0];
+    assign tr_en  = ctrl_cdc_out[2];
+    assign rec_en = ctrl_cdc_out[3];
+    assign ctrl_cdc_in[0] = !req_ack;
+    assign ctrl_cdc_in[1] = !rx_valid;
+    assign ctrl_cdc_in[2 +: 7] = ctrl_cdc_out[2 +: 7];
 
     // mux for routing one register value
     always_comb
@@ -60,16 +66,9 @@ module nf_uart_top
         endcase
     end
 
-    logic   req;
-    logic   req_ack;
-
-    assign  req    = ctrl_cdc_out[0];
-    assign  tr_en  = ctrl_cdc_out[2];
-    assign  rec_en = ctrl_cdc_out[3];
-    assign  ctrl_cdc_in[0] = !req_ack;
-    assign  ctrl_cdc_in[1] = !rx_valid;
-    assign  ctrl_cdc_in[2 +: 7] = ctrl_cdc_out[2 +: 7];
-
+    nf_register_we #( 8  ) nf_uart_tx_reg    ( clk, resetn, uart_tx_we, wd, tx_data          );
+    nf_register_we #( 16 ) nf_uart_dv_reg    ( clk, resetn, uart_dv_we, wd, comp             );
+    // creating one cross domain crossing unit
     nf_cdc 
     #(
         .width      ( 8             )
@@ -87,36 +86,36 @@ module nf_uart_top
         .data_1_out ( control_reg   ),
         .data_2_out ( ctrl_cdc_out  ),
         .wait_1     (               ),
-        .wait_2     ( wait_2        )
+        .wait_2     (               )
     );
-
+    // creating one uart transmitter 
     nf_uart_transmitter nf_uart_transmitter_0
     (
         // reset and clock
-        .clk        ( clk       ),     // clk
-        .resetn     ( resetn    ),     // resetn
+        .clk        ( clk           ),     // clk
+        .resetn     ( resetn        ),     // resetn
         // controller side interface
-        .tr_en      ( tr_en     ),     // transmitter enable
-        .comp       ( comp      ),     // compare input for setting baudrate
-        .tx_data    ( tx_data   ),     // data for transfer
-        .req        ( req       ),     // request signal
-        .req_ack    ( req_ack   ),     // acknowledgent signal
+        .tr_en      ( tr_en         ),     // transmitter enable
+        .comp       ( comp          ),     // compare input for setting baudrate
+        .tx_data    ( tx_data       ),     // data for transfer
+        .req        ( req           ),     // request signal
+        .req_ack    ( req_ack       ),     // acknowledgent signal
         // uart tx side
-        .uart_tx    ( uart_tx   )      // UART tx wire
+        .uart_tx    ( uart_tx       )      // UART tx wire
     );
-
+    // creating one uart receiver 
     nf_uart_receiver nf_uart_receiver_0
     (
         // reset and clock
-        .clk        ( clk       ),      // clk
-        .resetn     ( resetn    ),      // resetn
+        .clk        ( clk           ),      // clk
+        .resetn     ( resetn        ),      // resetn
         // controller side interface
-        .comp       ( comp      ),      // receiver enable
-        .rec_en     ( rec_en    ),      // compare input for setting baudrate
-        .rx_data    ( rx_data   ),      // received data
-        .rx_valid   ( rx_valid  ),      // receiver data valid
+        .comp       ( comp          ),      // receiver enable
+        .rec_en     ( rec_en        ),      // compare input for setting baudrate
+        .rx_data    ( rx_data       ),      // received data
+        .rx_valid   ( rx_valid      ),      // receiver data valid
         // uart rx side
-        .uart_rx    ( uart_rx   )       // UART rx wire
+        .uart_rx    ( uart_rx       )       // UART rx wire
     );
 
 endmodule : nf_uart_top

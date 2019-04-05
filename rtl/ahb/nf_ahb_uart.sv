@@ -31,30 +31,28 @@ module nf_ahb_uart
     input   logic   [0  : 0]  uart_rx       // UART rx wire
 );
 
-    logic   [0  : 0]    uart_request;
-    logic   [0  : 0]    uart_wrequest;
-    logic   [31 : 0]    uart_addr;
-    logic   [0  : 0]    uart_we;
+    logic   [0  : 0]    uart_request;   // uart request
+    logic   [0  : 0]    uart_wrequest;  // uart write request
+    logic   [31 : 0]    uart_addr;      // uart address
+    logic   [0  : 0]    uart_we;        // uart write enable
 
-    assign  uart_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
-    assign  uart_wrequest = uart_request && hwrite_s;
-
-    nf_register_we  #( 32 ) uart_addr_ff    ( hclk, hresetn, uart_request, haddr_s, uart_addr );
-    nf_register     #( 1  ) uart_wreq_ff    ( hclk, hresetn, uart_wrequest, uart_we  );
-    nf_register     #( 1  ) hready_ff       ( hclk, hresetn, uart_request , hready_s );
-
-    logic   [31 : 0]    addr;
-    logic   [31 : 0]    rd;
-    logic   [31 : 0]    wd;
-    logic   [0  : 0]    we;
+    logic   [31 : 0]    addr;           // address for uart module
+    logic   [31 : 0]    rd;             // read data from uart module
+    logic   [31 : 0]    wd;             // write data for uart module
+    logic   [0  : 0]    we;             // write enable for uart module
 
     assign  addr     = uart_addr;
     assign  we       = uart_we;
     assign  wd       = hwdata_s;
     assign  hrdata_s = rd;
-
-    assign  hresp_s   = `AHB_HRESP_OKAY;
-
+    assign  hresp_s  = `AHB_HRESP_OKAY;
+    assign  uart_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
+    assign  uart_wrequest = uart_request && hwrite_s;
+    // creating control and address registers
+    nf_register_we  #( 32 ) uart_addr_ff    ( hclk, hresetn, uart_request, haddr_s, uart_addr );
+    nf_register     #( 1  ) uart_wreq_ff    ( hclk, hresetn, uart_wrequest, uart_we  );
+    nf_register     #( 1  ) hready_ff       ( hclk, hresetn, uart_request , hready_s );
+    // creating one uart top module
     nf_uart_top nf_uart_top_0
     (
         // reset and clock

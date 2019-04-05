@@ -75,6 +75,7 @@ class nf_log_writer extends nf_bt_class;
                     txt_str = { log_str , txt_str };
                     if( `log_txt )
                         $fwrite( txt_p, txt_str );
+                    if( `log_term )
                     $write( txt_str );
                 end
             join

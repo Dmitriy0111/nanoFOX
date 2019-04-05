@@ -34,30 +34,29 @@ module nf_ahb_pwm
     output  logic   [0  : 0]    pwm         // PWM output signal
 );
 
-    logic   [0  : 0]    pwm_request;
-    logic   [0  : 0]    pwm_wrequest;
-    logic   [31 : 0]    pwm_addr;
-    logic   [0  : 0]    pwm_we;
+    logic   [0  : 0]    pwm_request;    // pwm request
+    logic   [0  : 0]    pwm_wrequest;   // pwm write request
+    logic   [31 : 0]    pwm_addr;       // pwm address
+    logic   [0  : 0]    pwm_we;         // pwm write enable
 
-    assign  pwm_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
-    assign  pwm_wrequest = pwm_request && hwrite_s;
-
-    nf_register_we  #( 32 ) pwm_addr_ff ( hclk, hresetn, pwm_request , haddr_s, pwm_addr );
-    nf_register     #( 1  ) pwm_wreq_ff ( hclk, hresetn, pwm_wrequest, pwm_we   );
-    nf_register     #( 1  ) hready_ff   ( hclk, hresetn, pwm_request , hready_s );
-
-    logic   [31 : 0]    addr;
-    logic   [31 : 0]    rd;
-    logic   [31 : 0]    wd;
-    logic   [0  : 0]    we;
+    logic   [31 : 0]    addr;           // address for pwm module
+    logic   [31 : 0]    rd;             // read data from pwm module
+    logic   [31 : 0]    wd;             // write data for pwm module
+    logic   [0  : 0]    we;             // write enable for pwm module
 
     assign  addr     = pwm_addr;
     assign  we       = pwm_we;
     assign  wd       = hwdata_s;
     assign  hrdata_s = rd;
+    assign  hresp_s  = `AHB_HRESP_OKAY;
+    assign  pwm_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
+    assign  pwm_wrequest = pwm_request && hwrite_s;
 
-    assign  hresp_s   = `AHB_HRESP_OKAY;
-
+    // creating control and address registers
+    nf_register_we  #( 32 ) pwm_addr_ff ( hclk, hresetn, pwm_request , haddr_s, pwm_addr );
+    nf_register     #( 1  ) pwm_wreq_ff ( hclk, hresetn, pwm_wrequest, pwm_we   );
+    nf_register     #( 1  ) hready_ff   ( hclk, hresetn, pwm_request , hready_s );
+    // creating one pwm module
     nf_pwm
     #(
         .pwm_width  ( pwm_width     )
