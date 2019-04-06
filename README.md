@@ -28,13 +28,13 @@ For working with project install:
 *   Python
 *   RISC-V tools for <a href="https://">windows</a> or <a href="https://">linux</a>
 
-**Impotant:** Before starting simulation or synthesis process make compilation program or create program_file folder and copy one of program.hex files from program folder.
+**Impotant:** Before starting simulation or synthesis process make compilation program or create "program_file" folder and copy one of program.hex files from program folder.
 
 ## Compilation program:
 *   **set PROG_NAME="name of folder with main program"** is used for setting current program. For example "set PROG_NAME=02_running_bit";
 *   **make prog_comp_win** is used for compiling program on windows machine;
 *   **make prog_comp_lin** is used for compiling program on linux machine;
-*   **make prog_clean** is user for cleaning folder with results of compilation.
+*   **make prog_clean** is used for cleaning compilation results folder.
 
 ## Simulation:
 *   **make sim_dir** is used for creating simulation folder;
@@ -55,8 +55,9 @@ If log_en or log_html set as '1 (tb/nf_tb.svh) then you can see simulation resul
 ![cpu_system](doc/cpu_system.jpg)
 
 ## Boards support:
-nanoFOX simple cpu currently works on these FPGA boards:
+simple cpu nanoFOX currently works on these FPGA boards:
 <ol>
+<li>Storm_IV_E6_V2 ( Altera Cyclone IV FPGA )</li>
 <li>rz_easyFPGA_A2_1 ( Altera Cyclone IV FPGA )</li>
 <li><a href="https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=234&No=1021">Terasic DE10-Lite ( Altera MAX10 FPGA )</a></li>
 <li><a href="https://www.terasic.com.tw/cgi-bin/page/archive.pl?No=593">Terasic DE0-Nano ( Altera Cyclone IV FPGA )</a></li>
