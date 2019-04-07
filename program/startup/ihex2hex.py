@@ -60,7 +60,5 @@ for lines in pars_file:
             i += 4
             if( i >= lenght ):
                 break
-    else:
-        ...
 
 print("Conversion comlete!")
