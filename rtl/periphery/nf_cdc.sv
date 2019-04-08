@@ -25,12 +25,12 @@ module nf_cdc
     output  logic   [0       : 0]   wait_2
 );
 
-    logic   [7 : 0]     int_reg1;
-    logic   [7 : 0]     int_reg2;
-    logic   [0 : 0]     req_1;
-    logic   [0 : 0]     ack_1;
-    logic   [0 : 0]     req_2;
-    logic   [0 : 0]     ack_2;
+    logic   [7 : 0]     int_reg1;   // internal register 1
+    logic   [7 : 0]     int_reg2;   // internal register 2
+    logic   [0 : 0]     req_1;      // request 1
+    logic   [0 : 0]     ack_1;      // request acknowledge 1
+    logic   [0 : 0]     req_2;      // request 2
+    logic   [0 : 0]     ack_2;      // request acknowledge 2
 
     assign wait_1 = req_1 || ack_2;
     assign wait_2 = req_2 || ack_1;

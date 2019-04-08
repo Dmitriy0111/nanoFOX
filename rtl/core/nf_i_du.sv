@@ -31,18 +31,18 @@ module nf_i_du
 );
 
     // sign extend wires
-    logic   [11 : 0]    imm_data_i; // for I-type command's
-    logic   [19 : 0]    imm_data_u; // for U-type command's
-    logic   [11 : 0]    imm_data_b; // for B-type command's
-    logic   [11 : 0]    imm_data_s; // for S-type command's
-    logic   [19 : 0]    imm_data_j; // for J-type command's
+    logic   [11 : 0]    imm_data_i;     // for I-type command's
+    logic   [19 : 0]    imm_data_u;     // for U-type command's
+    logic   [11 : 0]    imm_data_b;     // for B-type command's
+    logic   [11 : 0]    imm_data_s;     // for S-type command's
+    logic   [19 : 0]    imm_data_j;     // for J-type command's
     // control unit wires
-    logic   [1  : 0]    instr_type;
-    logic   [4  : 0]    opcode;
-    logic   [2  : 0]    funct3;
-    logic   [6  : 0]    funct7;
+    logic   [1  : 0]    instr_type;     // instruction type
+    logic   [4  : 0]    opcode;         // instruction operation code
+    logic   [2  : 0]    funct3;         // instruction function 3 field
+    logic   [6  : 0]    funct7;         // instruction function 7 field
     logic   [0  : 0]    branch_hf;      // branch help field
-    logic   [4  : 0]    imm_src;
+    logic   [4  : 0]    imm_src;        // immediate source selecting
     // immediate data in instruction
     assign imm_data_i = instr[20 +: 12];
     assign imm_data_u = instr[12 +: 20];

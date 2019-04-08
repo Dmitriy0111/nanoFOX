@@ -9,9 +9,9 @@
 
 void main (void)
 {
+    volatile int leo = 0;
     int i_0 = 1;
     int i_1 = 1;
-    int leo = 0;
     while(1)
     {
         leo = i_1 + i_0 + 1;

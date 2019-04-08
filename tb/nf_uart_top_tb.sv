@@ -25,18 +25,18 @@ module nf_uart_top_tb ();
     localparam      uart_speed = 115200;
 
     // clock and reset
-    bit                 clk;        // clk
-    bit                 resetn;     // resetn
+    bit     [0  : 0]    clk;        // clk
+    bit     [0  : 0]    resetn;     // resetn
     // bus side
     logic   [31 : 0]    addr;       // address
-    logic               we;         // write enable
+    logic   [0  : 0]    we;         // write enable
     logic   [31 : 0]    wd;         // write data
     logic   [31 : 0]    rd;         // read data
     // uart side
-    logic               uart_tx;    // UART tx wire
-    logic               uart_rx;    // UART rx wire
+    logic   [0  : 0]    uart_tx;    // UART tx wire
+    logic   [0  : 0]    uart_rx;    // UART rx wire
 
-    logic [31 : 0] read_data;
+    logic   [31 : 0]    read_data;
 
     //assign uart_rx = uart_tx;
     // creating one nf_uart_top_0 module

@@ -24,15 +24,15 @@ module nf_uart_top
     input   logic   [0  : 0]    uart_rx     // UART rx wire
 );
 
-    logic   [7  : 0]    control_reg;
-    logic   [7  : 0]    ctrl_cdc_out;
-    logic   [7  : 0]    ctrl_cdc_in;
-    logic   [7  : 0]    tx_data;
-    logic   [15 : 0]    comp;
-    logic   [7  : 0]    rx_data;
-    logic   [0  : 0]    tr_en;
-    logic   [0  : 0]    rec_en;
-    logic   [0  : 0]    rx_valid;
+    logic   [7  : 0]    control_reg;    // control register
+    logic   [7  : 0]    ctrl_cdc_out;   // cross domain crossing data output
+    logic   [7  : 0]    ctrl_cdc_in;    // cross domain crossing data input
+    logic   [7  : 0]    tx_data;        // transmitting data
+    logic   [15 : 0]    comp;           // "dividing frequency"
+    logic   [7  : 0]    rx_data;        // received data
+    logic   [0  : 0]    tr_en;          // transmitter enable
+    logic   [0  : 0]    rec_en;         // receiver enable
+    logic   [0  : 0]    rx_valid;       // rx byte received
     // write enable signals 
     logic   [0  : 0]    uart_cr_we;     // UART control register write enable
     logic   [0  : 0]    uart_tx_we;     // UART transmitter register write enable
@@ -89,7 +89,8 @@ module nf_uart_top
         .wait_2     (               )
     );
     // creating one uart transmitter 
-    nf_uart_transmitter nf_uart_transmitter_0
+    nf_uart_transmitter 
+    nf_uart_transmitter_0
     (
         // reset and clock
         .clk        ( clk           ),     // clk
@@ -104,7 +105,8 @@ module nf_uart_top
         .uart_tx    ( uart_tx       )      // UART tx wire
     );
     // creating one uart receiver 
-    nf_uart_receiver nf_uart_receiver_0
+    nf_uart_receiver 
+    nf_uart_receiver_0
     (
         // reset and clock
         .clk        ( clk           ),      // clk

@@ -35,11 +35,11 @@ module nf_hz_bypass_unit
     output  logic   [31 : 0]    cmp_d2          // bypass data 2 for decode stage (branch)
 );
 
-    logic   [1  : 0]    rd1_bypass;
-    logic   [1  : 0]    rd2_bypass;
+    logic   [1 : 0]     rd1_bypass;     // bypass selecting for rd1 ( not branch operations )
+    logic   [1 : 0]     rd2_bypass;     // bypass selecting for rd2 ( not branch operations )
 
-    logic   [0  : 0]    cmp_d1_bypass;
-    logic   [0  : 0]    cmp_d2_bypass;
+    logic   [0 : 0]     cmp_d1_bypass;  // bypass selecting for rd1 ( branch operations )
+    logic   [0 : 0]     cmp_d2_bypass;  // bypass selecting for rd2 ( branch operations )
 
     assign  cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem && ( | ra1_id );   // zero without bypass ( | ra1_id )
     assign  cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem && ( | ra2_id );   // zero without bypass ( | ra2_id )

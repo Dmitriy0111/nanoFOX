@@ -27,14 +27,14 @@ module nf_gpio
     output  logic   [gpio_w-1 : 0]  gpd     // GPIO direction
 );
     // gpio input
-    logic   [gpio_w-1 : 0]  gpio_i;
+    logic   [gpio_w-1 : 0]  gpio_i;     // gpio input
     // gpio output
-    logic   [gpio_w-1 : 0]  gpio_o;
+    logic   [gpio_w-1 : 0]  gpio_o;     // gpio output
     // gpio direction
-    logic   [gpio_w-1 : 0]  gpio_d;
+    logic   [gpio_w-1 : 0]  gpio_d;     // gpio direction
     // write enable signals 
-    logic   [0        : 0]  gpo_we;
-    logic   [0        : 0]  gpd_we;
+    logic   [0        : 0]  gpo_we;     // gpio output write enable
+    logic   [0        : 0]  gpd_we;     // gpio direction write enable
     // assign inputs/outputs
     assign gpo    = gpio_o;
     assign gpd    = gpio_d;

@@ -80,7 +80,8 @@ module nf_top
     assign  gpio_d_0   = gpd_0;
  
     // Creating one nf_cpu_0
-    nf_cpu nf_cpu_0
+    nf_cpu 
+    nf_cpu_0
     (
         // clock and reset
         .clk            ( clk           ),      // clk  
@@ -102,7 +103,8 @@ module nf_top
     );
 
     // Creating one nf_cpu_cc_0
-    nf_cpu_cc nf_cpu_cc_0
+    nf_cpu_cc 
+    nf_cpu_cc_0
     (
         // clock and reset
         .clk            ( clk           ),      // clk
@@ -160,7 +162,8 @@ module nf_top
     );
 
     // Creating one nf_ahb_ram_0
-    nf_ahb_ram nf_ahb_ram_0
+    nf_ahb_ram 
+    nf_ahb_ram_0
     (
         // clock and reset
         .hclk           ( clk           ),      // hclk

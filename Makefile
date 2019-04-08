@@ -91,7 +91,6 @@ sim_gui: sim_dir
 # compiling  - program
 
 PROG_NAME ?= 00_counter
-COMP_KEY  ?= -march=rv32i -mabi=ilp32
 CCF	= -march=rv32i -mabi=ilp32
 LDF	= -b elf32-littleriscv
 CPF = ihex -O ihex
@@ -99,10 +98,10 @@ CPF = ihex -O ihex
 comp_lin_c:
 	mkdir -p program_file
 	riscv64-unknown-elf-as program/startup/boot.S -c -o program_file/boot.o $(CCF)
-	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
-	riscv64-unknown-elf-gcc program/startup/vectors.c -c -o program_file/vectors.o $(CCF)
+	riscv64-unknown-elf-gcc -O1 program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
+	riscv64-unknown-elf-gcc -O1 program/startup/vectors.c -c -o program_file/vectors.o $(CCF)
 	riscv64-unknown-elf-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o program_file/vectors.o $(LDF)
-	riscv64-unknown-elf-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv64-unknown-elf-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
 	riscv64-unknown-elf-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py
 
@@ -110,17 +109,17 @@ comp_lin_asm:
 	mkdir -p program_file
 	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
 	riscv64-unknown-elf-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o $(LDF)
-	riscv64-unknown-elf-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv64-unknown-elf-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
 	riscv64-unknown-elf-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py
 
 comp_win_c:
 	mkdir -p program_file
 	riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o $(CCF)
-	riscv-none-embed-gcc program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
-	riscv-none-embed-gcc program/startup/vectors.c -c -o program_file/vectors.o $(CCF)
+	riscv-none-embed-gcc -O1 program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
+	riscv-none-embed-gcc -O1 program/startup/vectors.c -c -o program_file/vectors.o $(CCF)
 	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o program_file/vectors.o $(LDF)
-	riscv-none-embed-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
 	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py
 
@@ -128,7 +127,7 @@ comp_win_asm:
 	mkdir -p program_file
 	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
 	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o $(LDF)
-	riscv-none-embed-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
 	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py
 

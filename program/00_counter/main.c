@@ -7,19 +7,12 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-void delay(void)
-{
-    int del = 10;
-    while(del != 0)
-        del--;
-}
 
 void main (void)
 {
-    int i = 0;
+    volatile int i = 0;
     while(1)
     {
-        delay();
         i++;
     }
 }

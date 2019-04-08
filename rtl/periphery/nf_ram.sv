@@ -22,10 +22,10 @@ module nf_ram
     output  logic   [31 : 0]    rd      // read data
 );
 
-    logic   [7  : 0]    bank_0 [depth-1 : 0];
-    logic   [7  : 0]    bank_1 [depth-1 : 0];
-    logic   [7  : 0]    bank_2 [depth-1 : 0];
-    logic   [7  : 0]    bank_3 [depth-1 : 0];
+    logic   [7  : 0]    bank_0  [depth-1 : 0];  // memory bank 0
+    logic   [7  : 0]    bank_1  [depth-1 : 0];  // memory bank 1
+    logic   [7  : 0]    bank_2  [depth-1 : 0];  // memory bank 2
+    logic   [7  : 0]    bank_3  [depth-1 : 0];  // memory bank 3
 
     assign rd[24 +: 8] = bank_3[addr];
     assign rd[16 +: 8] = bank_2[addr];
@@ -70,7 +70,7 @@ module nf_ram
     // for verification
     // synthesis translate_off
     
-    logic [31 : 0] ram  [depth-1 : 0];
+    logic   [31 : 0]    ram     [depth-1 : 0];  // full memory
 
     always @(posedge clk)
     begin

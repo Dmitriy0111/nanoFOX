@@ -1,5 +1,6 @@
 # **nanoFOX**
     A small RISC-V CPU core. This is a pipeline version of CPU with AHB.
+    
 ## Supported instructions:
 *   add
 *   and
@@ -70,7 +71,20 @@ simple cpu nanoFOX currently works on these FPGA boards:
 <li><a href="https://www.terasic.com.tw/cgi-bin/page/archive.pl?No=593">Terasic DE0-Nano ( Altera Cyclone IV FPGA )</a></li>
 </ol>
 
-## Planns
+## Repository contents:
+| Folder        | Contents                                          |
+| :------------ | :------------------------------------------------ |
+| board         | Top levels of design for fpga development boards  |
+| brd_rtl       | Auxiliary modules for top levels                  |
+| doc           | RISC-V ISA 2.2                                    |
+| inc           | Header files for design                           |
+| program       | Examples of programs                              |
+| rtl           | Core source files                                 |
+| run           | Scripts for simulation                            |
+| tb            | Testbenches for core and separate parts           |
+| other         | Readme and license files, Makefile                |
+
+## Planns:
 *   Adding Xilinx support
 *   Adding other Altera boards support
 *   Adding docs

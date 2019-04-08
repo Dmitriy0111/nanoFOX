@@ -21,7 +21,7 @@
 
 void delay(int delay_c)
 {
-    int delay_v = delay_c;
+    volatile int delay_v = delay_c;
     while(delay_v)
         delay_v--;
 }

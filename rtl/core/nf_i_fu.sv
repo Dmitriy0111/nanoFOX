@@ -24,16 +24,15 @@ module nf_i_fu
     input   logic   [0  : 0]    pc_src,     // next program counter source
     input   logic   [0  : 0]    stall_if,   // for stalling instruction fetch stage
     output  logic   [0  : 0]    flush_id    // for flushing instruction decode stage
-    
 );
 
-    logic   [31 : 0]    pc_i;
-    logic   [31 : 0]    pc_not_branch;
+    logic   [31 : 0]    pc_i;               // program counter value
+    logic   [31 : 0]    pc_not_branch;      // program counter not branch value
 
-    logic   [0  : 0]    flush_id_ifu;
-    logic   [0  : 0]    flush_id_branch;
-    logic   [0  : 0]    flush_id_delayed;
-    logic   [0  : 0]    flush_id_sw_instr;
+    logic   [0  : 0]    flush_id_ifu;       // flush id stage
+    logic   [0  : 0]    flush_id_branch;    // flush id stage ( branch operation )
+    logic   [0  : 0]    flush_id_delayed;   // flush id stage
+    logic   [0  : 0]    flush_id_sw_instr;  // flush id stage ( store data instruction)
 
     assign pc_not_branch = pc_if + 4;
     assign pc_i  = pc_src ? pc_branch : pc_not_branch;

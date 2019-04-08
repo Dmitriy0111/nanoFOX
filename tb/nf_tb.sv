@@ -17,24 +17,21 @@ module nf_tb();
     timeprecision       1ns;
     timeunit            1ns;
     
-    parameter           T = 10,
+    parameter           T = 10,                 // 100 MHz
                         resetn_delay = 7,
                         repeat_cycles = 200;
-    
-    bit                 clk;
-    bit                 resetn;
-
-    logic   [7  : 0]    gpio_i_0;   // GPIO_0 input
-    logic   [7  : 0]    gpio_o_0;   // GPIO_0 output
-    logic   [7  : 0]    gpio_d_0;   // GPIO_0 direction
-    logic   [0  : 0]    pwm;        // PWM output signal
-    logic   [0  : 0]    uart_tx;    // UART tx wire
-    logic   [0  : 0]    uart_rx;    // UART rx wire
-
-    assign  gpio_i_0 = gpio_o_0 ^ gpio_d_0;
-
-    bit     [31 : 0]    cycle_counter;
-
+    // clock and reset
+    bit     [0  : 0]    clk;            // clock
+    bit     [0  : 0]    resetn;         // reset
+    // peryphery inputs/outputs
+    logic   [7  : 0]    gpio_i_0;       // GPIO_0 input
+    logic   [7  : 0]    gpio_o_0;       // GPIO_0 output
+    logic   [7  : 0]    gpio_d_0;       // GPIO_0 direction
+    logic   [0  : 0]    pwm;            // PWM output signal
+    logic   [0  : 0]    uart_tx;        // UART tx wire
+    logic   [0  : 0]    uart_rx;        // UART rx wire
+    // help variables
+    bit     [31 : 0]    cycle_counter;  // variable for cpu cycle
     // instructions
     string  instruction_id_stage;
     string  instruction_iexe_stage;
@@ -48,7 +45,10 @@ module nf_tb();
     // string for txt, html and terminal logging
     string  log_str = "";
 
-    nf_top nf_top_0
+    assign  gpio_i_0 = 8'b11;
+
+    nf_top 
+    nf_top_0
     (   
         // clock and reset
         .clk        ( clk       ),  // clock input
@@ -66,7 +66,8 @@ module nf_tb();
 
     /*
     or
-    nf_top nf_top_0
+    nf_top 
+    nf_top_0
     (
         .*
     );

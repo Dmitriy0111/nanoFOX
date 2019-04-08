@@ -39,11 +39,11 @@ module nf_cpu_cc
                 MASTER_1    = 2'b10,
                 MASTER_NONE = 2'b00;
 
-    logic   [1 : 0]     master_sel_out;
-    logic   [1 : 0]     master_sel_in;
-    logic   [0 : 0]     last_master;
+    logic   [1 : 0]     master_sel_out;     // master select output for request, write data, write enable, address signals
+    logic   [1 : 0]     master_sel_in;      // master select input for request acknowledge, read data signals
+    logic   [0 : 0]     last_master;        // last master
     enum 
-    logic   [1 : 0]     {M0_s, M1_s, M_NONE_s} state;
+    logic   [1 : 0]     { M0_s , M1_s , M_NONE_s } state;   // selecting states
 
     assign req_ack_i  = master_sel_in == MASTER_0 ? req_ack_cc : '0;
     assign rd_i       = master_sel_in == MASTER_0 ? rd_cc      : '0;

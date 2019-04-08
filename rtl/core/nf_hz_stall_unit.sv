@@ -33,11 +33,11 @@ module nf_hz_stall_unit
     output  logic   [0 : 0]     flush_iexe      // flush execution stage
 );
 
-    logic   lw_stall_id_iexe;
-    logic   lw_stall_imem_iwb;
-    logic   branch_exe_id_stall;
-    logic   sw_data_stall;
-    logic   lw_instr_stall;
+    logic   lw_stall_id_iexe;       // stall pipe if load data instructions ( id and exe stages )
+    logic   lw_stall_imem_iwb;      // stall pipe if load data instructions ( imem and iwb stages )
+    logic   branch_exe_id_stall;    // stall pipe if branch operations
+    logic   sw_data_stall;          // stall pipe if store data instructions
+    logic   lw_instr_stall;         // stall pipe if load instruction from memory
 
     assign  lw_stall_id_iexe    =   ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && 
                                     we_rf_iexe && 

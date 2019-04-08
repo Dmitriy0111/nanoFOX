@@ -21,10 +21,9 @@ module nf_i_exu
     output  logic   [31 : 0]    result      // result of ALU operation
 );
 
-    logic   [31 : 0]    result_;
     // wires for ALU inputs
-    logic   [31 : 0]    srcA;
-    logic   [31 : 0]    srcB;
+    logic   [31 : 0]    srcA;   // source A ALU
+    logic   [31 : 0]    srcB;   // source B ALU
     // assign's ALU signals
     assign  srcA    = rd1;
     assign  srcB    = srcB_sel == SRCB_RD2 ? rd2     : ext_data;

@@ -18,9 +18,9 @@ module nf_branch_unit
     output  logic   [0  : 0]    pc_src          // next program counter
 );
 
-    logic   equal;
+    logic   [0 : 0]     equal;  // For beq and bne instructions
 
-    assign  equal  = ( d0 == d1 );
-    assign  pc_src = ( branch_type[0] && ( ! ( equal ^ branch_hf ) ) ) || branch_type[3];
+    assign equal  = ( d0 == d1 );
+    assign pc_src = ( branch_type[0] && ( ! ( equal ^ branch_hf ) ) ) || branch_type[3];
 
 endmodule : nf_branch_unit

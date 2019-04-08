@@ -21,7 +21,7 @@ module nf_reg_file
     input   logic   [0  : 0]    we3     // write enable signal
 );
 
-    logic [31 : 0] reg_file [31 : 0];
+    logic   [31 : 0]    reg_file    [31 : 0];   // register file
 
     assign  rd1 = ( ra1 == '0 ) ? '0 : 
                   ( ( ra1 == wa3) ? wd3 : reg_file[ra1] );

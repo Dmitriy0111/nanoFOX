@@ -28,6 +28,7 @@ int main ()
         __asm("nop");
         i++;
     }
+    __asm("nop");
     NF_GPIO_GPO = 0x55;
     while(1);
     return 0;
