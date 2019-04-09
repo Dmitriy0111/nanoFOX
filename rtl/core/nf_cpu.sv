@@ -23,6 +23,7 @@ module nf_cpu
     input   logic   [31 : 0]    rd_i,       // read instruction memory
     output  logic   [31 : 0]    wd_i,       // write instruction memory
     output  logic   [0  : 0]    we_i,       // write enable instruction memory signal
+    output  logic   [1  : 0]    size_i,     // size for load/store instructions
     output  logic   [0  : 0]    req_i,      // request instruction memory signal
     input   logic   [0  : 0]    req_ack_i,  // request acknowledge instruction memory signal
     // data memory and other's
@@ -30,6 +31,7 @@ module nf_cpu
     input   logic   [31 : 0]    rd_dm,      // read data memory
     output  logic   [31 : 0]    wd_dm,      // write data memory
     output  logic   [0  : 0]    we_dm,      // write enable data memory signal
+    output  logic   [1  : 0]    size_dm,    // size for load/store instructions
     output  logic   [0  : 0]    req_dm,     // request data memory signal
     input   logic   [0  : 0]    req_ack_dm  // request acknowledge data memory signal
 );
@@ -67,7 +69,8 @@ module nf_cpu
     logic   [0  : 0]    we_if_stalled;      // write enable for stall ( fetch stage )
     logic   [31 : 0]    instr_if_stalled;   // stalled instruction ( fetch stage )
     // creating one instruction fetch unit
-    nf_i_fu nf_i_fu_0
+    nf_i_fu 
+    nf_i_fu_0
     (
         // clock and reset
         .clk            ( clk               ),  // clock
@@ -84,12 +87,13 @@ module nf_cpu
         .flush_id       ( flush_id          )   // for flushing instruction decode stage
     );
 
-    assign  addr_i          = pc_if;                                    // from fetch stage
-    assign  instr_if        = sel_id_instr ? instr_if_stalled : rd_i;   // from fetch stage
-    assign  we_if_stalled   = stall_id  && ( ~ sel_id_instr );          // for sw and branch stalls
+    assign addr_i          = pc_if;                                    // from fetch stage
+    assign instr_if        = sel_id_instr ? instr_if_stalled : rd_i;   // from fetch stage
+    assign we_if_stalled   = stall_id  && ( ~ sel_id_instr );          // for sw and branch stalls
 
-    assign  we_i  = '0;
-    assign  wd_i  = '0;
+    assign we_i   = '0;
+    assign wd_i   = '0;
+    assign size_i = 2'b10;  // word
 
     logic   [31 : 0]    instr_id;           // instruction ( decode stage )
     logic   [31 : 0]    pc_id;              // program counter ( decode stage )
@@ -117,12 +121,14 @@ module nf_cpu
     logic   [31 : 0]    ALU_Code_id;        // code for execution unit ( decode stage )
     logic   [4  : 0]    shamt_id;           // shift value for execution unit ( decode stage )
     logic   [0  : 0]    branch_src;         // program counter selection
+    logic   [1  : 0]    size_dm_id;         // size for load/store instructions
 
     // next program counter value for branch command
     assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
 
     // creating register file
-    nf_reg_file nf_reg_file_0
+    nf_reg_file 
+    nf_reg_file_0
     (
         .clk            ( clk               ),  // clock
         .ra1            ( ra1_id            ),  // read address 1
@@ -134,7 +140,8 @@ module nf_cpu
         .we3            ( we_rf             )   // write enable signal
     );
     // creating instruction decode unit
-    nf_i_du nf_i_du_0
+    nf_i_du 
+    nf_i_du_0
     (
         .instr          ( instr_id          ),  // Instruction input
         .ext_data       ( ext_data_id       ),  // decoded extended data
@@ -151,6 +158,7 @@ module nf_cpu
         .we_rf          ( we_rf_id          ),  // decoded write register file
         .we_dm_en       ( we_dm_id          ),  // decoded write data memory
         .rf_src         ( rf_src_id         ),  // decoded source register file signal
+        .size_dm        ( size_dm_id        ),  // size for load/store instructions
         .branch_src     ( branch_src        ),  // for selecting branch source (JALR)
         .branch_type    ( branch_type       )   // branch type
     );
@@ -175,6 +183,7 @@ module nf_cpu
     logic   [0  : 0]    rf_src_iexe;        // register file source ( execution stage )
     logic   [31 : 0]    ALU_Code_iexe;      // code for execution unit ( execution stage )
     logic   [4  : 0]    shamt_iexe;         // shift value for execution unit ( execution stage )
+    logic   [1  : 0]    size_dm_iexe;       // size for load/store instructions
     logic   [31 : 0]    result_iexe;        // result from execution unit ( execution stage )
     logic   [31 : 0]    result_iexe_e;      // selected result ( execution stage )
 
@@ -189,6 +198,7 @@ module nf_cpu
     nf_register_we_clr  #( 32 ) rd1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd1_id      , rd1_iexe      );
     nf_register_we_clr  #( 32 ) rd2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd2_id      , rd2_iexe      );
     nf_register_we_clr  #( 32 ) pc_id_iexe          ( clk , resetn , ~ stall_iexe , flush_iexe , pc_id       , pc_iexe       );
+    nf_register_we_clr  #( 2  ) size_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , size_dm_id  , size_dm_iexe  );
     // control wires (flushed)
     nf_register_we_clr  #( 1  ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id , srcB_sel_iexe );
     nf_register_we_clr  #( 1  ) res_sel_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , res_sel_id  , res_sel_iexe  );
@@ -201,7 +211,8 @@ module nf_cpu
     **       Instruction execution stage        **
     *********************************************/
     // creating instruction execution unit
-    nf_i_exu nf_i_exu_0
+    nf_i_exu 
+    nf_i_exu_0
     (
         .rd1            ( rd1_i_exu         ),  // read data from reg file (port1)
         .rd2            ( rd2_i_exu         ),  // read data from reg file (port2)
@@ -227,18 +238,21 @@ module nf_cpu
     logic   [0  : 0]    rf_src_imem;        // register file source ( memory stage )
     logic   [4  : 0]    wa3_imem;           // write address for register file ( memory stage )
     logic   [0  : 0]    we_rf_imem;         // write enable register file ( memory stage )
+    logic   [1  : 0]    size_dm_imem;       // size for load/store instructions
 
-    nf_register_we  #( 1  ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , we_dm_iexe    , we_dm_imem  );
-    nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe    , we_rf_imem  );
-    nf_register_we  #( 1  ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem , rf_src_iexe   , rf_src_imem );
-    nf_register_we  #( 5  ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem , wa3_iexe      , wa3_imem    );
-    nf_register_we  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , rd2_i_exu     , rd2_imem    );
-    nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe_e , result_imem );
+    nf_register_we  #( 1  ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , we_dm_iexe    , we_dm_imem   );
+    nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe    , we_rf_imem   );
+    nf_register_we  #( 1  ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem , rf_src_iexe   , rf_src_imem  );
+    nf_register_we  #( 2  ) size_dm_iexe_imem   ( clk , resetn , ~ stall_imem , size_dm_iexe  , size_dm_imem );
+    nf_register_we  #( 5  ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem , wa3_iexe      , wa3_imem     );
+    nf_register_we  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , rd2_i_exu     , rd2_imem     );
+    nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe_e , result_imem  );
 
     assign addr_dm  = result_imem;
     assign wd_dm    = rd2_imem;
     assign we_dm    = we_dm_imem;
     assign req_dm   = we_dm_imem || rf_src_imem;
+    assign size_dm  = size_dm_imem;
 
     /*********************************************
     **       Instruction write back stage       **
@@ -267,7 +281,8 @@ module nf_cpu
     assign we_rf = we_rf_iwb;
 
     // creating stall and flush unit (hazard)
-    nf_hz_stall_unit nf_hz_stall_unit_0
+    nf_hz_stall_unit 
+    nf_hz_stall_unit_0
     (   
         // scan wires
         .we_rf_imem     ( we_rf_imem    ),  // write enable register from memory stage
@@ -290,7 +305,8 @@ module nf_cpu
         .flush_iexe     ( flush_iexe    )   // flush execution stage
     );
     // creating bypass unit (hazard)
-    nf_hz_bypass_unit nf_hz_bypass_unit_0
+    nf_hz_bypass_unit 
+    nf_hz_bypass_unit_0
     (
         // scan wires
         .wa3_imem       ( wa3_imem      ),  // write address from mem stage

@@ -31,6 +31,7 @@ module nf_ahb_top
     output  logic                  [31 : 0]     rd,             // read memory
     input   logic                  [31 : 0]     wd,             // write memory
     input   logic                  [0  : 0]     we,             // write enable signal
+    input   logic                  [1  : 0]     size,           // size for load/store instructions
     input   logic                  [0  : 0]     req,            // request memory signal
     output  logic                  [0  : 0]     req_ack         // request acknowledge memory signal
 );
@@ -45,7 +46,8 @@ module nf_ahb_top
     logic   [1  : 0]    hresp;
     logic   [0  : 0]    hready;
     // creating one ahb to core unit
-    nf_ahb2core nf_ahb2core_0
+    nf_ahb2core 
+    nf_ahb2core_0
     (
         .clk            ( clk           ),
         .resetn         ( resetn        ),
@@ -64,6 +66,7 @@ module nf_ahb_top
         .we             ( we            ),  // write enable signal
         .wd             ( wd            ),  // write memory
         .rd             ( rd            ),  // read memory
+        .size           ( size          ),  // size for load/store instructions
         .req            ( req           ),  // request memory signal
         .req_ack        ( req_ack       )   // request acknowledge memory signal
     );

@@ -24,19 +24,21 @@ module nf_control_unit
     output  logic   [0  : 0]    we_rf,          // write enable signal for register file
     output  logic   [0  : 0]    we_dm,          // write enable signal for data memory and others
     output  logic   [0  : 0]    rf_src,         // write data select for register file
+    output  logic   [1  : 0]    size_dm,        // size for load/store instructions
     output  logic   [31 : 0]    ALU_Code        // output code for ALU unit
 );
 
     instr_cf    instr_cf_0;
 
-    assign  instr_cf_0.IT = instr_type,
-            instr_cf_0.OP = opcode,
-            instr_cf_0.F3 = funct3,
-            instr_cf_0.F7 = funct7;
+    assign instr_cf_0.IT = instr_type,
+           instr_cf_0.OP = opcode,
+           instr_cf_0.F3 = funct3,
+           instr_cf_0.F7 = funct7;
 
-    assign  branch_hf  = ~ instr_cf_0.F3[0];
-    assign  branch_src = instr_cf_0.OP == JALR.OP;
-    assign  we_dm      = instr_cf_0.OP == SW.OP;
+    assign branch_hf  = ~ instr_cf_0.F3[0];
+    assign branch_src = instr_cf_0.OP == JALR.OP;
+    assign we_dm      = instr_cf_0.OP == SW.OP;
+    assign size_dm    = instr_cf_0.F3[0 +: 2];
 
     always_comb
     begin

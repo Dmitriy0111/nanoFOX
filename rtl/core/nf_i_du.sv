@@ -26,6 +26,7 @@ module nf_i_du
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
     output  logic   [0  : 0]    rf_src,     // decoded source register file signal
+    output  logic   [1  : 0]    size_dm,    // size for load/store instructions
     output  logic   [0  : 0]    branch_src, // for selecting branch source (JALR)
     output  logic   [3  : 0]    branch_type // branch type
 );
@@ -60,9 +61,9 @@ module nf_i_du
     assign opcode     = instr[2   +: 5];
     assign funct3     = instr[12  +: 3];
     assign funct7     = instr[25  +: 7];
-    
     // creating control unit for cpu
-    nf_control_unit nf_control_unit_0
+    nf_control_unit 
+    nf_control_unit_0
     (
         .instr_type     ( instr_type            ),  // instruction type
         .opcode         ( opcode                ),  // operation code field in instruction code
@@ -77,11 +78,12 @@ module nf_i_du
         .we_dm          ( we_dm_en              ),  // write enable signal for data memory and others
         .rf_src         ( rf_src                ),  // write data select for register file
         .imm_src        ( imm_src               ),  // selection immediate data input
+        .size_dm        ( size_dm               ),  // size for load/store instructions
         .ALU_Code       ( ALU_Code              )   // output code for ALU unit
     );
-
     // creating sign extending unit
-    nf_sign_ex nf_sign_ex_0
+    nf_sign_ex 
+    nf_sign_ex_0
     (
         .imm_data_i     ( imm_data_i            ),  // immediate data in i-type instruction
         .imm_data_u     ( imm_data_u            ),  // immediate data in u-type instruction
@@ -91,9 +93,9 @@ module nf_i_du
         .imm_src        ( imm_src               ),  // selection immediate data input
         .imm_ex         ( ext_data              )   // extended immediate data
     );
-
     // creating branch unit
-    nf_branch_unit nf_branch_unit_0
+    nf_branch_unit 
+    nf_branch_unit_0
     (
         .branch_type    ( branch_type           ),  // from control unit, '1 if branch instruction
         .d0             ( rd1                   ),  // from register file (rd1)

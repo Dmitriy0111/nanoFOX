@@ -41,11 +41,11 @@ module nf_hz_bypass_unit
     logic   [0 : 0]     cmp_d1_bypass;  // bypass selecting for rd1 ( branch operations )
     logic   [0 : 0]     cmp_d2_bypass;  // bypass selecting for rd2 ( branch operations )
 
-    assign  cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem && ( | ra1_id );   // zero without bypass ( | ra1_id )
-    assign  cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem && ( | ra2_id );   // zero without bypass ( | ra2_id )
+    assign cmp_d1_bypass = ( wa3_imem == ra1_id ) && we_rf_imem && ( | ra1_id );    // zero without bypass ( | ra1_id )
+    assign cmp_d2_bypass = ( wa3_imem == ra2_id ) && we_rf_imem && ( | ra2_id );    // zero without bypass ( | ra2_id )
 
-    assign  cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;
-    assign  cmp_d2 = cmp_d2_bypass ? result_imem : rd2_id;
+    assign cmp_d1 = cmp_d1_bypass ? result_imem : rd1_id;
+    assign cmp_d2 = cmp_d2_bypass ? result_imem : rd2_id;
 
     always_comb
     begin

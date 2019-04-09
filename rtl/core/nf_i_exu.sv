@@ -25,10 +25,11 @@ module nf_i_exu
     logic   [31 : 0]    srcA;   // source A ALU
     logic   [31 : 0]    srcB;   // source B ALU
     // assign's ALU signals
-    assign  srcA    = rd1;
-    assign  srcB    = srcB_sel == SRCB_RD2 ? rd2     : ext_data;
+    assign srcA = rd1;
+    assign srcB = srcB_sel == SRCB_RD2 ? rd2 : ext_data;
     // creating ALU unit
-    nf_alu alu_0
+    nf_alu 
+    alu_0
     (
         .srcA           ( srcA          ),  // source A for ALU unit
         .srcB           ( srcB          ),  // source B for ALU unit

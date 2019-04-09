@@ -17,6 +17,7 @@ module nf_cpu_cc
     output  logic   [31 : 0]    rd_i,       // read instruction memory
     input   logic   [31 : 0]    wd_i,       // write instruction memory
     input   logic   [0  : 0]    we_i,       // write enable instruction memory signal
+    input   logic   [1  : 0]    size_i,     // size for load/store instructions
     input   logic   [0  : 0]    req_i,      // request instruction memory signal
     output  logic   [0  : 0]    req_ack_i,  // request acknowledge instruction memory signal
     // data memory and other's
@@ -24,6 +25,7 @@ module nf_cpu_cc
     output  logic   [31 : 0]    rd_dm,      // read data memory
     input   logic   [31 : 0]    wd_dm,      // write data memory
     input   logic   [0  : 0]    we_dm,      // write enable data memory signal
+    input   logic   [1  : 0]    size_dm,    // size for load/store instructions
     input   logic   [0  : 0]    req_dm,     // request data memory signal
     output  logic   [0  : 0]    req_ack_dm, // request acknowledge data memory signal
     // cross connect data
@@ -31,6 +33,7 @@ module nf_cpu_cc
     input   logic   [31 : 0]    rd_cc,      // read cc_data memory
     output  logic   [31 : 0]    wd_cc,      // write cc_data memory
     output  logic   [0  : 0]    we_cc,      // write enable cc_data memory signal
+    output  logic   [1  : 0]    size_cc,    // size for load/store instructions
     output  logic   [0  : 0]    req_cc,     // request cc_data memory signal
     input   logic   [0  : 0]    req_ack_cc  // request acknowledge cc_data memory signal
 );
@@ -54,14 +57,15 @@ module nf_cpu_cc
     always_comb
     begin 
         req_cc  = '0;
+        size_cc = '0;
         wd_cc   = '0;
         we_cc   = '0;
         addr_cc = '0;
         case( master_sel_out )
-            MASTER_0       :   begin req_cc = req_i  ; wd_cc = wd_i  ; we_cc = we_i  ; addr_cc = addr_i  ; end
-            MASTER_1       :   begin req_cc = req_dm ; wd_cc = wd_dm ; we_cc = we_dm ; addr_cc = addr_dm ; end
-            MASTER_NONE    :   begin req_cc = '0     ; wd_cc = '0    ; we_cc = '0    ; addr_cc = '0      ; end
-            default         :   ;
+            MASTER_0    :   begin req_cc = req_i  ; wd_cc = wd_i  ; we_cc = we_i  ; addr_cc = addr_i  ; size_cc = size_i  ; end
+            MASTER_1    :   begin req_cc = req_dm ; wd_cc = wd_dm ; we_cc = we_dm ; addr_cc = addr_dm ; size_cc = size_dm ; end
+            MASTER_NONE :   begin req_cc = '0     ; wd_cc = '0    ; we_cc = '0    ; addr_cc = '0      ; size_cc = '0      ; end
+            default     :   ;
         endcase
     end
 

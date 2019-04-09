@@ -44,13 +44,13 @@ module nf_ahb_pwm
     logic   [31 : 0]    wd;             // write data for pwm module
     logic   [0  : 0]    we;             // write enable for pwm module
 
-    assign  addr     = pwm_addr;
-    assign  we       = pwm_we;
-    assign  wd       = hwdata_s;
-    assign  hrdata_s = rd;
-    assign  hresp_s  = `AHB_HRESP_OKAY;
-    assign  pwm_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
-    assign  pwm_wrequest = pwm_request && hwrite_s;
+    assign addr     = pwm_addr;
+    assign we       = pwm_we;
+    assign wd       = hwdata_s;
+    assign hrdata_s = rd;
+    assign hresp_s  = `AHB_HRESP_OKAY;
+    assign pwm_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
+    assign pwm_wrequest = pwm_request && hwrite_s;
 
     // creating control and address registers
     nf_register_we  #( 32 ) pwm_addr_ff ( hclk, hresetn, pwm_request , haddr_s, pwm_addr );

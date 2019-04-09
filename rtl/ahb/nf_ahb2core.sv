@@ -28,17 +28,18 @@ module nf_ahb2core
     input   logic   [31 : 0]    wd,         // write memory
     output  logic   [31 : 0]    rd,         // read memory
     input   logic   [0  : 0]    we,         // write enable signal
+    input   logic   [1  : 0]    size,       // size for load/store instructions
     input   logic   [0  : 0]    req,        // request memory signal
     output  logic   [0  : 0]    req_ack     // request acknowledge memory signal
 );
 
-    assign  haddr   = addr;
-    assign  hwrite  = we;
-    assign  rd      = hrdata;
-    assign  htrans  = req ? `AHB_HTRANS_NONSEQ : `AHB_HTRANS_IDLE;
-    assign  hsize   = `AHB_HSIZE_W;
-    assign  hburst  = `AHB_HBUSRT_SINGLE;
-    assign  req_ack = hready && ( hresp != `AHB_HRESP_ERROR );
+    assign haddr   = addr;
+    assign hwrite  = we;
+    assign rd      = hrdata;
+    assign htrans  = req ? `AHB_HTRANS_NONSEQ : `AHB_HTRANS_IDLE;
+    assign hsize   = { 1'b0 , size };
+    assign hburst  = `AHB_HBUSRT_SINGLE;
+    assign req_ack = hready && ( hresp != `AHB_HRESP_ERROR );
 
     // creating one write data flip-flop
     nf_register_we  #( 32 ) wd_dm_ff    ( clk, resetn, we, wd, hwdata );

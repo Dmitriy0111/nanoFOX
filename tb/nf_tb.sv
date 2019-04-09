@@ -45,7 +45,7 @@ module nf_tb();
     // string for txt, html and terminal logging
     string  log_str = "";
 
-    assign  gpio_i_0 = 8'b11;
+    assign  gpio_i_0 = 8'b1;
 
     nf_top 
     nf_top_0

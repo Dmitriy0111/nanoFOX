@@ -41,7 +41,7 @@ module nf_ahb_router
     logic   [slave_c-1 : 0]     hsel_ff;
     logic   [slave_c-1 : 0]     hsel;
     
-    assign  hsel_s = hsel;
+    assign hsel_s = hsel;
     // generating wires for all slaves
     genvar  gen_ahb_dec;
     generate

@@ -8,7 +8,7 @@
 #
 
 .equ    _main_addr,     0x00000040
-.equ    _stack_start,   0x00000400
+.equ    _stack_start,   0x00001000      # 400 << 2
 
 nanoFOX_vectors:
         j _main         # reset vector

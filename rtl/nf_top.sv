@@ -33,6 +33,7 @@ module nf_top
     logic   [31 : 0]    rd_i;           // read instruction memory
     logic   [31 : 0]    wd_i;           // write instruction memory
     logic   [0  : 0]    we_i;           // write enable instruction memory signal
+    logic   [1  : 0]    size_i;         // size for load/store instructions
     logic   [0  : 0]    req_i;          // request instruction memory signal
     logic   [0  : 0]    req_ack_i;      // request acknowledge instruction memory signal
     // data memory and other's
@@ -40,6 +41,7 @@ module nf_top
     logic   [31 : 0]    rd_dm;          // read data memory
     logic   [31 : 0]    wd_dm;          // write data memory
     logic   [0  : 0]    we_dm;          // write enable data memory signal
+    logic   [1  : 0]    size_dm;        // size for load/store instructions
     logic   [0  : 0]    req_dm;         // request data memory signal
     logic   [0  : 0]    req_ack_dm;     // request acknowledge data memory signal
     // cross connect data
@@ -47,11 +49,12 @@ module nf_top
     logic   [31 : 0]    rd_cc;          // read cc_data memory
     logic   [31 : 0]    wd_cc;          // write cc_data memory
     logic   [0  : 0]    we_cc;          // write enable cc_data memory signal
+    logic   [1  : 0]    size_cc;        // size for load/store instructions
     logic   [0  : 0]    req_cc;         // request cc_data memory signal
     logic   [0  : 0]    req_ack_cc;     // request acknowledge cc_data memory signal
     // RAM side
     logic   [31 : 0]    ram_addr;       // addr memory
-    logic   [0  : 0]    ram_we;         // write enable
+    logic   [3  : 0]    ram_we;         // write enable
     logic   [31 : 0]    ram_wd;         // write data
     logic   [31 : 0]    ram_rd;         // read data
     // PWM 
@@ -73,11 +76,11 @@ module nf_top
     logic   [slave_c-1 : 0][0  : 0]     hready_s;   // AHB - Slave HREADYOUT 
     logic   [slave_c-1 : 0]             hsel_s;     // AHB - Slave HSEL
 
-    assign  pwm_clk    = clk;
-    assign  pwm_resetn = resetn;    
-    assign  gpi_0      = gpio_i_0;
-    assign  gpio_o_0   = gpo_0;
-    assign  gpio_d_0   = gpd_0;
+    assign pwm_clk    = clk;
+    assign pwm_resetn = resetn;    
+    assign gpi_0      = gpio_i_0;
+    assign gpio_o_0   = gpo_0;
+    assign gpio_d_0   = gpd_0;
  
     // Creating one nf_cpu_0
     nf_cpu 
@@ -91,6 +94,7 @@ module nf_top
         .rd_i           ( rd_i          ),      // read instruction memory
         .wd_i           ( wd_i          ),      // write instruction memory
         .we_i           ( we_i          ),      // write enable instruction memory signal
+        .size_i         ( size_i        ),      // size for load/store instructions
         .req_i          ( req_i         ),      // request instruction memory signal
         .req_ack_i      ( req_ack_i     ),      // request acknowledge instruction memory signal
         // data memory and other's
@@ -98,6 +102,7 @@ module nf_top
         .rd_dm          ( rd_dm         ),      // read data memory
         .wd_dm          ( wd_dm         ),      // write data memory
         .we_dm          ( we_dm         ),      // write enable data memory signal
+        .size_dm        ( size_dm       ),      // size for load/store instructions
         .req_dm         ( req_dm        ),      // request data memory signal
         .req_ack_dm     ( req_ack_dm    )       // request acknowledge data memory signal
     );
@@ -114,6 +119,7 @@ module nf_top
         .rd_i           ( rd_i          ),      // read instruction memory
         .wd_i           ( wd_i          ),      // write instruction memory
         .we_i           ( we_i          ),      // write enable instruction memory signal
+        .size_i         ( size_i        ),      // size for load/store instructions
         .req_i          ( req_i         ),      // request instruction memory signal
         .req_ack_i      ( req_ack_i     ),      // request acknowledge instruction memory signal
         // data memory and other's
@@ -121,6 +127,7 @@ module nf_top
         .rd_dm          ( rd_dm         ),      // read data memory
         .wd_dm          ( wd_dm         ),      // write data memory
         .we_dm          ( we_dm         ),      // write enable data memory signal
+        .size_dm        ( size_dm       ),      // size for load/store instructions
         .req_dm         ( req_dm        ),      // request data memory signal
         .req_ack_dm     ( req_ack_dm    ),      // request acknowledge data memory signal
         // cross connect data
@@ -128,6 +135,7 @@ module nf_top
         .rd_cc          ( rd_cc         ),      // read cc_data memory
         .wd_cc          ( wd_cc         ),      // write cc_data memory
         .we_cc          ( we_cc         ),      // write enable cc_data memory signal
+        .size_cc        ( size_cc       ),      // size for load/store instructions
         .req_cc         ( req_cc        ),      // request cc_data memory signal
         .req_ack_cc     ( req_ack_cc    )       // request acknowledge cc_data memory signal
     );
@@ -157,6 +165,7 @@ module nf_top
         .rd             ( rd_cc         ),      // read memory
         .wd             ( wd_cc         ),      // write memory
         .we             ( we_cc         ),      // write enable signal
+        .size           ( size_cc       ),      // size for load/store instructions
         .req            ( req_cc        ),      // request memory signal
         .req_ack        ( req_ack_cc    )       // request acknowledge memory signal
     );

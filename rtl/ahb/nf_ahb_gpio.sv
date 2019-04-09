@@ -44,13 +44,13 @@ module nf_ahb_gpio
     logic   [31 : 0]    wd;             // write data for gpio module
     logic   [0  : 0]    we;             // write enable for gpio module
 
-    assign  addr     = gpio_addr;
-    assign  we       = gpio_we;
-    assign  wd       = hwdata_s;
-    assign  hrdata_s = rd;
-    assign  hresp_s  = `AHB_HRESP_OKAY;
-    assign  gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
-    assign  gpio_wrequest = gpio_request && hwrite_s;
+    assign addr     = gpio_addr;
+    assign we       = gpio_we;
+    assign wd       = hwdata_s;
+    assign hrdata_s = rd;
+    assign hresp_s  = `AHB_HRESP_OKAY;
+    assign gpio_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
+    assign gpio_wrequest = gpio_request && hwrite_s;
     // creating control and address registers
     nf_register_we  #( 32 ) gpio_addr_ff    ( hclk, hresetn, gpio_request , haddr_s, gpio_addr );
     nf_register     #( 1  ) gpio_wreq_ff    ( hclk, hresetn, gpio_wrequest, gpio_we  );

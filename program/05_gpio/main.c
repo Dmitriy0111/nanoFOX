@@ -11,7 +11,7 @@
 
 #define SYNTH   1
 #define SIM     0
-#define RUNTYPE SYNTH
+#define RUNTYPE SIM
 
 #if   RUNTYPE == SIM
     #define delay_value 10
@@ -34,7 +34,10 @@ void main (void)
     {
         delay(delay_value);
         i = NF_GPIO_GPO;
-        i += NF_GPIO_GPI;
+        if( i == 20 )
+            i = 0;
+        else
+            i += NF_GPIO_GPI;
         NF_GPIO_GPO = i;
     }
 }

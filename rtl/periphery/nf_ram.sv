@@ -17,7 +17,7 @@ module nf_ram
 )(
     input   logic   [0  : 0]    clk,    // clock
     input   logic   [31 : 0]    addr,   // address
-    input   logic   [0  : 0]    we,     // write enable
+    input   logic   [3  : 0]    we,     // write enable
     input   logic   [31 : 0]    wd,     // write data
     output  logic   [31 : 0]    rd      // read data
 );
@@ -34,25 +34,25 @@ module nf_ram
 
     always @(posedge clk)
     begin : write_to_bank_3
-        if( we )
+        if( we[3] )
             bank_3[addr] <= wd[24 +: 8]; 
     end
     
     always @(posedge clk)
     begin : write_to_bank_2
-        if( we )
+        if( we[2] )
             bank_2[addr] <= wd[16 +: 8]; 
     end
     
     always @(posedge clk)
     begin : write_to_bank_1
-        if( we )
+        if( we[1] )
             bank_1[addr] <= wd[8  +: 8]; 
     end
     
     always @(posedge clk)
     begin : write_to_bank_0
-        if( we )
+        if( we[0] )
             bank_0[addr] <= wd[0  +: 8]; 
     end
 
@@ -70,24 +70,29 @@ module nf_ram
     // for verification
     // synthesis translate_off
     
-    logic   [31 : 0]    ram     [depth-1 : 0];  // full memory
+    logic   [7 : 0]     ram     [4*depth-1 : 0];  // full memory
 
     always @(posedge clk)
     begin
-        if( we )
-            ram[addr][24 +: 8] <= wd[24 +: 8];
-        if( we )
-            ram[addr][16 +: 8] <= wd[16 +: 8];
-        if( we )
-            ram[addr][8  +: 8] <= wd[8  +: 8];
-        if( we )
-            ram[addr][0  +: 8] <= wd[0  +: 8];
+        if( we[3] )
+            ram[addr*4+3] <= wd[24 +: 8];
+        if( we[2] )
+            ram[addr*4+2] <= wd[16 +: 8];
+        if( we[1] )
+            ram[addr*4+1] <= wd[8  +: 8];
+        if( we[0] )
+            ram[addr*4+0] <= wd[0  +: 8];
     end
     
     initial
         if( load )
-            $readmemh( { path2file , ".hex" } , ram );
-            
+            for( integer i = 0 ; i < depth ; i = i + 1 )
+            begin
+                ram[i*4+0] = bank_0[i];
+                ram[i*4+1] = bank_1[i];
+                ram[i*4+2] = bank_2[i];
+                ram[i*4+3] = bank_3[i];
+            end
     // synthesis translate_on
 
 endmodule : nf_ram

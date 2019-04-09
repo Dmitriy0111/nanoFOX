@@ -41,19 +41,20 @@ module nf_ahb_uart
     logic   [31 : 0]    wd;             // write data for uart module
     logic   [0  : 0]    we;             // write enable for uart module
 
-    assign  addr     = uart_addr;
-    assign  we       = uart_we;
-    assign  wd       = hwdata_s;
-    assign  hrdata_s = rd;
-    assign  hresp_s  = `AHB_HRESP_OKAY;
-    assign  uart_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
-    assign  uart_wrequest = uart_request && hwrite_s;
+    assign addr     = uart_addr;
+    assign we       = uart_we;
+    assign wd       = hwdata_s;
+    assign hrdata_s = rd;
+    assign hresp_s  = `AHB_HRESP_OKAY;
+    assign uart_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE );
+    assign uart_wrequest = uart_request && hwrite_s;
     // creating control and address registers
     nf_register_we  #( 32 ) uart_addr_ff    ( hclk, hresetn, uart_request, haddr_s, uart_addr );
     nf_register     #( 1  ) uart_wreq_ff    ( hclk, hresetn, uart_wrequest, uart_we  );
     nf_register     #( 1  ) hready_ff       ( hclk, hresetn, uart_request , hready_s );
     // creating one uart top module
-    nf_uart_top nf_uart_top_0
+    nf_uart_top 
+    nf_uart_top_0
     (
         // reset and clock
         .clk        ( hclk      ),  // clk
