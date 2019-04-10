@@ -8,6 +8,7 @@
 */
 
 `include "../../inc/nf_settings.svh"
+`include "../../inc/nf_uart_regs.svh"
 
 module nf_uart_top
 (
@@ -24,67 +25,88 @@ module nf_uart_top
     input   logic   [0  : 0]    uart_rx     // UART rx wire
 );
 
-    logic   [7  : 0]    control_reg;    // control register
-    logic   [7  : 0]    ctrl_cdc_out;   // cross domain crossing data output
-    logic   [7  : 0]    ctrl_cdc_in;    // cross domain crossing data input
-    logic   [7  : 0]    tx_data;        // transmitting data
-    logic   [15 : 0]    comp;           // "dividing frequency"
-    logic   [7  : 0]    rx_data;        // received data
-    logic   [0  : 0]    tr_en;          // transmitter enable
-    logic   [0  : 0]    rec_en;         // receiver enable
-    logic   [0  : 0]    rx_valid;       // rx byte received
+    UCR                 CRI;            // control register input
+    UCR                 CRO;            // control register output
+    UDVR                UDVR_0;         // "dividing frequency"
+    UDR                 UDR_TX;         // transmitting data
+    UDR                 UDR_RX;         // received data
     // write enable signals 
     logic   [0  : 0]    uart_cr_we;     // UART control register write enable
     logic   [0  : 0]    uart_tx_we;     // UART transmitter register write enable
     logic   [0  : 0]    uart_dv_we;     // UART divider register write enable
-    // uart transmitter
+    // uart transmitter other signals
     logic   [0  : 0]    req;            // request transmit
     logic   [0  : 0]    req_ack;        // request acknowledge transmit
+    // uart receiver other signals
+    logic   [0  : 0]    rx_valid;       // rx byte received
+    logic   [0  : 0]    rx_val_set;     // receiver data valid set
     
     // assign write enable signals
     assign uart_cr_we = we && ( addr[0 +: 4] == `NF_UART_CR );
     assign uart_tx_we = we && ( addr[0 +: 4] == `NF_UART_TX );
     assign uart_dv_we = we && ( addr[0 +: 4] == `NF_UART_DR );
 
-    assign req    = ctrl_cdc_out[0];
-    assign tr_en  = ctrl_cdc_out[2];
-    assign rec_en = ctrl_cdc_out[3];
-    assign ctrl_cdc_in[0] = !req_ack;
-    assign ctrl_cdc_in[1] = !rx_valid;
-    assign ctrl_cdc_in[2 +: 7] = ctrl_cdc_out[2 +: 7];
+    assign CRI.TX_REQ = wd[0];
+    assign CRI.RX_VAL = wd[1];
+    assign CRI.TX_EN  = wd[2];
+    assign CRI.RX_EN  = wd[3];
+    assign CRI.UN     = '0;
+    assign CRO.UN     = '0;
 
     // mux for routing one register value
     always_comb
     begin
-        rd = '0 | control_reg;
+        rd = '0 | CRO;
         casex( addr[0 +: 4] )
-            `NF_UART_CR :   rd = '0 | control_reg ;
-            `NF_UART_TX :   rd = '0 | tx_data     ;
-            `NF_UART_RX :   rd = '0 | rx_data     ;
-            `NF_UART_DR :   rd = '0 | comp        ;
+            `NF_UART_CR :   rd = '0 | CRO    ;
+            `NF_UART_TX :   rd = '0 | UDR_TX ;
+            `NF_UART_RX :   rd = '0 | UDR_RX ;
+            `NF_UART_DR :   rd = '0 | UDVR_0 ;
             default     : ;
         endcase
     end
-
-    nf_register_we #( 8  ) nf_uart_tx_reg    ( clk, resetn, uart_tx_we, wd, tx_data          );
-    nf_register_we #( 16 ) nf_uart_dv_reg    ( clk, resetn, uart_dv_we, wd, comp             );
-    // creating one cross domain crossing unit
+    // creating control and data registers
+    nf_register_we #( 8  ) nf_uart_tx_reg    ( clk , resetn , uart_tx_we , wd        , UDR_TX    );
+    nf_register_we #( 16 ) nf_uart_dv_reg    ( clk , resetn , uart_dv_we , wd        , UDVR_0    );
+    nf_register_we #( 1  ) nf_uart_tx_en     ( clk , resetn , uart_cr_we , CRI.TX_EN , CRO.TX_EN );
+    nf_register_we #( 1  ) nf_uart_rx_en     ( clk , resetn , uart_cr_we , CRI.RX_EN , CRO.RX_EN );
+    // creating one cross domain crossing for tx request
     nf_cdc 
     #(
-        .width      ( 8             )
+        .width      ( 1             )
     )
-    nf_cdc_0
+    nf_cdc_req
     (  
-        .resetn_1   ( resetn        ),
-        .resetn_2   ( resetn        ),
-        .clk_1      ( clk           ),
-        .clk_2      ( clk           ),
-        .we_1       ( uart_cr_we    ),
-        .we_2       ( req_ack       ),
-        .data_1_in  ( wd            ),
-        .data_2_in  ( ctrl_cdc_in   ),
-        .data_1_out ( control_reg   ),
-        .data_2_out ( ctrl_cdc_out  ),
+        .resetn_1   ( resetn        ),  // controller side reset
+        .resetn_2   ( resetn        ),  // uart side reset
+        .clk_1      ( clk           ),  // controller side clock
+        .clk_2      ( clk           ),  // uart side clock
+        .we_1       ( uart_cr_we    ),  // controller side write enable
+        .we_2       ( req_ack       ),  // uart side write enable
+        .data_1_in  ( CRI.TX_REQ    ),  // controller side request
+        .data_2_in  ( !req_ack      ),  // uart side request
+        .data_1_out ( CRO.TX_REQ    ),  // controller side request out
+        .data_2_out ( req           ),  // uart side request out
+        .wait_1     (               ),
+        .wait_2     (               )
+    );
+    // creating one cross domain crossing for rx valid
+    nf_cdc 
+    #(
+        .width      ( 1             )
+    )
+    nf_cdc_valid
+    (  
+        .resetn_1   ( resetn        ),  // controller side reset
+        .resetn_2   ( resetn        ),  // uart side reset
+        .clk_1      ( clk           ),  // controller side clock
+        .clk_2      ( clk           ),  // uart side clock
+        .we_1       ( uart_cr_we    ),  // controller side write enable
+        .we_2       ( rx_valid      ),  // uart side write enable
+        .data_1_in  ( CRI.RX_VAL    ),  // controller side valid
+        .data_2_in  ( rx_valid      ),  // uart side valid
+        .data_1_out ( CRO.RX_VAL    ),  // controller side valid out
+        .data_2_out ( rx_val_set    ),  // uart side valid out
         .wait_1     (               ),
         .wait_2     (               )
     );
@@ -96,9 +118,9 @@ module nf_uart_top
         .clk        ( clk           ),     // clk
         .resetn     ( resetn        ),     // resetn
         // controller side interface
-        .tr_en      ( tr_en         ),     // transmitter enable
-        .comp       ( comp          ),     // compare input for setting baudrate
-        .tx_data    ( tx_data       ),     // data for transfer
+        .tr_en      ( CRO.TX_EN     ),     // transmitter enable
+        .comp       ( UDVR_0        ),     // compare input for setting baudrate
+        .tx_data    ( UDR_TX        ),     // data for transfer
         .req        ( req           ),     // request signal
         .req_ack    ( req_ack       ),     // acknowledgent signal
         // uart tx side
@@ -112,10 +134,11 @@ module nf_uart_top
         .clk        ( clk           ),      // clk
         .resetn     ( resetn        ),      // resetn
         // controller side interface
-        .comp       ( comp          ),      // receiver enable
-        .rec_en     ( rec_en        ),      // compare input for setting baudrate
-        .rx_data    ( rx_data       ),      // received data
+        .rec_en     ( CRO.RX_EN     ),      // receiver enable
+        .comp       ( UDVR_0        ),      // compare input for setting baudrate
+        .rx_data    ( UDR_RX        ),      // received data
         .rx_valid   ( rx_valid      ),      // receiver data valid
+        .rx_val_set ( rx_val_set    ),      // receiver data valid set
         // uart rx side
         .uart_rx    ( uart_rx       )       // UART rx wire
     );

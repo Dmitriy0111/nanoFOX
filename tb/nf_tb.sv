@@ -17,9 +17,13 @@ module nf_tb();
     timeprecision       1ns;
     timeunit            1ns;
     
-    parameter           T = 10,                 // 100 MHz
+    parameter           T = 20,                 // 50 MHz
                         resetn_delay = 7,
-                        repeat_cycles = 200;
+                        repeat_cycles = 200,
+                        work_freq  = 50_000_000,
+                        uart_speed = 115200,
+                        uart_rec_example = 1;
+    
     // clock and reset
     bit     [0  : 0]    clk;            // clock
     bit     [0  : 0]    resetn;         // reset
@@ -74,7 +78,16 @@ module nf_tb();
     */
     // overload path to program file
     defparam nf_top_0.nf_ram_i_d_0.path2file = "../program_file/program";
-
+    initial
+    begin
+        uart_rx = '1;
+        if( uart_rec_example )
+        begin
+            @(posedge resetn);
+            repeat(200) @(posedge clk);
+            send_uart_symbol( 8'h5a );
+        end
+    end
     // reset all registers to '0
     initial
         for( int i=0 ; i<32 ; i++ )
@@ -148,5 +161,21 @@ module nf_tb();
             end
         end
     end
+
+    // task for sending symbol over uart to receive module
+    task send_uart_symbol( logic [7 : 0] symbol );
+        // generate 'start'
+        uart_rx = '0;
+        repeat( work_freq / uart_speed ) @(posedge clk);
+        // generate transaction
+        for( integer i = 0 ; i < 8 ; i ++ )
+        begin
+            uart_rx = symbol[i];
+            repeat( work_freq / uart_speed ) @(posedge clk);
+        end
+        // generate 'stop'
+        uart_rx = '1;
+        repeat( work_freq / uart_speed ) @(posedge clk);
+    endtask : send_uart_symbol
 
 endmodule : nf_tb

@@ -47,7 +47,7 @@ module nf_cdc
             if( we_1 )
                 int_reg1 <= data_1_in;
             else if( req_2 )
-                int_reg1 <= data_2_in;
+                int_reg1 <= int_reg2;
         end
     end
 
@@ -80,7 +80,7 @@ module nf_cdc
             if( we_2 )
                 int_reg2 <= data_2_in;
             if( req_1 )
-                int_reg2 <= data_1_in;
+                int_reg2 <= int_reg1;
         end
     end
 

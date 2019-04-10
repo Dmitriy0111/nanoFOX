@@ -18,6 +18,7 @@ module nf_uart_receiver
     input   logic   [15 : 0]    comp,       // compare input for setting baudrate
     output  logic   [7  : 0]    rx_data,    // received data
     output  logic   [0  : 0]    rx_valid,   // receiver data valid
+    input   logic   [0  : 0]    rx_val_set, // receiver data valid set
     // uart rx side
     input   logic   [0  : 0]    uart_rx     // UART rx wire
 );
@@ -25,34 +26,37 @@ module nf_uart_receiver
     logic   [7  : 0]    int_reg;        // internal register
     logic   [3  : 0]    bit_counter;    // bit counter for internal register
     logic   [15 : 0]    counter;        // counter for baudrate
-    logic   [0  : 0]    wait2rec;       // wait to receive
+    logic   [0  : 0]    idle2rec;       // idle to receive
     logic   [0  : 0]    rec2wait;       // receive to wait
+    logic   [0  : 0]    wait2idle;      // wait to idle
     enum
-    logic   [1  : 0]    { WAIT_s, RECEIVE_s } state, next_state; //FSM states
+    logic   [1  : 0]    { IDLE_s, RECEIVE_s, WAIT_s } state, next_state; //FSM states
 
-    assign wait2rec = uart_rx == '0 ;
-    assign rec2wait = bit_counter == 4'h9;
+    assign idle2rec  = uart_rx == '0 ;
+    assign rec2wait  = bit_counter == 4'h9;
+    assign wait2idle = rx_val_set;
     
     assign rx_data = int_reg;
     
     //FSM state change
     always_ff @(posedge clk or negedge resetn)
         if( !resetn )
-            state <= WAIT_s;
+            state <= IDLE_s;
         else
         begin
             state <= next_state;
             if( !rec_en )
-                state <= WAIT_s;
+                state <= IDLE_s;
         end
     //Finding next state for FSM
     always_comb 
     begin : next_state_finding
         next_state = state;
         case( state )
-            WAIT_s      :   if( wait2rec )  next_state = RECEIVE_s;
-            RECEIVE_s   :   if( rec2wait )  next_state = WAIT_s;
-            default     :                   next_state = WAIT_s;
+            IDLE_s    :   if( idle2rec  )   next_state = RECEIVE_s;
+            RECEIVE_s :   if( rec2wait  )   next_state = WAIT_s;
+            WAIT_s    :   if( wait2idle )   next_state = IDLE_s;
+            default   :                     next_state = IDLE_s;
         endcase
     end
     //Other FSM sequence logic
@@ -69,25 +73,27 @@ module nf_uart_receiver
         begin
             if( rec_en )
                 case( state )
-                    WAIT_s :
-                        begin
-                            bit_counter <= '0;
-                            counter <= '0;
-                            rx_valid <= '0;
-                        end
+                    IDLE_s :
+                    begin
+                        bit_counter <= '0;
+                        counter <= '0;
+                        rx_valid <= '0;
+                    end
                     RECEIVE_s : 
+                    begin
+                        counter <= counter + 1'b1;
+                        if( counter >= comp )
                         begin
-                            counter <= counter + 1'b1;
-                            if( counter >= comp )
-                            begin
-                                counter <= '0;
-                                bit_counter <= bit_counter + 1'b1;
-                            end
-                            if( counter == ( comp >> 1 ) )
-                                int_reg <= {uart_rx,int_reg[7:1]};
-                            if( bit_counter == 4'h9 )
-                                rx_valid <= '1;
+                            counter <= '0;
+                            bit_counter <= bit_counter + 1'b1;
                         end
+                        if( counter == ( comp >> 1 ) )
+                            int_reg <= { uart_rx , int_reg[7 : 1] };
+                    end
+                    WAIT_s :
+                    begin
+                        rx_valid <= '1;
+                    end
                 endcase
             else
             begin

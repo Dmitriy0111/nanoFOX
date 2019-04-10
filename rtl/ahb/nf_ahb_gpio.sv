@@ -58,7 +58,7 @@ module nf_ahb_gpio
     // creating one nf_gpio unit
     nf_gpio
     #(
-        .gpio_w     ( gpio_w            )
+        .gpio_w     ( gpio_w    )
     )
     nf_gpio_0
     (

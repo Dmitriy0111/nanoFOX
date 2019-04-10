@@ -8,7 +8,6 @@
 */
 
 `include "../../inc/nf_settings.svh"
-`include "../../inc/nf_hazard_unit.svh"
 `include "../../inc/nf_cpu.svh"
 
 module nf_cpu
@@ -121,7 +120,7 @@ module nf_cpu
     logic   [31 : 0]    ALU_Code_id;        // code for execution unit ( decode stage )
     logic   [4  : 0]    shamt_id;           // shift value for execution unit ( decode stage )
     logic   [0  : 0]    branch_src;         // program counter selection
-    logic   [1  : 0]    size_dm_id;         // size for load/store instructions
+    logic   [1  : 0]    size_dm_id;         // size for load/store instructions ( decode stage )
 
     // next program counter value for branch command
     assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
@@ -183,7 +182,7 @@ module nf_cpu
     logic   [0  : 0]    rf_src_iexe;        // register file source ( execution stage )
     logic   [31 : 0]    ALU_Code_iexe;      // code for execution unit ( execution stage )
     logic   [4  : 0]    shamt_iexe;         // shift value for execution unit ( execution stage )
-    logic   [1  : 0]    size_dm_iexe;       // size for load/store instructions
+    logic   [1  : 0]    size_dm_iexe;       // size for load/store instructions ( execution stage )
     logic   [31 : 0]    result_iexe;        // result from execution unit ( execution stage )
     logic   [31 : 0]    result_iexe_e;      // selected result ( execution stage )
 
@@ -238,7 +237,7 @@ module nf_cpu
     logic   [0  : 0]    rf_src_imem;        // register file source ( memory stage )
     logic   [4  : 0]    wa3_imem;           // write address for register file ( memory stage )
     logic   [0  : 0]    we_rf_imem;         // write enable register file ( memory stage )
-    logic   [1  : 0]    size_dm_imem;       // size for load/store instructions
+    logic   [1  : 0]    size_dm_imem;       // size for load/store instructions ( memory stage )
 
     nf_register_we  #( 1  ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , we_dm_iexe    , we_dm_imem   );
     nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe    , we_rf_imem   );
