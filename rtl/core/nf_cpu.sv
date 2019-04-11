@@ -60,13 +60,7 @@ module nf_cpu
     /*********************************************
     **         Instruction Fetch  stage         **
     *********************************************/
-
-    // instruction fetch stage
-    logic   [31 : 0]    pc_if;              // program counter ( fetch stage )
-    logic   [0  : 0]    sel_id_instr;       // selected instruction 
-    logic   [31 : 0]    instr_if;           // instruction ( fetch stage )
-    logic   [0  : 0]    we_if_stalled;      // write enable for stall ( fetch stage )
-    logic   [31 : 0]    instr_if_stalled;   // stalled instruction ( fetch stage )
+    logic   [31 : 0]    instr_if;           // instruction fetch
     // creating one instruction fetch unit
     nf_i_fu 
     nf_i_fu_0
@@ -74,33 +68,27 @@ module nf_cpu
         // clock and reset
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset
-        // instruction ram
-        .req_ack_i      ( req_ack_i         ),  // request instruction acknowledge
-        .req_i          ( req_i             ),  // request instruction
-        // instruction fetch  stage
-        .pc_if          ( pc_if             ),  // program counter from fetch stage
         // program counter inputs
         .pc_branch      ( pc_branch         ),  // program counter branch value from decode stage
         .pc_src         ( pc_src            ),  // next program counter source
-        .stall_if       ( stall_if          ),  // for stalling instruction fetch stage
-        .flush_id       ( flush_id          )   // for flushing instruction decode stage
+        .stall_if       ( stall_if          ),  // stalling instruction fetch stage
+        .flush_id       ( flush_id          ),  // for flushing instruction decode stage
+        .instr_if       ( instr_if          ),  // instruction fetch
+        // memory inputs/outputs
+        .addr_i         ( addr_i            ),  // address instruction memory
+        .rd_i           ( rd_i              ),  // read instruction memory
+        .wd_i           ( wd_i              ),  // write instruction memory
+        .we_i           ( we_i              ),  // write enable instruction memory signal
+        .size_i         ( size_i            ),  // size for load/store instructions
+        .req_i          ( req_i             ),  // request instruction memory signal
+        .req_ack_i      ( req_ack_i         )   // request acknowledge instruction memory signal
     );
-
-    assign addr_i          = pc_if;                                    // from fetch stage
-    assign instr_if        = sel_id_instr ? instr_if_stalled : rd_i;   // from fetch stage
-    assign we_if_stalled   = stall_id  && ( ~ sel_id_instr );          // for sw and branch stalls
-
-    assign we_i   = '0;
-    assign wd_i   = '0;
-    assign size_i = 2'b10;  // word
 
     logic   [31 : 0]    instr_id;           // instruction ( decode stage )
     logic   [31 : 0]    pc_id;              // program counter ( decode stage )
 
-    nf_register        #(  1 ) sel_id_ff        ( clk , resetn ,                            stall_id , sel_id_instr     );
-    nf_register_we_clr #( 32 ) instr_if_stall   ( clk , resetn , we_if_stalled , flush_id , rd_i     , instr_if_stalled );
-    nf_register_we_clr #( 32 ) instr_if_id      ( clk , resetn , ~ stall_id    , flush_id , instr_if , instr_id         );
-    nf_register_we_clr #( 32 ) pc_if_id         ( clk , resetn , ~ stall_id    , flush_id , pc_if    , pc_id            );
+    nf_register_we  #( 32 ) instr_if_id     ( clk , resetn , ~ stall_id , instr_if , instr_id );
+    nf_register_we  #( 32 ) pc_if_id        ( clk , resetn , ~ stall_id , addr_i   , pc_id    );
 
     /*********************************************
     **         Instruction Decode stage         **

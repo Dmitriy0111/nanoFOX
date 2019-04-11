@@ -27,11 +27,14 @@ vlog $i0 $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $s0 $s1 $s2 $s3 $s4 $s5 $s6 $s7 $s8
 
 if {$test == "core test"} {
     vsim -novopt work.nf_tb
+    add wave -divider  "pipeline stages"
     add wave -position insertpoint sim:/nf_tb/instruction_id_stage
     add wave -position insertpoint sim:/nf_tb/instruction_iexe_stage
     add wave -position insertpoint sim:/nf_tb/instruction_imem_stage
     add wave -position insertpoint sim:/nf_tb/instruction_iwb_stage
+    add wave -divider  "core singals"
     add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/*
+    add wave -divider  "testbench signals"
     add wave -position insertpoint sim:/nf_tb/*
 } elseif {$test == "ahb test"} {
     vsim -novopt work.nf_ahb_tb

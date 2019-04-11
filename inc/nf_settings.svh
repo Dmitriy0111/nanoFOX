@@ -8,11 +8,13 @@
 */
 
 //depth of ram module
-`define ram_depth  64
+`define ram_depth   64
 //path to program file
-`define path2file "../../program_file/program"
+`define path2file   "../../program_file/program"
 //number of slave device's
 `define SLAVE_COUNT 4
+// program counter init value
+`define PROG_START  32'h00_00_00_00
 
 /*  
     memory map for devices

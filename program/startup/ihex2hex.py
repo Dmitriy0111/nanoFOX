@@ -10,7 +10,6 @@
 
 pars_file  = open("program_file/program.ihex" , "r")
 
-out_file_f = open("program_file/program.hex"  , "w")    # full mem [31:0]
 out_file_0 = open("program_file/program_0.hex", "w")    # bank_0
 out_file_1 = open("program_file/program_1.hex", "w")    # bank_1
 out_file_2 = open("program_file/program_2.hex", "w")    # bank_2
@@ -44,7 +43,6 @@ for lines in pars_file:
         i = 0
         # write addr
         st_addr = str("@{:s}\n".format( hex( ( ( hi_addr << 16 ) + lo_addr ) >> 2 )[2:] ))
-        out_file_f.write(st_addr)
         out_file_0.write(st_addr)
         out_file_1.write(st_addr)
         out_file_2.write(st_addr)
@@ -55,7 +53,6 @@ for lines in pars_file:
             out_file_1.write(lines[2:4] + "\n")
             out_file_2.write(lines[4:6] + "\n")
             out_file_3.write(lines[6:8] + "\n")
-            out_file_f.write(lines[6:8] + lines[4:6] + lines[2:4] + lines[0:2] + "\n")
             lines = lines[8:]
             i += 4
             if( i >= lenght ):

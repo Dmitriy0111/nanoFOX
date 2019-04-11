@@ -22,7 +22,7 @@ module nf_tb();
                         repeat_cycles = 200,
                         work_freq  = 50_000_000,
                         uart_speed = 115200,
-                        uart_rec_example = 1;
+                        uart_rec_example = 0;
     
     // clock and reset
     bit     [0  : 0]    clk;            // clock
@@ -123,6 +123,7 @@ module nf_tb();
             begin
                 if( `log_en )
                 begin
+                    #1ns;   // for current instructions
                     nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage   );
                     nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage );
                     nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage );
