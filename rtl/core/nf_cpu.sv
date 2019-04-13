@@ -52,7 +52,6 @@ module nf_cpu
     logic   [0  : 0]    stall_imem;         // stall memory stage
     logic   [0  : 0]    stall_iwb;          // stall write back stage
     logic   [0  : 0]    flush_iexe;         // flush execution stage
-    logic   [0  : 0]    flush_id;           // flush decode stage
 
     logic   [31 : 0]    rd1_i_exu;          // data for execution stage ( bypass unit )
     logic   [31 : 0]    rd2_i_exu;          // data for execution stage ( bypass unit )
@@ -71,8 +70,8 @@ module nf_cpu
         // program counter inputs
         .pc_branch      ( pc_branch         ),  // program counter branch value from decode stage
         .pc_src         ( pc_src            ),  // next program counter source
+        .branch_type    ( branch_type       ),  // branch type
         .stall_if       ( stall_if          ),  // stalling instruction fetch stage
-        .flush_id       ( flush_id          ),  // for flushing instruction decode stage
         .instr_if       ( instr_if          ),  // instruction fetch
         // memory inputs/outputs
         .addr_i         ( addr_i            ),  // address instruction memory

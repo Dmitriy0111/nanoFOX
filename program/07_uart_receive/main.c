@@ -17,7 +17,6 @@ int main ()
     while( 1 )
     {
         while( NF_UART_CR != ( NF_UART_RX_EN | NF_UART_RX_VALID ) );
-        __asm("nop");
         NF_UART_CR = NF_UART_RX_EN;
         NF_GPIO_GPO = NF_UART_RX;
     }

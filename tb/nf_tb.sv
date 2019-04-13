@@ -37,11 +37,13 @@ module nf_tb();
     // help variables
     bit     [31 : 0]    cycle_counter;  // variable for cpu cycle
     // instructions
+    string  instruction_if_stage;
     string  instruction_id_stage;
     string  instruction_iexe_stage;
     string  instruction_imem_stage;
     string  instruction_iwb_stage;
     // string for debug_lev0
+    string  instr_sep_s_if_stage;
     string  instr_sep_s_id_stage;
     string  instr_sep_s_iexe_stage;
     string  instr_sep_s_imem_stage;
@@ -85,7 +87,7 @@ module nf_tb();
         begin
             @(posedge resetn);
             repeat(200) @(posedge clk);
-            send_uart_symbol( 8'h5a );
+            send_uart_message( "Hello World!" , 100);
         end
     end
     // reset all registers to '0
@@ -124,6 +126,7 @@ module nf_tb();
                 if( `log_en )
                 begin
                     #1ns;   // for current instructions
+                    nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_if   , instruction_if_stage   , instr_sep_s_if_stage   );
                     nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_id   , instruction_id_stage   , instr_sep_s_id_stage   );
                     nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_iexe , instruction_iexe_stage , instr_sep_s_iexe_stage );
                     nf_pars_instr_0.pars( nf_top_0.nf_cpu_0.instr_imem , instruction_imem_stage , instr_sep_s_imem_stage );
@@ -132,6 +135,11 @@ module nf_tb();
                     log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
                     log_str = { log_str , $psprintf("cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.addr_i     ) };
                     log_str = { log_str , $psprintf("%t\n", $time                                                         ) };
+                    // form instruction fetch stage output
+                    log_str = { log_str , "Instruction decode stage        : "                                              };
+                    log_str = { log_str , $psprintf("%s\n", instruction_if_stage                                          ) };
+                    if( `debug_lev0 ) 
+                        log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_if_stage   ) };
                     // form instruction decode stage output
                     log_str = { log_str , "Instruction decode stage        : "                                              };
                     log_str = { log_str , $psprintf("%s\n", instruction_id_stage                                          ) };
@@ -178,5 +186,13 @@ module nf_tb();
         uart_rx = '1;
         repeat( work_freq / uart_speed ) @(posedge clk);
     endtask : send_uart_symbol
+    // task for sending message over uart to receive module
+    task send_uart_message( string message , integer delay_v);
+        for( int i=0; i<message.len(); i++ )
+        begin
+            send_uart_symbol(message[i]);
+            #delay_v;
+        end
+    endtask : send_uart_message
 
 endmodule : nf_tb
