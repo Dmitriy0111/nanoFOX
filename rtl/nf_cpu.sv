@@ -79,7 +79,7 @@ module nf_cpu
     // finding next program counter value
     assign pc_i  = pc_src ? pc_b : pc_nb;
 
-    // creating program counter
+    // creating one program counter
     nf_register_we
     #(
         .width          ( 32            )
@@ -92,7 +92,7 @@ module nf_cpu
         .datao          ( instr_addr    ),  // output data
         .we             ( cpu_en        )   // write enable
     );
-    // creating register file
+    // creating one register file
     nf_reg_file 
     reg_file_0
     (
@@ -107,7 +107,7 @@ module nf_cpu
         .ra0            ( reg_addr      ),  // read address 0
         .rd0            ( reg_data      )   // read data 0
     );
-    // creating ALU unit
+    // creating one ALU unit
     nf_alu 
     alu_0
     (
@@ -117,31 +117,31 @@ module nf_cpu
         .ALU_Code       ( ALU_Code      ),  // ALU code from control unit
         .result         ( result        )   // result of ALU operation
     );
-    // creating control unit for cpu
+    // creating one control unit for cpu
     nf_control_unit 
     nf_control_unit_0
     (
         .opcode         ( opcode        ),  // operation code field in instruction code
         .funct3         ( funct3        ),  // funct 3 field in instruction code
         .funct7         ( funct7        ),  // funct 7 field in instruction code
+        .imm_src        ( imm_src       ),  // for selecting immediate data
         .srcBsel        ( srcBsel       ),  // for selecting srcB ALU
         .branch_type    ( branch_type   ),  // for executing branch instructions
         .branch_hf      ( branch_hf     ),  // branch help field
         .we             ( we3           ),  // write enable signal for register file
-        .imm_src        ( imm_src       ),  // for enable immediate data
         .ALU_Code       ( ALU_Code      )   // output code for ALU unit
     );
-    // creating branch unit
+    // creating one  branch unit
     nf_branch_unit 
     nf_branch_unit_0
     (
         .branch_type    ( branch_type   ),  // from control unit, '1 if branch instruction
+        .branch_hf      ( branch_hf     ),  // branch help field
         .d1             ( rd1           ),  // from register file (rd1)
         .d2             ( rd2           ),  // from register file (rd2)
-        .branch_hf      ( branch_hf     ),  // branch help field
         .pc_src         ( pc_src        )   // next program counter selection
     );
-    // creating sign extending unit
+    // creating one sign extending unit
     nf_sign_ex 
     nf_sign_ex_0
     (

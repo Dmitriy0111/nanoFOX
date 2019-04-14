@@ -16,9 +16,9 @@ module nf_top
     output  logic   [31 : 0]    reg_data    // scan register data
 );
 
-    logic   [31 : 0]    instr_addr;
-    logic   [31 : 0]    instr;
-    logic   [0  : 0]    cpu_en;
+    logic   [31 : 0]    instr_addr;     // instruction address
+    logic   [31 : 0]    instr;          // instruction data
+    logic   [0  : 0]    cpu_en;         // cpu enable ( "dividing" clock )
     // creating one nf_cpu unit
     nf_cpu 
     nf_cpu_0
@@ -31,7 +31,7 @@ module nf_top
         .reg_addr       ( reg_addr          ),  // register address
         .reg_data       ( reg_data          )   // register data
     );
-    // creating instruction memory 
+    // creating one instruction memory 
     nf_instr_mem 
     #( 
         .depth          ( 64                )   // depth of memory array
@@ -41,7 +41,7 @@ module nf_top
         .addr           ( instr_addr >> 2   ),  // instruction address
         .instr          ( instr             )   // instruction data
     );
-    // creating strob generating unit for "dividing" clock
+    // creating one strob generating unit for "dividing" clock
     nf_clock_div 
     nf_clock_div_0
     (

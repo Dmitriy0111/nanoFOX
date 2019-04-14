@@ -49,6 +49,11 @@ If log_en or log_html set as '1 (tb/nf_tb.svh) then you can see simulation resul
 *   **make synth_gui_q** is used for open project in Quartus;
 *   **make synth_load_q** is used for loading bitstream in CPLD/FPGA.
 
+For selecting debug output (VGA or hex_display) change in verilog board file (board/[board name]/[board name].sv) value ("hex" or "vga") of localparam in string:
+```verilog
+localparam              debug_type  = "hex";
+```
+
 ## Core structure:
 ![cpu_system](doc/cpu_system.jpg)
 
@@ -59,6 +64,19 @@ simple cpu nanoFOX currently works on these FPGA boards:
 <li>rz_easyFPGA_A2_1 ( Altera Cyclone IV FPGA )</li>
 <li><a href="https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=234&No=1021">Terasic DE10-Lite ( Altera MAX10 FPGA )</a></li>
 </ol>
+
+## Repository contents:
+| Folder        | Contents                                          |
+| :------------ | :------------------------------------------------ |
+| board         | Top levels of design for fpga development boards  |
+| brd_rtl       | Auxiliary modules for top levels                  |
+| doc           | RISC-V ISA 2.2                                    |
+| inc           | Header files for design                           |
+| program       | Examples of programs                              |
+| rtl           | Core source files                                 |
+| run           | Scripts for simulation                            |
+| tb            | Testbenches for core and separate parts           |
+| other         | Readme and license files, Makefile                |
 
 ## Planns
 *   Adding Xilinx support
