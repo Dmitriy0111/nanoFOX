@@ -18,7 +18,7 @@ module nf_ram
     output  logic   [31 : 0]    rd      // read data
 );
 
-    logic [31 : 0] ram [depth-1 : 0];
+    logic   [31 : 0]    ram     [depth-1 : 0];  // creating memory array
 
     assign rd = ram[addr];
 

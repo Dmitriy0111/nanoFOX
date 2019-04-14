@@ -15,7 +15,7 @@ module nf_instr_mem
     output  logic   [31 : 0]    instr       // instruction data
 );
 
-    logic   [31 : 0]    mem [depth-1 : 0];
+    logic   [31 : 0]    mem     [depth-1 : 0];  // creating rom
 
     assign instr = mem[addr];
 

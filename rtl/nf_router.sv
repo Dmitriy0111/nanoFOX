@@ -37,7 +37,7 @@ module nf_router
     assign wd_dm_s   = { `slave_number { wd_dm_m } };
     assign addr_dm_s = { `slave_number { addr_dm_m } };
     assign we_dm_s   = { `slave_number { we_dm_m } } & slave_sel ; // {we_dm_m && slave_sel[n-1] , we_dm_m && slave_sel[n-2] , ... , we_dm_m && slave_sel[0] };
-
+    // creating one router decoder
     nf_router_dec
     #(
         .Slave_n        ( `slave_number     )
@@ -47,7 +47,7 @@ module nf_router
         .addr_m         ( addr_dm_m         ),  // master address
         .slave_sel      ( slave_sel         )   // slave select
     );
-
+    // creating one router mux
     nf_router_mux
     #(
         .Slave_n        ( `slave_number     )

@@ -95,7 +95,7 @@ module nf_cpu
     // finding next program counter value
     assign pc_i  = pc_src ? pc_b : pc_nb;
 
-    // creating program counter
+    // creating one program counter
     nf_register_we_r
     #(
         .width          ( 32                )
@@ -110,7 +110,7 @@ module nf_cpu
         .we             ( cpu_en            )   // write enable
     );
 
-    // creating register file
+    // creating one register file
     nf_reg_file 
     reg_file_0
     (
@@ -125,7 +125,7 @@ module nf_cpu
         .ra0            ( reg_addr          ),  // scan register address
         .rd0            ( reg_data          )   // scan register data
     );
-    // creating ALU unit
+    // creating one ALU unit
     nf_alu 
     alu_0
     (
@@ -135,23 +135,23 @@ module nf_cpu
         .ALU_Code       ( ALU_Code          ),  // ALU code from control unit
         .result         ( result            )   // result of ALU operation
     );
-    // creating control unit for cpu
+    // creating one control unit for cpu
     nf_control_unit 
     nf_control_unit_0
     (
         .opcode         ( opcode            ),  // operation code field in instruction code
         .funct3         ( funct3            ),  // funct 3 field in instruction code
         .funct7         ( funct7            ),  // funct 7 field in instruction code
+        .imm_src        ( imm_src           ),  // for selecting immediate data
         .srcBsel        ( srcBsel           ),  // for selecting srcB ALU
         .branch_type    ( branch_type       ),  // for executing branch instructions
         .branch_hf      ( branch_hf         ),  // branch help field
         .we_rf          ( we_rf             ),  // write enable signal for register file
         .we_dm          ( we_dm_en          ),  // write enable signal for data memory and other's
         .rf_src         ( rf_src            ),  // write data select for register file
-        .imm_src        ( imm_src           ),  // for enable immediate data
         .ALU_Code       ( ALU_Code          )   // output code for ALU unit
     );
-    // creating branch unit
+    // creating one branch unit
     nf_branch_unit 
     nf_branch_unit_0
     (
@@ -161,7 +161,7 @@ module nf_cpu
         .branch_hf      ( branch_hf         ),  // branch help field
         .pc_src         ( pc_src            )   // selecting next program counter
     );
-    // creating sign extending unit
+    // creating one sign extending unit
     nf_sign_ex 
     nf_sign_ex_0
     (

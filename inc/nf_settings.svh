@@ -8,9 +8,9 @@
 */
 
 // depth of ram module
-`define ram_depth  64
+`define ram_depth       64
 // number of slave device's
-`define slave_number 4
+`define slave_number    4
 
 /*  
     memory map for devices

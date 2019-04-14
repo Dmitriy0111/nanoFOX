@@ -26,6 +26,8 @@ module nf_top
     output  logic   [31               : 0]  reg_data    // scan register data
 );
 
+    localparam          Slave_n = `slave_number ;
+
     // instruction memory
     logic   [31 : 0]    instr_addr;
     logic   [31 : 0]    instr;
@@ -36,15 +38,13 @@ module nf_top
     logic   [31 : 0]    wd_dm;
     logic   [31 : 0]    rd_dm;
     // slave's side
-    localparam                          Slave_n = `slave_number ;
-
     logic                  [0  : 0]     clk_s;
     logic                  [0  : 0]     resetn_s;
     logic   [Slave_n-1 : 0][31 : 0]     addr_dm_s;
     logic   [Slave_n-1 : 0][0  : 0]     we_dm_s;
     logic   [Slave_n-1 : 0][31 : 0]     wd_dm_s;
     logic   [Slave_n-1 : 0][31 : 0]     rd_dm_s;
-
+    // for future
     assign  rd_dm_s[3]  = '0;
 
     // creating one nf_cpu_0 unit 
@@ -64,7 +64,7 @@ module nf_top
         .reg_data       ( reg_data          )   // scan register data
     );
 
-    // creating instruction memory 
+    // creating one instruction memory 
     nf_instr_mem 
     #( 
         .depth          ( 64                ) 
@@ -75,7 +75,7 @@ module nf_top
         .instr          ( instr             )   // instruction data
     );
 
-    // creating strob generating unit for "dividing" clock
+    // creating one strob generating unit for "dividing" clock
     nf_clock_div 
     nf_clock_div_0
     (

@@ -17,10 +17,10 @@ module nf_branch_unit
     input   logic   [31 : 0]    d2,             // from register file (rd2)
     output  logic   [0  : 0]    pc_src          // next program counter
 );
-
+    // for equal and not equal operation
     logic   equal;
 
-    assign  equal  = ( d2 == d1 );
-    assign  pc_src = branch_type && ( ! ( equal ^ branch_hf ) );
+    assign equal  = ( d2 == d1 );
+    assign pc_src = branch_type && ( ! ( equal ^ branch_hf ) );
 
 endmodule : nf_branch_unit

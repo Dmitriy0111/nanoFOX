@@ -25,8 +25,8 @@ module nf_pwm
     output  logic   [0  : 0]    pwm         // PWM output signal
 );
 
-    logic   [pwm_width-1 : 0]  pwm_i;   //internal counter register
-    logic   [pwm_width-1 : 0]  pwm_c;   //internal compare register
+    logic   [pwm_width-1 : 0]   pwm_i;  //internal counter register
+    logic   [pwm_width-1 : 0]   pwm_c;  //internal compare register
 
     assign pwm = (pwm_i >= pwm_c);
     assign rd  = { '0 , pwm_c };
