@@ -14,6 +14,5 @@ void main (void)
     while(1)
     {
         i++;
-        __asm("nop");
     }
 }

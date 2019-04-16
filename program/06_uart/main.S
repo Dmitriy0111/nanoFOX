@@ -19,4 +19,21 @@
 
 .section    .text
 
-_start:     beq     zero, zero, _start
+_start:     lui     a4, 0x30
+            addi    a3, zero, 0x04
+            addi    a5, zero, 0x48
+            addi    a2, zero, NF_UART_SP_115200
+            sw      a2, 0xC(a4)
+            sw      a3, 0x0(a4)
+            sw      a5, 0x4(a4)
+            addi    a3, zero, 0x05
+            sw      a3, 0x0(a4)
+loop1:      lw      a1, 0x0(a4)
+            beq     a3, a1, loop1
+            lui     a4, 0x10
+            sw      a5, 0x4(a4)
+loop2:      jal     zero, loop2
+loop3:      jal     zero, loop3
+loop4:      jal     zero, loop4
+loop5:      jal     zero, loop5
+

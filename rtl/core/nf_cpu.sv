@@ -234,12 +234,6 @@ module nf_cpu
     nf_register_we  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , rd2_i_exu     , rd2_imem     );
     nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe_e , result_imem  );
 
-    assign addr_dm  = result_imem;
-    assign wd_dm    = rd2_imem;
-    assign we_dm    = we_dm_imem;
-    assign req_dm   = we_dm_imem || rf_src_imem;
-    assign size_dm  = size_dm_imem;
-
     /*********************************************
     **       Instruction write back stage       **
     *********************************************/
@@ -254,18 +248,43 @@ module nf_cpu
     logic   [0  : 0]    we_rf_iwb;          // write enable for register file ( write back stage )
     logic   [0  : 0]    rf_src_iwb;         // register file source ( write back stage )
     logic   [31 : 0]    result_iwb;         // result operation ( write back stage )
+    logic   [31 : 0]    wd_iwb;             // write data ( write back stage )
     logic   [31 : 0]    rd_dm_iwb;          // read data from data memory ( write back stage )
 
     nf_register_we  #( 1  ) we_rf_imem_iwb  ( clk , resetn , ~ stall_iwb , we_rf_imem  , we_rf_iwb  );
     nf_register_we  #( 1  ) rf_src_imem_iwb ( clk , resetn , ~ stall_iwb , rf_src_imem , rf_src_iwb );
     nf_register_we  #( 5  ) wa3_imem_iwb    ( clk , resetn , ~ stall_iwb , wa3_imem    , wa3_iwb    );
     nf_register_we  #( 32 ) result_imem_iwb ( clk , resetn , ~ stall_iwb , result_imem , result_iwb );
-    nf_register_we  #( 32 ) rd_dm_iwb_ff    ( clk , resetn , ~ stall_iwb , rd_dm       , rd_dm_iwb  );
+    logic   [0  : 0]     lsu_busy;          // load store unit busy
 
-    assign wa3   = wa3_iwb;
-    assign wd3   = rf_src_iwb ? rd_dm_iwb : result_iwb;
-    assign we_rf = we_rf_iwb;
+    assign wa3    = wa3_iwb;
+    assign wd3    = wd_iwb;
+    assign wd_iwb = rf_src_iwb ? rd_dm_iwb : result_iwb;
+    assign we_rf  = we_rf_iwb;
 
+    nf_i_lsu 
+    nf_i_lsu_0
+    (
+        // clock and reset
+        .clk            ( clk           ),      // clock
+        .resetn         ( resetn        ),      // reset
+        // pipeline wires
+        .result_imem    ( result_imem   ),      // result from imem stage
+        .rd2_imem       ( rd2_imem      ),      // read data 2 from imem stage
+        .we_dm_imem     ( we_dm_imem    ),      // write enable data memory from imem stage
+        .rf_src_imem    ( rf_src_imem   ),      // register file source enable from imem stage
+        .size_dm_imem   ( size_dm_imem  ),      // size data memory from imem stage
+        .rd_dm_iwb      ( rd_dm_iwb     ),      // read data for write back stage
+        .lsu_busy       ( lsu_busy      ),      // load store unit busy
+        // data memory and other's
+        .addr_dm        ( addr_dm       ),      // address data memory
+        .rd_dm          ( rd_dm         ),      // read data memory
+        .wd_dm          ( wd_dm         ),      // write data memory
+        .we_dm          ( we_dm         ),      // write enable data memory signal
+        .size_dm        ( size_dm       ),      // size for load/store instructions
+        .req_dm         ( req_dm        ),      // request data memory signal
+        .req_ack_dm     ( req_ack_dm    )       // request acknowledge data memory signal
+    );
     // creating stall and flush unit (hazard)
     nf_hz_stall_unit 
     nf_hz_stall_unit_0
@@ -273,6 +292,7 @@ module nf_cpu
         // scan wires
         .we_rf_imem     ( we_rf_imem    ),  // write enable register from memory stage
         .wa3_iexe       ( wa3_iexe      ),  // write address from execution stage
+        .wa3_imem       ( wa3_imem      ),
         .we_rf_iexe     ( we_rf_iexe    ),  // write enable register from memory stage
         .rf_src_iexe    ( rf_src_iexe   ),  // register source from execution stage
         .ra1_id         ( ra1_id        ),  // read address 1 from decode stage
@@ -282,6 +302,7 @@ module nf_cpu
         .req_ack_dm     ( req_ack_dm    ),  // request acknowledge data memory
         .req_ack_i      ( req_ack_i     ),  // request acknowledge instruction
         .rf_src_imem    ( rf_src_imem   ),  // register source from memory stage
+        .lsu_busy       ( lsu_busy      ),  // load store unit busy
         // control wires
         .stall_if       ( stall_if      ),  // stall fetch stage
         .stall_id       ( stall_id      ),  // stall decode stage
@@ -307,7 +328,7 @@ module nf_cpu
         .rd1_iexe       ( rd1_iexe      ),  // read data 1 from execution stage
         .rd2_iexe       ( rd2_iexe      ),  // read data 2 from execution stage
         .result_imem    ( result_imem   ),  // ALU result from mem stage
-        .result_iwb     ( result_iwb    ),  // ALU result from write back stage
+        .wd_iwb         ( wd_iwb        ),  // write data from iwb stage
         .rd1_id         ( rd1_id        ),  // read data 1 from decode stage
         .rd2_id         ( rd2_id        ),  // read data 2 from decode stage
         // bypass outputs

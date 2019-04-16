@@ -15,6 +15,7 @@ module nf_hz_stall_unit
     // scan wires
     input   logic   [0 : 0]     we_rf_imem,     // write enable register from memory stage
     input   logic   [4 : 0]     wa3_iexe,       // write address from execution stage
+    input   logic   [4 : 0]     wa3_imem,       // write address from execution stage
     input   logic   [0 : 0]     we_rf_iexe,     // write enable register from memory stage
     input   logic   [0 : 0]     rf_src_iexe,    // register source from execution stage
     input   logic   [4 : 0]     ra1_id,         // read address 1 from decode stage
@@ -24,6 +25,7 @@ module nf_hz_stall_unit
     input   logic   [0 : 0]     req_ack_dm,     // request acknowledge data memory
     input   logic   [0 : 0]     req_ack_i,      // request acknowledge instruction
     input   logic   [0 : 0]     rf_src_imem,    // register source from memory stage
+    input   logic   [0 : 0]     lsu_busy,       // load store unit busy
     // control wires
     output  logic   [0 : 0]     stall_if,       // stall fetch stage
     output  logic   [0 : 0]     stall_id,       // stall decode stage
@@ -34,34 +36,29 @@ module nf_hz_stall_unit
 );
 
     logic   lw_stall_id_iexe;       // stall pipe if load data instructions ( id and exe stages )
-    logic   lw_stall_imem_iwb;      // stall pipe if load data instructions ( imem and iwb stages )
     logic   branch_exe_id_stall;    // stall pipe if branch operations
-    logic   sw_data_stall;          // stall pipe if store data instructions
+    logic   sw_lw_data_stall;       // stall pipe if store or load data instructions
     logic   lw_instr_stall;         // stall pipe if load instruction from memory
 
-    assign lw_stall_id_iexe     =   ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe ) ) && 
-                                    we_rf_iexe && 
-                                    rf_src_iexe;
+    assign lw_stall_id_iexe     =   ( ( ra1_id == wa3_iexe ) || ( ra2_id == wa3_iexe )  || ( ra1_id == wa3_imem ) || ( ra2_id == wa3_imem ) ) && 
+                                    ( we_rf_iexe || we_rf_imem ) && 
+                                    ( rf_src_iexe || rf_src_imem );
 
-    assign lw_stall_imem_iwb    =   rf_src_imem && 
-                                    we_rf_imem && 
-                                    ( ~ req_ack_dm );
 
     assign branch_exe_id_stall  =   ( ! ( ( branch_type[0 +: 3] == B_NONE[0 +: 3] ) || ( branch_type[3] ) ) ) && 
                                     we_rf_iexe && 
                                     ( ( wa3_iexe == ra1_id ) || ( wa3_iexe == ra2_id ) ) && 
                                     ( ( | ra1_id ) || ( | ra2_id ) );
 
-    assign sw_data_stall        =   we_dm_imem && 
-                                    ( ~ req_ack_dm );
+    assign sw_lw_data_stall     =   lsu_busy;
 
     assign lw_instr_stall       =   ~ req_ack_i;
 
-    assign stall_if   = lw_stall_id_iexe  || lw_stall_imem_iwb || sw_data_stall || branch_exe_id_stall || lw_instr_stall;
-    assign stall_id   = lw_stall_id_iexe  || lw_stall_imem_iwb || sw_data_stall || branch_exe_id_stall || lw_instr_stall;
-    assign flush_iexe = lw_stall_id_iexe  || lw_stall_imem_iwb ||                  branch_exe_id_stall || lw_instr_stall;
-    assign stall_iexe = lw_stall_imem_iwb ||                      sw_data_stall;
-    assign stall_imem = lw_stall_imem_iwb ||                      sw_data_stall;
-    assign stall_iwb  = lw_stall_imem_iwb ||                      sw_data_stall;
+    assign stall_if   = lw_stall_id_iexe  || sw_lw_data_stall || branch_exe_id_stall || lw_instr_stall;
+    assign stall_id   = lw_stall_id_iexe  || sw_lw_data_stall || branch_exe_id_stall || lw_instr_stall;
+    assign flush_iexe = lw_stall_id_iexe  ||                     branch_exe_id_stall || lw_instr_stall;
+    assign stall_iexe =                      sw_lw_data_stall;
+    assign stall_imem =                      sw_lw_data_stall;
+    assign stall_iwb  =                      sw_lw_data_stall;
     
 endmodule : nf_hz_stall_unit

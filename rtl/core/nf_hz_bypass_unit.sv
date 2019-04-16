@@ -25,7 +25,7 @@ module nf_hz_bypass_unit
     input   logic   [31 : 0]    rd1_iexe,       // read data 1 from execution stage
     input   logic   [31 : 0]    rd2_iexe,       // read data 2 from execution stage
     input   logic   [31 : 0]    result_imem,    // ALU result from mem stage
-    input   logic   [31 : 0]    result_iwb,     // ALU result from write back stage
+    input   logic   [31 : 0]    wd_iwb,         // write data from iwb stage
     input   logic   [31 : 0]    rd1_id,         // read data 1 from decode stage
     input   logic   [31 : 0]    rd2_id,         // read data 2 from decode stage
     // bypass outputs
@@ -70,13 +70,13 @@ module nf_hz_bypass_unit
         case( rd1_bypass )
             `HU_BP_NONE : rd1_i_exu = rd1_iexe;
             `HU_BP_MEM  : rd1_i_exu = result_imem;
-            `HU_BP_WB   : rd1_i_exu = result_iwb;
+            `HU_BP_WB   : rd1_i_exu = wd_iwb;
             default     : ;
         endcase
         case( rd2_bypass )
             `HU_BP_NONE : rd2_i_exu = rd2_iexe;
             `HU_BP_MEM  : rd2_i_exu = result_imem;
-            `HU_BP_WB   : rd2_i_exu = result_iwb;
+            `HU_BP_WB   : rd2_i_exu = wd_iwb;
             default     : ;
         endcase
     end

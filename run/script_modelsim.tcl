@@ -35,8 +35,12 @@ if {$test == "core test"} {
     add wave -position insertpoint sim:/nf_tb/instruction_iwb_stage
     add wave -divider  "core singals"
     add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/*
-    add wave -divider  "instruction fetch unit singals"
-    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_i_fu_0/*
+#    add wave -divider  "instruction fetch unit singals"
+#    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_i_fu_0/*
+#    add wave -divider  "instruction load store unit singals"
+#    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_i_lsu_0/*
+#    add wave -divider  "instruction cross connect unit singals"
+#    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_cc_0/*
     add wave -divider  "testbench signals"
     add wave -position insertpoint sim:/nf_tb/*
 } elseif {$test == "ahb test"} {

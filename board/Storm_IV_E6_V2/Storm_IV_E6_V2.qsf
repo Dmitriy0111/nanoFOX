@@ -55,6 +55,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cpu_cc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_control_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_fu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_lsu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_exu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_du.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hz_stall_unit.sv
