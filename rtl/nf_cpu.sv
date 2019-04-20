@@ -42,7 +42,7 @@ module nf_cpu
     logic   [31 : 0]    srcA;           // source A for ALU
     logic   [31 : 0]    srcB;           // source B for ALU
     logic   [4  : 0]    shamt;          // for operations with shift
-    logic   [31 : 0]    ALU_Code;       // code for ALU
+    logic   [2  : 0]    ALU_Code;       // code for ALU
     logic   [31 : 0]    result;         // result of ALU operation
     // control unit wires
     logic   [6  : 0]    opcode;         // opcode instruction field
@@ -94,7 +94,7 @@ module nf_cpu
     );
     // creating one register file
     nf_reg_file 
-    reg_file_0
+    nf_reg_file_0
     (
         .clk            ( clk           ),  // clock
         .ra1            ( ra1           ),  // read address 1
@@ -109,7 +109,7 @@ module nf_cpu
     );
     // creating one ALU unit
     nf_alu 
-    alu_0
+    nf_alu_0
     (
         .srcA           ( srcA          ),  // source A for ALU unit
         .srcB           ( srcB          ),  // source B for ALU unit

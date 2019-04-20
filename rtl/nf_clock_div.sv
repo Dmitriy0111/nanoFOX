@@ -27,7 +27,7 @@ module nf_clock_div
         if( !resetn )
         begin
             int_div <= '0;
-            int_c   <= div;
+            int_c   <= '0;
         end
         else
         begin

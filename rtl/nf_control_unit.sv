@@ -19,7 +19,7 @@ module nf_control_unit
     output  logic   [0  : 0]    branch_type,    // for executing branch instructions
     output  logic   [0  : 0]    branch_hf,      // branch help field
     output  logic   [0  : 0]    we,             // write enable signal for register file
-    output  logic   [31 : 0]    ALU_Code        // output code for ALU unit
+    output  logic   [2  : 0]    ALU_Code        // output code for ALU unit
 );
 
     always_comb

@@ -72,21 +72,21 @@
 
 
 //ALU commands
-`define ALU_ADD     'b000
-`define ALU_OR      'b001
-`define ALU_LUI     'b010
-`define ALU_SLL     'b011
-`define ALU_SUB     'b100
+`define ALU_ADD     3'b000
+`define ALU_OR      3'b001
+`define ALU_LUI     3'b010
+`define ALU_SLL     3'b011
+`define ALU_SUB     3'b100
 
 //sign imm select
-`define I_SEL       'b00        // for i type instruction
-`define U_SEL       'b01        // for u type instruction
-`define B_SEL       'b10        // for b type instruction
+`define I_SEL       2'b00   // for i type instruction
+`define U_SEL       2'b01   // for u type instruction
+`define B_SEL       2'b10   // for b type instruction
 
 //branch type constants
-`define B_NONE      'b0
-`define B_EQ_NEQ    'b1
+`define B_NONE      1'b0
+`define B_EQ_NEQ    1'b1
 
 //srcB select constants
-`define SRCB_IMM    'b0
-`define SRCB_RD1    'b1
+`define SRCB_IMM    1'b0
+`define SRCB_RD1    1'b1
