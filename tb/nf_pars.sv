@@ -11,7 +11,7 @@
 `include "nf_tb.svh"
 
 class nf_pars;
-
+    // for parsing instruction
     bit     [4  : 0]    ra1        ;
     bit     [4  : 0]    ra2        ;
     bit     [4  : 0]    wa3        ;
@@ -22,12 +22,13 @@ class nf_pars;
     logic   [11 : 0]    imm_data_i ;
     logic   [11 : 0]    imm_data_b ;
     logic   [11 : 0]    imm_data_s ;
+    // for working with register file
     logic   [31 : 0]    reg_file_l  [31 : 0];
     logic   [31 : 0]    table_html  [31 : 0];
     logic   [1  : 0]    table_c     [31 : 0];
     string              html_str = "";
     integer             html_p;
-
+    // register file list names
     string registers_list [0:31] =  {
                                         "zero",
                                         "ra",
@@ -62,11 +63,11 @@ class nf_pars;
                                         "t5",
                                         "t6"
                                     };
-
+    // constructor
     function new();
         $timeformat(-9, 2, " ns", 7);
     endfunction : new
-
+    // task for parsing current instructions
     task pars(logic [31 : 0] instr, ref string instruction_s,ref string instr_sep);
 
         instr_sep = "";
@@ -112,7 +113,7 @@ class nf_pars;
             instr_separation(instr,instr_sep);
 
     endtask : pars
-
+    // task for parsing instruction in debug level 0
     task instr_separation(bit [31 : 0] instr, ref string instr_sep);
 
         instr_sep= "";
@@ -145,7 +146,7 @@ class nf_pars;
         endcase
 
     endtask : instr_separation
-
+    // task for writing register file values in txt file ( table )
     task write_txt_table(logic [31 : 0] reg_file[31 : 0], ref string reg_str);
 
         integer reg_addr;
@@ -167,8 +168,8 @@ class nf_pars;
         while( reg_addr != 32 );
 
     endtask : write_txt_table
-
-    task build_html_loger(string out_file);
+    // task for creating html logger
+    task build_html_logger(string out_file);
 
         integer i;
 
@@ -186,8 +187,8 @@ class nf_pars;
             $stop;
         end
 
-    endtask : build_html_loger
-
+    endtask : build_html_logger
+    // task for writing html log info
     task write_html_log( logic [31 : 0] reg_file[31 : 0], string log_str);
 
         integer i;
@@ -208,7 +209,7 @@ class nf_pars;
         $fwrite(html_p,html_str);
 
     endtask : write_html_log
-
+    // task for formirate current instruction info in html
     task form_info_html(string log_str);
 
         html_str = { html_str , "<font size = \"4\">" };
@@ -219,7 +220,7 @@ class nf_pars;
         html_str = { html_str , "</font>\n" };
 
     endtask : form_info_html
-
+    // task for formirate register file values in html table
     task form_html_table(integer row, integer col);
 
         integer tr_i;

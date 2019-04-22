@@ -29,46 +29,48 @@ module nf_cpu
 );
 
     // program counter wires
-    logic   [31 : 0]    pc_i;
-    logic   [31 : 0]    pc_nb;
-    logic   [31 : 0]    pc_b;
-    logic   [0  : 0]    pc_src;
+    logic   [31 : 0]    pc_i;           // program counter -> instruction memory address
+    logic   [31 : 0]    pc_nb;          // program counter for non branch instructions
+    logic   [31 : 0]    pc_b;           // program counter for branch instructions
+    logic   [0  : 0]    pc_src;         // program counter selecting pc_nb or pc_b
     // register file wires
-    logic   [4  : 0]    ra1;
-    logic   [31 : 0]    rd1;
-    logic   [4  : 0]    ra2;
-    logic   [31 : 0]    rd2;
-    logic   [4  : 0]    wa3;
-    logic   [31 : 0]    wd3;
-    logic   [0  : 0]    we_rf;
-    logic   [0  : 0]    rf_src;
+    logic   [4  : 0]    ra1;            // read address 1 from RF
+    logic   [31 : 0]    rd1;            // read data 1 from RF
+    logic   [4  : 0]    ra2;            // read address 2 from RF
+    logic   [31 : 0]    rd2;            // read data 2 from RF
+    logic   [4  : 0]    wa3;            // write address for RF
+    logic   [31 : 0]    wd3;            // write data for RF
+    logic   [0  : 0]    we_rf;          // write enable for RF
+    logic   [0  : 0]    rf_src;         // register file source
+    logic   [0  : 0]    we_rf_mod;      // write enable for RF with cpu enable
     // sign extend wires
-    logic   [11 : 0]    imm_data_i;
-    logic   [19 : 0]    imm_data_u;
-    logic   [11 : 0]    imm_data_b;
-    logic   [11 : 0]    imm_data_s;
-    logic   [31 : 0]    ext_data;
+    logic   [11 : 0]    imm_data_i;     // immediate data for i-type commands
+    logic   [19 : 0]    imm_data_u;     // immediate data for u-type commands
+    logic   [11 : 0]    imm_data_b;     // immediate data for b-type commands
+    logic   [11 : 0]    imm_data_s;     // immediate data for s-type commands
+    logic   [31 : 0]    ext_data;       // sign extended data
     // ALU wires
-    logic   [31 : 0]    srcA;
-    logic   [31 : 0]    srcB;
-    logic   [4  : 0]    shamt;
-    logic   [31 : 0]    ALU_Code;
-    logic   [31 : 0]    result;
+    logic   [31 : 0]    srcA;           // source A for ALU
+    logic   [31 : 0]    srcB;           // source B for ALU
+    logic   [4  : 0]    shamt;          // for operations with shift
+    logic   [2  : 0]    ALU_Code;       // code for ALU
+    logic   [31 : 0]    result;         // result of ALU operation
     // control unit wires
-    logic   [6  : 0]    opcode;
-    logic   [2  : 0]    funct3;
-    logic   [6  : 0]    funct7;
-    logic   [0  : 0]    branch_type;
-    logic   [0  : 0]    branch_hf;
-    logic   [1  : 0]    imm_src;
-    logic   [0  : 0]    srcBsel;
+    logic   [6  : 0]    opcode;         // opcode instruction field
+    logic   [2  : 0]    funct3;         // funct 3 instruction field
+    logic   [6  : 0]    funct7;         // funct 7 instruction field
+    logic   [0  : 0]    branch_type;    // branch type
+    logic   [0  : 0]    branch_hf;      // branch help field
+    logic   [1  : 0]    imm_src;        // immediate data selecting
+    logic   [0  : 0]    srcBsel;        // source B for ALU selecting
     // data memory and other's
-    logic   [0  : 0]    we_dm_en;
+    logic   [0  : 0]    we_dm_en;       // write enable for data memory
 
     // register's address finding from instruction
     assign ra1  = instr[15 +: 5];
     assign ra2  = instr[20 +: 5];
     assign wa3  = instr[7  +: 5];
+    assign we_rf_mod = we_rf & cpu_en;
     // shamt value in instruction
     assign shamt = instr[20  +: 5];
     // operation code, funct3 and funct7 field's in instruction
@@ -96,7 +98,7 @@ module nf_cpu
     assign pc_i  = pc_src ? pc_b : pc_nb;
 
     // creating one program counter
-    nf_register_we_r
+    nf_register_we
     #(
         .width          ( 32                )
     )
@@ -105,14 +107,13 @@ module nf_cpu
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset
         .datai          ( pc_i              ),  // input data
-        .datar          ( '0                ),  // output data
-        .datao          ( instr_addr        ),  // instruction address 
+        .datao          ( instr_addr        ),  // output data 
         .we             ( cpu_en            )   // write enable
     );
 
     // creating one register file
     nf_reg_file 
-    reg_file_0
+    nf_reg_file_0
     (
         .clk            ( clk               ),  // clock
         .ra1            ( ra1               ),  // read address 1
@@ -121,13 +122,13 @@ module nf_cpu
         .rd2            ( rd2               ),  // read data 2
         .wa3            ( wa3               ),  // write address 
         .wd3            ( wd3               ),  // write data
-        .we3            ( we_rf && cpu_en   ),  // write enable signal
+        .we3            ( we_rf_mod         ),  // write enable signal
         .ra0            ( reg_addr          ),  // scan register address
         .rd0            ( reg_data          )   // scan register data
     );
     // creating one ALU unit
     nf_alu 
-    alu_0
+    nf_alu_0
     (
         .srcA           ( srcA              ),  // source A for ALU unit
         .srcB           ( srcB              ),  // source B for ALU unit

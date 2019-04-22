@@ -9,7 +9,7 @@
 
 module nf_pwm
 #(
-    parameter                   pwm_width = 8
+    parameter                   pwm_width = 8   // width pwm register
 )(
     // clock and reset
     input   logic   [0  : 0]    clk,        // clock
@@ -25,8 +25,8 @@ module nf_pwm
     output  logic   [0  : 0]    pwm         // PWM output signal
 );
 
-    logic   [pwm_width-1 : 0]   pwm_i;  //internal counter register
-    logic   [pwm_width-1 : 0]   pwm_c;  //internal compare register
+    logic   [pwm_width-1 : 0]   pwm_i;  // internal counter register
+    logic   [pwm_width-1 : 0]   pwm_c;  // internal compare register
 
     assign pwm = (pwm_i >= pwm_c);
     assign rd  = { '0 , pwm_c };

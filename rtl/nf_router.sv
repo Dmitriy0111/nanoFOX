@@ -11,7 +11,7 @@
 
 module nf_router
 #(
-    parameter                                   Slave_n = `slave_number
+    parameter                                   Slave_n = `SLAVE_NUMBER
 )(
     // clock and reset
     input   logic                  [0  : 0]     clk,        // clock
@@ -34,13 +34,13 @@ module nf_router
 
     assign clk_s     = clk;
     assign resetn_s  = resetn;
-    assign wd_dm_s   = { `slave_number { wd_dm_m } };
-    assign addr_dm_s = { `slave_number { addr_dm_m } };
-    assign we_dm_s   = { `slave_number { we_dm_m } } & slave_sel ; // {we_dm_m && slave_sel[n-1] , we_dm_m && slave_sel[n-2] , ... , we_dm_m && slave_sel[0] };
+    assign wd_dm_s   = { `SLAVE_NUMBER { wd_dm_m } };
+    assign addr_dm_s = { `SLAVE_NUMBER { addr_dm_m } };
+    assign we_dm_s   = { `SLAVE_NUMBER { we_dm_m } } & slave_sel; // {we_dm_m && slave_sel[n-1] , we_dm_m && slave_sel[n-2] , ... , we_dm_m && slave_sel[0] };
     // creating one router decoder
     nf_router_dec
     #(
-        .Slave_n        ( `slave_number     )
+        .Slave_n        ( `SLAVE_NUMBER     )
     )
     nf_router_dec_0
     (
@@ -50,7 +50,7 @@ module nf_router
     // creating one router mux
     nf_router_mux
     #(
-        .Slave_n        ( `slave_number     )
+        .Slave_n        ( `SLAVE_NUMBER     )
     )
     nf_router_mux_0
     (

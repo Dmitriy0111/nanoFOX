@@ -14,11 +14,11 @@ module nf_instr_mem
     input   logic   [31 : 0]    addr,       // instruction address
     output  logic   [31 : 0]    instr       // instruction data
 );
-
+    // creating instruction memory
     logic   [31 : 0]    mem     [depth-1 : 0];  // creating rom
-
+    // finding instruction value
     assign instr = mem[addr];
-
+    // loading instruction memory
     initial
         $readmemh("../program_file/program.hex",mem);
 

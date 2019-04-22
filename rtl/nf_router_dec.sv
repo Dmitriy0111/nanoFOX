@@ -11,7 +11,7 @@
 
 module nf_router_dec
 #(
-    parameter                           Slave_n = `slave_number
+    parameter                           Slave_n = `SLAVE_NUMBER
 )(
     input   logic   [31        : 0]     addr_m,     // master address
     output  logic   [Slave_n-1 : 0]     slave_sel   // slave select

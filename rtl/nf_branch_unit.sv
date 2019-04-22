@@ -18,9 +18,10 @@ module nf_branch_unit
     output  logic   [0  : 0]    pc_src          // next program counter
 );
     // for equal and not equal operation
-    logic   equal;
-
+    logic   [0 : 0]     equal;
+    // finding equality
     assign equal  = ( d2 == d1 );
+    // finding pc source
     assign pc_src = branch_type && ( ! ( equal ^ branch_hf ) );
 
 endmodule : nf_branch_unit

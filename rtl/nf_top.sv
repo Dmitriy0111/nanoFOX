@@ -26,24 +26,25 @@ module nf_top
     output  logic   [31               : 0]  reg_data    // scan register data
 );
 
-    localparam          Slave_n = `slave_number ;
+    localparam          Slave_n = `SLAVE_NUMBER ;
 
     // instruction memory
-    logic   [31 : 0]    instr_addr;
-    logic   [31 : 0]    instr;
-    logic   [0  : 0]    cpu_en;
+    logic   [31 : 0]    instr_addr;                 // instruction address
+    logic   [31 : 0]    instr;                      // instruction data
+    // cpu special signal
+    logic   [0  : 0]    cpu_en;                     // cpu enable ( "dividing" clock )
     // data memory and others's
-    logic   [31 : 0]    addr_dm;
-    logic   [0  : 0]    we_dm;
-    logic   [31 : 0]    wd_dm;
-    logic   [31 : 0]    rd_dm;
+    logic   [31 : 0]    addr_dm;                    // address data memory
+    logic   [0  : 0]    we_dm;                      // write enable data memory
+    logic   [31 : 0]    wd_dm;                      // write data for data memory
+    logic   [31 : 0]    rd_dm;                      // read data from data memory
     // slave's side
-    logic                  [0  : 0]     clk_s;
-    logic                  [0  : 0]     resetn_s;
-    logic   [Slave_n-1 : 0][31 : 0]     addr_dm_s;
-    logic   [Slave_n-1 : 0][0  : 0]     we_dm_s;
-    logic   [Slave_n-1 : 0][31 : 0]     wd_dm_s;
-    logic   [Slave_n-1 : 0][31 : 0]     rd_dm_s;
+    logic                  [0  : 0]     clk_s;      // clock slave
+    logic                  [0  : 0]     resetn_s;   // reset slave
+    logic   [Slave_n-1 : 0][31 : 0]     addr_dm_s;  // address data memory slave
+    logic   [Slave_n-1 : 0][0  : 0]     we_dm_s;    // write enable data memory slave
+    logic   [Slave_n-1 : 0][31 : 0]     wd_dm_s;    // write data for data memory slave
+    logic   [Slave_n-1 : 0][31 : 0]     rd_dm_s;    // read data from data memory slave
     // for future
     assign  rd_dm_s[3]  = '0;
 
@@ -63,7 +64,6 @@ module nf_top
         .reg_addr       ( reg_addr          ),  // scan register address
         .reg_data       ( reg_data          )   // scan register data
     );
-
     // creating one instruction memory 
     nf_instr_mem 
     #( 
@@ -74,7 +74,6 @@ module nf_top
         .addr           ( instr_addr >> 2   ),  // instruction address
         .instr          ( instr             )   // instruction data
     );
-
     // creating one strob generating unit for "dividing" clock
     nf_clock_div 
     nf_clock_div_0
@@ -87,7 +86,7 @@ module nf_top
     // creating one nf_router_0 unit 
     nf_router
     #(
-        .Slave_n        ( `slave_number     )
+        .Slave_n        ( `SLAVE_NUMBER     )
     )
     nf_router_0
     (
@@ -110,7 +109,7 @@ module nf_top
     // creating one nf_ram_0 unit
     nf_ram
     #(
-        .depth          ( `ram_depth        )
+        .depth          ( `RAM_DEPTH        )
     )
     nf_ram_0
     (
@@ -123,7 +122,7 @@ module nf_top
     // creating one nf_gpio_0 unit
     nf_gpio
     #(
-        .gpio_w         ( `NF_GPIO_WIDTH    )
+        .gpio_w         ( `NF_GPIO_WIDTH    )   // width gpio port
     ) 
     nf_gpio_0
     (
@@ -143,7 +142,7 @@ module nf_top
     // creating one nf_pwm_0 unit
     nf_pwm
     #(
-        .pwm_width      ( 8                 )
+        .pwm_width      ( 8                 )   // width pwm register
     )
     nf_pwm_0
     (

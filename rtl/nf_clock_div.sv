@@ -17,16 +17,16 @@ module nf_clock_div
     output  logic   [0  : 0]    en      // enable strobe
 );
 
-    logic   [25 : 0]    int_div;    // internal divider register
-    logic   [25 : 0]    int_c;      // internal compare register
-
-    assign en = (int_div == int_c);
-
+    logic   [25 : 0]    int_div;    //internal divider register
+    logic   [25 : 0]    int_c;      //internal compare register
+    // finding strobe value
+    assign en = ( int_div == int_c );
+    // other logic
     always_ff @(posedge clk, negedge resetn)
         if( !resetn )
         begin
             int_div <= '0;
-            int_c   <= div;
+            int_c   <= '0;
         end
         else
         begin

@@ -11,7 +11,7 @@
 
 module nf_router_mux
 #(
-    parameter                                   Slave_n = `slave_number
+    parameter                                   Slave_n = `SLAVE_NUMBER
 )(
     input   logic   [Slave_n-1 : 0]             slave_sel,  // slave select
     input   logic   [Slave_n-1 : 0][31 : 0]     rd_s,       // read data array slave

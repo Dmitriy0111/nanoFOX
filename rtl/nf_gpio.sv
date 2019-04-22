@@ -11,20 +11,20 @@
 
 module nf_gpio
 #(
-    parameter                       gpio_w = `NF_GPIO_WIDTH
+    parameter                       gpio_w = `NF_GPIO_WIDTH // width gpio port
 )(
     // clock and reset
-    input   logic   [0         : 0] clk,    // clock
-    input   logic   [0         : 0] resetn, // reset
-    //nf_router side
-    input   logic   [31        : 0] addr,   // address
-    input   logic   [0         : 0] we,     // write enable
-    input   logic   [31        : 0] wd,     // write data
-    output  logic   [31        : 0] rd,     // read data
-    //gpio_side
-    input   logic   [gpio_w-1  : 0] gpi,    // GPIO input
-    output  logic   [gpio_w-1  : 0] gpo,    // GPIO output
-    output  logic   [gpio_w-1  : 0] gpd     // GPIO direction
+    input   logic   [0        : 0]  clk,    // clock
+    input   logic   [0        : 0]  resetn, // reset
+    // nf_router side
+    input   logic   [31       : 0]  addr,   // address
+    input   logic   [0        : 0]  we,     // write enable
+    input   logic   [31       : 0]  wd,     // write data
+    output  logic   [31       : 0]  rd,     // read data
+    // gpio_side
+    input   logic   [gpio_w-1 : 0]  gpi,    // GPIO input
+    output  logic   [gpio_w-1 : 0]  gpo,    // GPIO output
+    output  logic   [gpio_w-1 : 0]  gpd     // GPIO direction
 );
     // gpio input
     logic   [gpio_w-1 : 0]  gpio_i;
