@@ -10,19 +10,20 @@
 `include "../tb/nf_pars.sv"
 
 module nf_tb();
-
+    // simulation settings
     timeprecision       1ns;
     timeunit            1ns;
     
     parameter           T = 10,
                         resetn_delay = 7,
                         repeat_cycles = 200;
-    
-    bit     [0  : 0]    clk;
-    bit     [0  : 0]    resetn;
+    // clock and reset
+    bit                 clk;
+    bit                 resetn;
+    bit     [25 : 0]    div;
+    // for debug
     bit     [4  : 0]    reg_addr;
     bit     [31 : 0]    reg_data;
-    bit     [25 : 0]    div;
     bit     [31 : 0]    cycle_counter;
 
     integer             log;
@@ -33,6 +34,7 @@ module nf_tb();
     string              log_str;
     string              reg_str;
 
+    // creating one nf_top_0 DUT
     nf_top 
     nf_top_0
     (
@@ -41,8 +43,8 @@ module nf_tb();
 
     // reset all register's in '0
     initial
-        for(int i=0;i<32;i++)
-            nf_top_0.nf_cpu_0.reg_file_0.reg_file[i] = '0;
+        for( int i=0 ; i<32 ; i++ )
+            nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[i] = '0;
     // generating clock
     initial
     begin
@@ -57,14 +59,14 @@ module nf_tb();
         resetn = '1;
         $display("Reset is in inactive state");
     end
-    // creating pars_instruction class
+    //creating pars_instruction class
     nf_pars nf_pars_0 = new();
-    // parsing instruction
+    //parsing instruction
     initial
     begin
         div = 3;
         if( `log_html )
-            nf_pars_0.build_html_loger("../log/log");
+            nf_pars_0.build_html_logger("../log/log");
         if( `log_en )
         begin
             log = $fopen("../log/.log","w");
@@ -80,7 +82,7 @@ module nf_tb();
             if( resetn )
             begin
                 nf_pars_0.pars(nf_top_0.nf_cpu_0.instr, instruction, instr_sep);
-                nf_pars_0.write_txt_table(nf_top_0.nf_cpu_0.reg_file_0.reg_file, reg_str);
+                nf_pars_0.write_txt_table(nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file, reg_str);
 
                 log_str = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
                 log_str = { log_str , $psprintf("cycle = %d, pc = %h, %t \n", cycle_counter, nf_top_0.nf_cpu_0.instr_addr, $time) };
@@ -89,7 +91,7 @@ module nf_tb();
                 if( `debug_lev0 )
                     log_str = { log_str , $psprintf("               %s\n", instr_sep) };
                 if( `log_html )
-                    nf_pars_0.write_html_log( nf_top_0.nf_cpu_0.reg_file_0.reg_file, log_str);
+                    nf_pars_0.write_html_log( nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file, log_str);
                 log_str = { log_str , $psprintf("%s", reg_str) };
                 $display(log_str);
                 if( `log_en )

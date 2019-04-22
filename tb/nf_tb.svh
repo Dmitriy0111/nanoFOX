@@ -8,7 +8,7 @@
 */
 
 // enable debug instruction messages
-`define debug_lev0  1
+`define debug_lev0  0
 // enable logging
 `define log_en      1
 // enable logging

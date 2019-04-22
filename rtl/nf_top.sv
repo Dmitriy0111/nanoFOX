@@ -15,9 +15,10 @@ module nf_top
     input   logic   [4  : 0]    reg_addr,   // scan register address
     output  logic   [31 : 0]    reg_data    // scan register data
 );
-
+    // instruction memory
     logic   [31 : 0]    instr_addr;     // instruction address
     logic   [31 : 0]    instr;          // instruction data
+    // cpu special signal
     logic   [0  : 0]    cpu_en;         // cpu enable ( "dividing" clock )
     // creating one nf_cpu unit
     nf_cpu 

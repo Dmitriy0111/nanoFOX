@@ -25,6 +25,7 @@ module nf_cpu
     logic   [31 : 0]    pc_i;           // program counter -> instruction memory address
     logic   [31 : 0]    pc_nb;          // program counter for non branch instructions
     logic   [31 : 0]    pc_b;           // program counter for branch instructions
+    logic   [0  : 0]    pc_src;         // program counter selecting pc_nb or pc_b
     // register file wires
     logic   [4  : 0]    ra1;            // read address 1 from RF
     logic   [31 : 0]    rd1;            // read data 1 from RF
@@ -33,6 +34,7 @@ module nf_cpu
     logic   [4  : 0]    wa3;            // write address for RF
     logic   [31 : 0]    wd3;            // write data for RF
     logic   [0  : 0]    we3;            // write enable for RF
+    logic   [0  : 0]    we_rf_mod;      // write enable for RF with cpu enable signal
     // sign extend wires
     logic   [11 : 0]    imm_data_i;     // immediate data for i-type commands
     logic   [19 : 0]    imm_data_u;     // immediate data for u-type commands
@@ -52,12 +54,12 @@ module nf_cpu
     logic   [0  : 0]    branch_hf;      // branch help field
     logic   [1  : 0]    imm_src;        // immediate data selecting
     logic   [0  : 0]    srcBsel;        // source B for ALU selecting
-    logic   [0  : 0]    pc_src;         // program counter selecting pc_nb or pc_b
 
     // register's address finding from instruction
     assign ra1  = instr[15 +: 5];
     assign ra2  = instr[20 +: 5];
     assign wa3  = instr[7  +: 5];
+    assign we_rf_mod = we3 & cpu_en;
     // shamt value in instruction
     assign shamt = instr[20  +: 5];
     // operation code, funct3 and funct7 field's in instruction
@@ -103,7 +105,7 @@ module nf_cpu
         .rd2            ( rd2           ),  // read data 2
         .wa3            ( wa3           ),  // write address 
         .wd3            ( wd3           ),  // write data
-        .we3            ( we3 && cpu_en ),  // write enable signal
+        .we3            ( we_rf_mod     ),  // write enable signal
         .ra0            ( reg_addr      ),  // read address 0
         .rd0            ( reg_data      )   // read data 0
     );

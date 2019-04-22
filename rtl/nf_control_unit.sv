@@ -11,17 +11,17 @@
 
 module nf_control_unit
 (
-    input   logic   [6  : 0]    opcode,         // operation code field in instruction code
-    input   logic   [2  : 0]    funct3,         // funct 3 field in instruction code
-    input   logic   [6  : 0]    funct7,         // funct 7 field in instruction code
-    output  logic   [1  : 0]    imm_src,        // for selecting immediate data
-    output  logic   [0  : 0]    srcBsel,        // for selecting srcB ALU
-    output  logic   [0  : 0]    branch_type,    // for executing branch instructions
-    output  logic   [0  : 0]    branch_hf,      // branch help field
-    output  logic   [0  : 0]    we,             // write enable signal for register file
-    output  logic   [2  : 0]    ALU_Code        // output code for ALU unit
+    input   logic   [6 : 0]    opcode,      // operation code field in instruction code
+    input   logic   [2 : 0]    funct3,      // funct 3 field in instruction code
+    input   logic   [6 : 0]    funct7,      // funct 7 field in instruction code
+    output  logic   [1 : 0]    imm_src,     // for selecting immediate data
+    output  logic   [0 : 0]    srcBsel,     // for selecting srcB ALU
+    output  logic   [0 : 0]    branch_type, // for executing branch instructions
+    output  logic   [0 : 0]    branch_hf,   // branch help field
+    output  logic   [0 : 0]    we,          // write enable signal for register file
+    output  logic   [2 : 0]    ALU_Code     // output code for ALU unit
 );
-
+    // finding values of control wires
     always_comb
     begin
         we          = '0;

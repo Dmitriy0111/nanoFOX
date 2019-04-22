@@ -7,11 +7,11 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "nf_tb.svh"
 `include "../inc/nf_cpu.svh"
+`include "nf_tb.svh"
 
 class nf_pars;
-
+    // for parsing instruction
     bit     [4  : 0]    ra1        ;
     bit     [4  : 0]    ra2        ;
     bit     [4  : 0]    wa3        ;
@@ -21,12 +21,14 @@ class nf_pars;
     logic   [19 : 0]    imm_data_u ;
     logic   [11 : 0]    imm_data_i ;
     logic   [11 : 0]    imm_data_b ;
-
+    logic   [11 : 0]    imm_data_s ;
+    // for working with register file
     logic   [31 : 0]    reg_file_l  [31 : 0];
+    logic   [31 : 0]    table_html  [31 : 0];
     logic   [1  : 0]    table_c     [31 : 0];
     string              html_str = "";
     integer             html_p;
-
+    // register file list names
     string registers_list [0:31] =  {
                                         "zero",
                                         "ra",
@@ -61,41 +63,46 @@ class nf_pars;
                                         "t5",
                                         "t6"
                                     };
-
+    // constructor
     function new();
         $timeformat(-9, 2, " ns", 7);
     endfunction : new
-
-    task pars(logic [31 : 0] instr, ref string instruction_s, ref string instr_sep);
+    // task for parsing current instructions
+    task pars(logic [31 : 0] instr, ref string instruction_s,ref string instr_sep);
 
         instr_sep = "";
-
-        ra1  = instr[15 +: 5];
-        ra2  = instr[20 +: 5];
-        wa3  = instr[7  +: 5];
-        opcode = instr[0   +: 7];
-        funct3 = instr[12  +: 3];
-        funct7 = instr[25  +: 7];
+        // destination and sources registers
+        ra1        = instr[15 +: 5];
+        ra2        = instr[20 +: 5];
+        wa3        = instr[7  +: 5];
+        // operation type fields
+        opcode     = instr[0  +: 7];
+        funct3     = instr[12 +: 3];
+        funct7     = instr[25 +: 7];
+        // immediate data
         imm_data_u = instr[12 +: 20];
         imm_data_i = instr[20 +: 12];
         imm_data_b = { instr[31] , instr[7] , instr[25 +: 6] , instr[8 +: 4] };
+        imm_data_s = { instr[25 +: 7] , instr[7 +: 5] };
 
         casex( { opcode , funct3 , funct7 } )
-            //  R - type command's
-            { `C_ADD  , `F3_ADD  , `F7_ADD } : instruction_s = $psprintf("ADD  rd  = %s, rs1 = %s, rs2 = %s"  , registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
-            { `C_SUB  , `F3_SUB  , `F7_SUB } : instruction_s = $psprintf("SUB  rd  = %s, rs1 = %s, rs2 = %s"  , registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
-            { `C_OR   , `F3_OR   , `F7_ANY } : instruction_s = $psprintf("OR   rd  = %s, rs1 = %s, rs2 = %s"  , registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
-            //  I - type command's
-            { `C_SLLI , `F3_SLLI , `F7_ANY } : instruction_s = $psprintf("SLLI rd  = %s, rs1 = %s, Imm = 0x%h", registers_list[wa3], registers_list[ra1], imm_data_i           );
-            { `C_ADDI , `F3_ADDI , `F7_ANY } : instruction_s = $psprintf("ADDI rd  = %s, rs1 = %s, Imm = 0x%h", registers_list[wa3], registers_list[ra1], imm_data_i           );
-            //  U - type command's
-            { `C_LUI  , `F3_ANY  , `F7_ANY } : instruction_s = $psprintf("LUI  rd  = %s, Imm = 0x%h"          ,           registers_list[wa3], imm_data_u                      );
-            //  B - type command's
-            { `C_BEQ  , `F3_BEQ  , `F7_ANY } : instruction_s = $psprintf("BEQ  rs1 = %s, rs2 = %s, Imm = 0x%h", registers_list[ra1], registers_list[ra2], imm_data_b           );
-            //  S and J - type command's
-            //  in the future
-            //  Other's instructions
-            { `C_ANY  , `F3_ANY  , `F7_ANY } : instruction_s = $psprintf("Unknown instruction"                ,                                                                );
+            // R - type command's
+            { `C_ADD  , `F3_ADD  , `F7_ADD  } : instruction_s = $psprintf("ADD  rd  = %s, rs1 = %s, rs2 = %s"  , registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
+            { `C_SUB  , `F3_SUB  , `F7_SUB  } : instruction_s = $psprintf("SUB  rd  = %s, rs1 = %s, rs2 = %s"  , registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
+            { `C_OR   , `F3_OR   , `F7_ANY  } : instruction_s = $psprintf("OR   rd  = %s, rs1 = %s, rs2 = %s"  , registers_list[wa3], registers_list[ra1], registers_list[ra2]  );
+            // I - type command's
+            { `C_SLLI , `F3_SLLI , `F7_ANY  } : instruction_s = $psprintf("SLLI rd  = %s, rs1 = %s, Imm = 0x%h", registers_list[wa3], registers_list[ra1], imm_data_i           );
+            { `C_ADDI , `F3_ADDI , `F7_ANY  } : instruction_s = $psprintf("ADDI rd  = %s, rs1 = %s, Imm = 0x%h", registers_list[wa3], registers_list[ra1], imm_data_i           );
+            // U - type command's
+            { `C_LUI  , `F3_ANY  , `F7_ANY  } : instruction_s = $psprintf("LUI  rd  = %s, Imm = 0x%h"          , registers_list[wa3], imm_data_u                                );
+            // B - type command's
+            { `C_BEQ  , `F3_BEQ  , `F7_ANY  } : instruction_s = $psprintf("BEQ  rs1 = %s, rs2 = %s, Imm = 0x%h", registers_list[ra1], registers_list[ra2], imm_data_b           );
+            // S - type command's
+            // in the future
+            // J - type command's
+            // in the future
+            // Other's instructions
+            { `C_ANY  , `F3_ANY  , `F7_ANY  } : instruction_s = $psprintf("Unknown instruction"                ,                                                                );
         endcase
 
         if( $isunknown( { opcode , funct3 , funct7 } ) )
@@ -105,8 +112,8 @@ class nf_pars;
             instr_separation(instr,instr_sep);
 
     endtask : pars
-
-    task instr_separation(logic [31 : 0] instr, ref string instr_sep);
+    // task for parsing instruction in debug level 0
+    task instr_separation(bit [31 : 0] instr, ref string instr_sep);
 
         instr_sep= "";
 
@@ -116,6 +123,7 @@ class nf_pars;
         opcode = instr[0  +: 7];
         funct3 = instr[12 +: 3];
         funct7 = instr[25 +: 7];
+
         casex( opcode )
             'b0110011 :
                 instr_sep = $psprintf("R-type : %b_%b_%b_%b_%b_%b", funct7, ra2, ra1, funct3, wa3, opcode );
@@ -137,7 +145,7 @@ class nf_pars;
         endcase
 
     endtask : instr_separation
-
+    // task for writing register file values in txt file ( table )
     task write_txt_table(logic [31 : 0] reg_file[31 : 0], ref string reg_str);
 
         integer reg_addr;
@@ -159,8 +167,8 @@ class nf_pars;
         while( reg_addr != 32 );
 
     endtask : write_txt_table
-
-    task build_html_loger(string out_file);
+    // task for creating html logger
+    task build_html_logger(string out_file);
 
         integer i;
 
@@ -178,8 +186,8 @@ class nf_pars;
             $stop;
         end
 
-    endtask : build_html_loger
-
+    endtask : build_html_logger
+    // task for writing html log info
     task write_html_log( logic [31 : 0] reg_file[31 : 0], string log_str);
 
         integer i;
@@ -200,7 +208,7 @@ class nf_pars;
         $fwrite(html_p,html_str);
 
     endtask : write_html_log
-
+    // task for formirate current instruction info in html
     task form_info_html(string log_str);
 
         html_str = { html_str , "<font size = \"4\">" };
@@ -211,7 +219,7 @@ class nf_pars;
         html_str = { html_str , "</font>\n" };
 
     endtask : form_info_html
-
+    // task for formirate register file values in html table
     task form_html_table(integer row, integer col);
 
         integer tr_i;

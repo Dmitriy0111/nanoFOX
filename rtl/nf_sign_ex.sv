@@ -17,7 +17,7 @@ module nf_sign_ex
     input   logic   [1  : 0]    imm_src,    // selection immediate data input
     output  logic   [31 : 0]    imm_ex      // extended immediate data
 );
-
+    // finding value of sign extended value for current instruction
     always_comb
     begin
         imm_ex = '0;
