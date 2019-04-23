@@ -150,15 +150,21 @@ input 		     [1:0]		GPIO_1_IN;
     assign gpi = '0 | SW[2 +: 2];
 	// creating one nf_top_0 unit
     nf_top 
-	nf_top_0
+    nf_top_0
     (
+        // clock and reset
         .clk        ( clk       ),  // clock
         .resetn     ( resetn    ),  // reset
         .div        ( div       ),  // clock divide input
-        .pwm        ( pwm       ),  // GPIO output
-        .gpi        ( gpi       ),  // GPIO direction
-        .gpo        ( gpo       ),  // scan register address
-        .gpd        ( gpd       )   // scan register data
+        // pwm side
+        .pwm        ( pwm       ),  // PWM output
+        // gpio side
+        .gpi        ( gpi       ),  // GPIO input
+        .gpo        ( gpo       ),  // GPIO output
+        .gpd        ( gpd       ),  // GPIO direction
+        // for debug
+        .reg_addr   ( reg_addr  ),  // scan register address
+        .reg_data   ( reg_data  )   // scan register data
     );
 
 endmodule

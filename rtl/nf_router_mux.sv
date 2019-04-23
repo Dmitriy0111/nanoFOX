@@ -17,7 +17,7 @@ module nf_router_mux
     input   logic   [Slave_n-1 : 0][31 : 0]     rd_s,       // read data array slave
     output  logic                  [31 : 0]     rd_m        // read data master
 );  
-
+    // selecting read data input
     always_comb
     begin
         rd_m = rd_s[0];

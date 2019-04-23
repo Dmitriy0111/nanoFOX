@@ -45,24 +45,3 @@ module nf_register_we
             datao <= datai;
 
 endmodule : nf_register_we
-
-// register with write enable input and not zero reset value
-module nf_register_we_r
-#(
-    parameter                       width = 1
-)(
-    input   logic   [0       : 0]   clk,    // clock
-    input   logic   [0       : 0]   resetn, // reset
-    input   logic   [0       : 0]   we,     // write enable
-    input   logic   [width-1 : 0]   datar,  // reset value
-    input   logic   [width-1 : 0]   datai,  // input data
-    output  logic   [width-1 : 0]   datao   // output data
-);
-
-    always_ff @(posedge clk, negedge resetn)
-        if( !resetn )
-            datao <= datar;
-        else if( we )
-            datao <= datai;
-
-endmodule : nf_register_we_r

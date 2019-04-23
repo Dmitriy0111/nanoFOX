@@ -61,14 +61,14 @@ module de10_lite
         .resetn     ( resetn    ),  // reset
         .div        ( div       ),  // clock divide input
         // pwm side
-        .reg_addr   ( reg_addr  ),  // PWM output
+        .pwm        ( pwm       ),  // PWM output
         // gpio side
-        .reg_data   ( reg_data  ),  // GPIO input
-        .pwm        ( pwm       ),  // GPIO output
-        .gpi        ( gpi       ),  // GPIO direction
+        .gpi        ( gpi       ),  // GPIO input
+        .gpo        ( gpo       ),  // GPIO output
+        .gpd        ( gpd       ),  // GPIO direction
         // for debug
-        .gpo        ( gpo       ),  // scan register address
-        .gpd        ( gpd       )   // scan register data
+        .reg_addr   ( reg_addr  ),  // scan register address
+        .reg_data   ( reg_data  )   // scan register data
     );
 
     // generate block

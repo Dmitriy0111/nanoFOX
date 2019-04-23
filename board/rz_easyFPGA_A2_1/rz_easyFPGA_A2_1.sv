@@ -40,19 +40,25 @@ module rz_easyFPGA_A2_1
     assign clk      = clk50mhz;
     assign resetn   = rst_key;
     assign div      = 26'h00_ff_ff_ff;
+    assign led      = '0 | gpo[0 +: 4];
+    
     // creating one nf_top_0 unit
     nf_top 
     nf_top_0
     (
+        // clock and reset
         .clk        ( clk       ),  // clock
         .resetn     ( resetn    ),  // reset
         .div        ( div       ),  // clock divide input
-        .reg_addr   ( reg_addr  ),  // PWM output
-        .reg_data   ( reg_data  ),  // GPIO input
-        .pwm        ( pwm       ),  // GPIO output
-        .gpi        ( gpi       ),  // GPIO direction
-        .gpo        ( gpo       ),  // scan register address
-        .gpd        ( gpd       )   // scan register data
+        // pwm side
+        .pwm        ( pwm       ),  // PWM output
+        // gpio side
+        .gpi        ( gpi       ),  // GPIO input
+        .gpo        ( gpo       ),  // GPIO output
+        .gpd        ( gpd       ),  // GPIO direction
+        // for debug
+        .reg_addr   ( reg_addr  ),  // scan register address
+        .reg_data   ( reg_data  )   // scan register data
     );
     // generate block
     generate
