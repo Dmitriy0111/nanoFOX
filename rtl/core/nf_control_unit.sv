@@ -11,21 +11,21 @@
 
 module nf_control_unit
 (
-    input   logic   [1  : 0]    instr_type,     // instruction type
-    input   logic   [4  : 0]    opcode,         // operation code field in instruction code
-    input   logic   [2  : 0]    funct3,         // funct 3 field in instruction code
-    input   logic   [6  : 0]    funct7,         // funct 7 field in instruction code
-    output  logic   [4  : 0]    imm_src,        // for enable immediate data
-    output  logic   [0  : 0]    srcBsel,        // for selecting srcB ALU
-    output  logic   [0  : 0]    res_sel,        // for selecting result
-    output  logic   [3  : 0]    branch_type,    // for executing branch instructions
-    output  logic   [0  : 0]    branch_hf,      // branch help field
-    output  logic   [0  : 0]    branch_src,     // for selecting branch source (JALR)
-    output  logic   [0  : 0]    we_rf,          // write enable signal for register file
-    output  logic   [0  : 0]    we_dm,          // write enable signal for data memory and others
-    output  logic   [0  : 0]    rf_src,         // write data select for register file
-    output  logic   [1  : 0]    size_dm,        // size for load/store instructions
-    output  logic   [31 : 0]    ALU_Code        // output code for ALU unit
+    input   logic   [1 : 0]     instr_type,     // instruction type
+    input   logic   [4 : 0]     opcode,         // operation code field in instruction code
+    input   logic   [2 : 0]     funct3,         // funct 3 field in instruction code
+    input   logic   [6 : 0]     funct7,         // funct 7 field in instruction code
+    output  logic   [4 : 0]     imm_src,        // for enable immediate data
+    output  logic   [0 : 0]     srcBsel,        // for selecting srcB ALU
+    output  logic   [0 : 0]     res_sel,        // for selecting result
+    output  logic   [3 : 0]     branch_type,    // for executing branch instructions
+    output  logic   [0 : 0]     branch_hf,      // branch help field
+    output  logic   [0 : 0]     branch_src,     // for selecting branch source (JALR)
+    output  logic   [0 : 0]     we_rf,          // write enable signal for register file
+    output  logic   [0 : 0]     we_dm,          // write enable signal for data memory and others
+    output  logic   [0 : 0]     rf_src,         // write data select for register file
+    output  logic   [1 : 0]     size_dm,        // size for load/store instructions
+    output  logic   [3 : 0]     ALU_Code        // output code for ALU unit
 );
 
     instr_cf    instr_cf_0;
@@ -47,7 +47,7 @@ module nf_control_unit
         ALU_Code    = ALU_ADD;
         srcBsel     = SRCB_IMM;
         res_sel     = RES_ALU;
-        imm_src     = I_NONE;
+        imm_src     = I_SEL;
         branch_type = B_NONE;
         case( instr_cf_0.IT )
             `RVI :
@@ -80,7 +80,7 @@ module nf_control_unit
         endcase
     end
 
-    function logic [14 : 0] ret_code(instr_cf instr_cf_);
+    function logic [8 : 0] ret_code(instr_cf instr_cf_);
         return  { instr_cf_.OP , instr_cf_.F3 , instr_cf_.F7[5] };
     endfunction : ret_code
 

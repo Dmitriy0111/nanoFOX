@@ -104,7 +104,7 @@ module nf_cpu
     logic   [0  : 0]    we_rf_id;           // write enable register file ( decode stage )
     logic   [0  : 0]    we_dm_id;           // write enable data memory ( decode stage )
     logic   [0  : 0]    rf_src_id;          // register file source ( decode stage )
-    logic   [31 : 0]    ALU_Code_id;        // code for execution unit ( decode stage )
+    logic   [3  : 0]    ALU_Code_id;        // code for execution unit ( decode stage )
     logic   [4  : 0]    shamt_id;           // shift value for execution unit ( decode stage )
     logic   [0  : 0]    branch_src;         // program counter selection
     logic   [1  : 0]    size_dm_id;         // size for load/store instructions ( decode stage )
@@ -167,7 +167,7 @@ module nf_cpu
     logic   [0  : 0]    we_rf_iexe;         // write enable register file ( execution stage )
     logic   [0  : 0]    we_dm_iexe;         // write enable data memory ( execution stage )
     logic   [0  : 0]    rf_src_iexe;        // register file source ( execution stage )
-    logic   [31 : 0]    ALU_Code_iexe;      // code for execution unit ( execution stage )
+    logic   [3  : 0]    ALU_Code_iexe;      // code for execution unit ( execution stage )
     logic   [4  : 0]    shamt_iexe;         // shift value for execution unit ( execution stage )
     logic   [1  : 0]    size_dm_iexe;       // size for load/store instructions ( execution stage )
     logic   [31 : 0]    result_iexe;        // result from execution unit ( execution stage )
@@ -191,7 +191,7 @@ module nf_cpu
     nf_register_we_clr  #( 1  ) we_rf_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_rf_id    , we_rf_iexe    );
     nf_register_we_clr  #( 1  ) we_dm_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_dm_id    , we_dm_iexe    );
     nf_register_we_clr  #( 1  ) rf_src_id_iexe      ( clk , resetn , ~ stall_iexe , flush_iexe , rf_src_id   , rf_src_iexe   );
-    nf_register_we_clr  #( 32 ) ALU_Code_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , ALU_Code_id , ALU_Code_iexe );
+    nf_register_we_clr  #( 4  ) ALU_Code_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , ALU_Code_id , ALU_Code_iexe );
 
     /*********************************************
     **       Instruction execution stage        **

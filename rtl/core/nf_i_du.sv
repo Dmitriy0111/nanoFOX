@@ -15,7 +15,7 @@ module nf_i_du
     output  logic   [31 : 0]    ext_data,   // decoded extended data
     output  logic   [0  : 0]    srcB_sel,   // decoded source B selection for ALU
     output  logic   [0  : 0]    res_sel,    // for selecting result
-    output  logic   [31 : 0]    ALU_Code,   // decoded ALU code
+    output  logic   [3  : 0]    ALU_Code,   // decoded ALU code
     output  logic   [4  : 0]    shamt,      // decoded for shift command's
     output  logic   [4  : 0]    ra1,        // decoded read address 1 for register file
     input   logic   [31 : 0]    rd1,        // read data 1 from register file
@@ -98,8 +98,8 @@ module nf_i_du
     nf_branch_unit_0
     (
         .branch_type    ( branch_type           ),  // from control unit, '1 if branch instruction
-        .d0             ( rd1                   ),  // from register file (rd1)
-        .d1             ( rd2                   ),  // from register file (rd2)
+        .d1             ( rd1                   ),  // from register file (rd1)
+        .d2             ( rd2                   ),  // from register file (rd2)
         .branch_hf      ( branch_hf             ),  // branch help field
         .pc_src         ( pc_src                )   // next program counter
     );

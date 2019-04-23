@@ -17,7 +17,7 @@ module nf_i_exu
     input   logic   [31 : 0]    ext_data,   // sign extended immediate data
     input   logic   [0  : 0]    srcB_sel,   // source enable signal for ALU
     input   logic   [4  : 0]    shamt,      // for shift operations
-    input   logic   [31 : 0]    ALU_Code,   // code for ALU
+    input   logic   [3  : 0]    ALU_Code,   // code for ALU
     output  logic   [31 : 0]    result      // result of ALU operation
 );
 

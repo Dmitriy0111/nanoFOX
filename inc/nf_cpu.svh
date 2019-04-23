@@ -168,7 +168,7 @@ parameter instr_cf VER   = { "  VER",`RVI , 5'b????? , 3'b??? , 7'b??????? };
 `ifndef ALU_TYPES
 `define ALU_TYPES
 //ALU commands
-typedef enum logic [4 : 0]
+typedef enum logic [3 : 0]
 {
     ALU_ADD,
     ALU_OR, 
