@@ -100,13 +100,13 @@ module nf_cpu_cc
             end
             M_NONE_s:
             begin
-                if( ( ! req_ack_cc ) && (! last_master ) )
+                if( ( ! req_ack_cc ) && ( ! last_master ) )
                 begin
                     state <= M1_s;
                     master_sel_out <= MASTER_1;
                     master_sel_in  <= MASTER_1;
                 end
-                if( ( ! req_ack_cc ) && (  last_master ) )
+                if( ( ! req_ack_cc ) && (   last_master ) )
                 begin
                     state <= M0_s;
                     master_sel_out <= MASTER_0;

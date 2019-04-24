@@ -33,9 +33,7 @@ module nf_reg_file
             reg_file[wa3] <= wd3;
 
     initial
-    begin
         for( int i = 0; i <= 31; i = i + 1'b1 )
             reg_file[i] = '0;
-    end
 
 endmodule : nf_reg_file

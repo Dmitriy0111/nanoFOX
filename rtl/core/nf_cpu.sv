@@ -59,7 +59,7 @@ module nf_cpu
     /*********************************************
     **         Instruction Fetch  stage         **
     *********************************************/
-    logic   [31 : 0]    instr_if;           // instruction fetch
+    logic   [31 : 0]    instr_if;               // instruction fetch
     // creating one instruction fetch unit
     nf_i_fu 
     nf_i_fu_0

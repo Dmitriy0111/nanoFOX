@@ -8,25 +8,23 @@
 */
 
 module nf_cdc
-#(
-    parameter                       width = 8
-)(
-    input   logic   [0       : 0]   resetn_1,
-    input   logic   [0       : 0]   resetn_2,
-    input   logic   [0       : 0]   clk_1,
-    input   logic   [0       : 0]   clk_2,
-    input   logic   [0       : 0]   we_1,
-    input   logic   [0       : 0]   we_2,
-    input   logic   [width-1 : 0]   data_1_in,
-    input   logic   [width-1 : 0]   data_2_in,
-    output  logic   [width-1 : 0]   data_1_out,
-    output  logic   [width-1 : 0]   data_2_out,
-    output  logic   [0       : 0]   wait_1,
-    output  logic   [0       : 0]   wait_2
+(
+    input   logic   [0 : 0]     resetn_1,   // first reset
+    input   logic   [0 : 0]     resetn_2,   // second reset
+    input   logic   [0 : 0]     clk_1,      // first clock
+    input   logic   [0 : 0]     clk_2,      // second clock
+    input   logic   [0 : 0]     we_1,       // first write enable
+    input   logic   [0 : 0]     we_2,       // second write enable
+    input   logic   [0 : 0]     data_1_in,  // first data input
+    input   logic   [0 : 0]     data_2_in,  // second data input
+    output  logic   [0 : 0]     data_1_out, // first data output
+    output  logic   [0 : 0]     data_2_out, // second data output
+    output  logic   [0 : 0]     wait_1,     // first wait
+    output  logic   [0 : 0]     wait_2      // second wait
 );
 
-    logic   [7 : 0]     int_reg1;   // internal register 1
-    logic   [7 : 0]     int_reg2;   // internal register 2
+    logic   [0 : 0]     int_reg1;   // internal register 1
+    logic   [0 : 0]     int_reg2;   // internal register 2
     logic   [0 : 0]     req_1;      // request 1
     logic   [0 : 0]     ack_1;      // request acknowledge 1
     logic   [0 : 0]     req_2;      // request 2

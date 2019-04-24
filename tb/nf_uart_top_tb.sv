@@ -1,10 +1,10 @@
 /*
 *  File            :   nf_uart_top_tb.sv
-*  Autor           :   Vlasov D.V. 63030
+*  Autor           :   Vlasov D.V.
 *  Data            :   2019.02.21
 *  Language        :   SystemVerilog
 *  Description     :   This uart top module
-*  Copyright(c)    :   2018 Vlasov D.V. 63030
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 `include "../../inc/nf_settings.svh"

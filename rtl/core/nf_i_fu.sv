@@ -63,10 +63,10 @@ module nf_i_fu
     // stalled instruction fetch instruction
     nf_register_we      #( 32 ) instr_if_stall          ( clk, resetn, we_if_stalled, rd_i, instr_if_stalled );
     // flush instruction decode signals
-    nf_register_we_r    #( 1  ) reg_flush_id_ifu        ( clk, resetn, '1, '1, '0, flush_id_ifu );
+    nf_register_we_r    #( 1, '0 ) reg_flush_id_ifu     ( clk, resetn, '1, '0, flush_id_ifu );
     nf_register         #( 1  ) reg_flush_id_delayed    ( clk, resetn, flush_id_branch, flush_id_delayed );
     nf_register         #( 4  ) branch_type_delayed_ff  ( clk, resetn, branch_type, branch_type_delayed );
     // creating program counter
-    nf_register_we_r    #( 32 ) register_pc             ( clk, resetn, ~ stall_if, `PROG_START, pc_i, addr_i );
+    nf_register_we_r    #( 32, `PROG_START ) register_pc    ( clk, resetn, ~ stall_if, pc_i, addr_i );
 
 endmodule : nf_i_fu

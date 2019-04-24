@@ -1,10 +1,10 @@
 /*
 *  File            :   nf_uart_transmitter.sv
-*  Autor           :   Vlasov D.V. 63030
+*  Autor           :   Vlasov D.V.
 *  Data            :   2019.02.21
 *  Language        :   SystemVerilog
 *  Description     :   This uart transmitter module
-*  Copyright(c)    :   2018 Vlasov D.V. 63030
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_uart_transmitter
@@ -39,7 +39,7 @@ module nf_uart_transmitter
     assign stop2wait  = counter >= comp;
     assign wait2idle  = req_ack;
     
-    //FSM state change
+    // FSM state change
     always_ff @(posedge clk, negedge resetn)
         if( !resetn )
             state <= IDLE_s;
@@ -50,7 +50,7 @@ module nf_uart_transmitter
                 state <= IDLE_s;
         end
             
-    //Finding next state for FSM
+    // Finding next state for FSM
     always_comb 
     begin : next_state_finding
         next_state = state;
@@ -64,7 +64,7 @@ module nf_uart_transmitter
         endcase
     end
 
-    //Other FSM sequence logic
+    // Other FSM sequence logic
     always_ff @(posedge clk, negedge resetn)
     begin
         if( !resetn )
@@ -121,10 +121,6 @@ module nf_uart_transmitter
                                 counter <= '0;
                                 req_ack <= '1;
                             end
-                        end
-                WAIT_s      :
-                        begin
-
                         end
             endcase
             if( !tr_en )

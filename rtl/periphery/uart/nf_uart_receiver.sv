@@ -1,11 +1,10 @@
 /*
 *  File            :   nf_uart_receiver.sv
-*  Autor           :   Vlasov D.V. 63030
+*  Autor           :   Vlasov D.V.
 *  Data            :   2019.02.21
 *  Language        :   SystemVerilog
-*  Company         :   ISS
 *  Description     :   This uart receiver module
-*  Copyright(c)    :   2018 Vlasov D.V. 63030
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 module nf_uart_receiver
@@ -38,7 +37,7 @@ module nf_uart_receiver
     
     assign rx_data = int_reg;
     
-    //FSM state change
+    // FSM state change
     always_ff @(posedge clk or negedge resetn)
         if( !resetn )
             state <= IDLE_s;
@@ -48,7 +47,7 @@ module nf_uart_receiver
             if( !rec_en )
                 state <= IDLE_s;
         end
-    //Finding next state for FSM
+    // Finding next state for FSM
     always_comb 
     begin : next_state_finding
         next_state = state;
@@ -59,7 +58,7 @@ module nf_uart_receiver
             default   :                     next_state = IDLE_s;
         endcase
     end
-    //Other FSM sequence logic
+    // Other FSM sequence logic
     always_ff @(posedge clk or negedge resetn)
     begin
         if( !resetn )

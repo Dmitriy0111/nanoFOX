@@ -65,43 +65,43 @@ module nf_i_du
     nf_control_unit 
     nf_control_unit_0
     (
-        .instr_type     ( instr_type            ),  // instruction type
-        .opcode         ( opcode                ),  // operation code field in instruction code
-        .funct3         ( funct3                ),  // funct 3 field in instruction code
-        .funct7         ( funct7                ),  // funct 7 field in instruction code
-        .srcBsel        ( srcB_sel              ),  // for selecting srcB ALU
-        .res_sel        ( res_sel               ),  // for selecting result
-        .branch_type    ( branch_type           ),  // branch type 
-        .branch_hf      ( branch_hf             ),  // branch help field
-        .branch_src     ( branch_src            ),  // for selecting branch source (JALR)
-        .we_rf          ( we_rf                 ),  // write enable signal for register file
-        .we_dm          ( we_dm_en              ),  // write enable signal for data memory and others
-        .rf_src         ( rf_src                ),  // write data select for register file
-        .imm_src        ( imm_src               ),  // selection immediate data input
-        .size_dm        ( size_dm               ),  // size for load/store instructions
-        .ALU_Code       ( ALU_Code              )   // output code for ALU unit
+        .instr_type     ( instr_type    ),  // instruction type
+        .opcode         ( opcode        ),  // operation code field in instruction code
+        .funct3         ( funct3        ),  // funct 3 field in instruction code
+        .funct7         ( funct7        ),  // funct 7 field in instruction code
+        .srcBsel        ( srcB_sel      ),  // for selecting srcB ALU
+        .res_sel        ( res_sel       ),  // for selecting result
+        .branch_type    ( branch_type   ),  // branch type 
+        .branch_hf      ( branch_hf     ),  // branch help field
+        .branch_src     ( branch_src    ),  // for selecting branch source (JALR)
+        .we_rf          ( we_rf         ),  // write enable signal for register file
+        .we_dm          ( we_dm_en      ),  // write enable signal for data memory and others
+        .rf_src         ( rf_src        ),  // write data select for register file
+        .imm_src        ( imm_src       ),  // selection immediate data input
+        .size_dm        ( size_dm       ),  // size for load/store instructions
+        .ALU_Code       ( ALU_Code      )   // output code for ALU unit
     );
     // creating sign extending unit
     nf_sign_ex 
     nf_sign_ex_0
     (
-        .imm_data_i     ( imm_data_i            ),  // immediate data in i-type instruction
-        .imm_data_u     ( imm_data_u            ),  // immediate data in u-type instruction
-        .imm_data_b     ( imm_data_b            ),  // immediate data in b-type instruction
-        .imm_data_s     ( imm_data_s            ),  // immediate data in s-type instruction
-        .imm_data_j     ( imm_data_j            ),  // immediate data in j-type instruction
-        .imm_src        ( imm_src               ),  // selection immediate data input
-        .imm_ex         ( ext_data              )   // extended immediate data
+        .imm_data_i     ( imm_data_i    ),  // immediate data in i-type instruction
+        .imm_data_u     ( imm_data_u    ),  // immediate data in u-type instruction
+        .imm_data_b     ( imm_data_b    ),  // immediate data in b-type instruction
+        .imm_data_s     ( imm_data_s    ),  // immediate data in s-type instruction
+        .imm_data_j     ( imm_data_j    ),  // immediate data in j-type instruction
+        .imm_src        ( imm_src       ),  // selection immediate data input
+        .imm_ex         ( ext_data      )   // extended immediate data
     );
     // creating branch unit
     nf_branch_unit 
     nf_branch_unit_0
     (
-        .branch_type    ( branch_type           ),  // from control unit, '1 if branch instruction
-        .d1             ( rd1                   ),  // from register file (rd1)
-        .d2             ( rd2                   ),  // from register file (rd2)
-        .branch_hf      ( branch_hf             ),  // branch help field
-        .pc_src         ( pc_src                )   // next program counter
+        .branch_type    ( branch_type   ),  // from control unit, '1 if branch instruction
+        .d1             ( rd1           ),  // from register file (rd1)
+        .d2             ( rd2           ),  // from register file (rd2)
+        .branch_hf      ( branch_hf     ),  // branch help field
+        .pc_src         ( pc_src        )   // next program counter
     );
 
 endmodule : nf_i_du

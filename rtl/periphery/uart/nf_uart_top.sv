@@ -1,10 +1,10 @@
 /*
 *  File            :   nf_uart_top.sv
-*  Autor           :   Vlasov D.V. 63030
+*  Autor           :   Vlasov D.V.
 *  Data            :   2019.02.21
 *  Language        :   SystemVerilog
 *  Description     :   This uart top module
-*  Copyright(c)    :   2018 Vlasov D.V. 63030
+*  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
 `include "../../inc/nf_settings.svh"
@@ -72,9 +72,6 @@ module nf_uart_top
     nf_register_we #( 1  ) nf_uart_rx_en     ( clk , resetn , uart_cr_we , CRI.RX_EN , CRO.RX_EN );
     // creating one cross domain crossing for tx request
     nf_cdc 
-    #(
-        .width      ( 1             )
-    )
     nf_cdc_req
     (  
         .resetn_1   ( resetn        ),  // controller side reset
@@ -92,9 +89,6 @@ module nf_uart_top
     );
     // creating one cross domain crossing for rx valid
     nf_cdc 
-    #(
-        .width      ( 1             )
-    )
     nf_cdc_valid
     (  
         .resetn_1   ( resetn        ),  // controller side reset

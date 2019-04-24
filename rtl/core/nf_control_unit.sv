@@ -80,7 +80,7 @@ module nf_control_unit
         endcase
     end
 
-    function logic [8 : 0] ret_code(instr_cf instr_cf_);
+    function logic [8 : 0] ret_code(instr_cf instr_cf_);    // for selecting actual instruction bits
         return  { instr_cf_.OP , instr_cf_.F3 , instr_cf_.F7[5] };
     endfunction : ret_code
 
