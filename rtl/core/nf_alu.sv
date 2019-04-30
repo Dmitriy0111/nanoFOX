@@ -13,7 +13,7 @@ module nf_alu
 (
     input   logic   [31 : 0]    srcA,       // source A for ALU unit
     input   logic   [31 : 0]    srcB,       // source B for ALU unit
-    input   logic   [4  : 0]    shamt,      // for shift operation
+    input   logic   [31 : 0]    shift,      // for shift operation
     input   logic   [3  : 0]    ALU_Code,   // ALU code from control unit
     output  logic   [31 : 0]    result      // result of ALU operation
 );
@@ -24,9 +24,8 @@ module nf_alu
         casex( ALU_Code )
             ALU_LUI     : result = srcB << 12;
             ALU_ADD     : result = srcA + srcB;
-            ALU_SUB     : result = srcA - srcB;
-            ALU_SLL     : result = srcA << shamt;
-            ALU_SRL     : result = srcA >> shamt;
+            ALU_SLL     : result = srcA << shift;
+            ALU_SRL     : result = srcA >> shift;
             ALU_OR      : result = srcA | srcB;
             ALU_XOR     : result = srcA ^ srcB;
             ALU_AND     : result = srcA & srcB;

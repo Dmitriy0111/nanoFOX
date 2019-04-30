@@ -14,6 +14,7 @@ module nf_i_du
     input   logic   [31 : 0]    instr,      // Instruction input
     output  logic   [31 : 0]    ext_data,   // decoded extended data
     output  logic   [0  : 0]    srcB_sel,   // decoded source B selection for ALU
+    output  logic   [0  : 0]    shift_sel,  // for selecting shift input
     output  logic   [0  : 0]    res_sel,    // for selecting result
     output  logic   [3  : 0]    ALU_Code,   // decoded ALU code
     output  logic   [4  : 0]    shamt,      // decoded for shift command's
@@ -70,6 +71,7 @@ module nf_i_du
         .funct3         ( funct3        ),  // funct 3 field in instruction code
         .funct7         ( funct7        ),  // funct 7 field in instruction code
         .srcBsel        ( srcB_sel      ),  // for selecting srcB ALU
+        .shift_sel      ( shift_sel     ),  // for selecting shift input
         .res_sel        ( res_sel       ),  // for selecting result
         .branch_type    ( branch_type   ),  // branch type 
         .branch_hf      ( branch_hf     ),  // branch help field

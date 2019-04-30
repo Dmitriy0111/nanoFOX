@@ -46,6 +46,19 @@ typedef struct packed
     logic   [6  : 0]    F7;     // instruction function field 7
 } instr_cf;                     // instruction typedef
 
+`ifndef OPCODES
+`define OPCODES
+parameter R_OP0 = 5'b01100;    
+parameter U_OP0 = 5'b01101;     // LUI
+parameter U_OP1 = 5'b00101;     // AUIPC
+parameter J_OP0 = 5'b11011;     // JAL
+parameter S_OP0 = 5'b01000;     // SW,SH,SB,SHU,SBU
+parameter B_OP0 = 5'b11000;     // BEQ,BNE,BGE,BLT,BGEU,BLTU
+parameter I_OP0 = 5'b00100;     
+parameter I_OP1 = 5'b00000;     // LW,LH,LB
+parameter I_OP2 = 5'b11001;     // JALR
+`endif
+
 `ifndef COMMANDS
 `define COMMANDS
 // LUI      -    Load Upper Immediate
@@ -175,7 +188,6 @@ typedef enum logic [3 : 0]
     ALU_LUI,
     ALU_SLL,
     ALU_SRL,
-    ALU_SUB,
     ALU_AND,
     ALU_XOR
 } alu_types;
@@ -217,6 +229,16 @@ typedef enum logic [0 : 0]
     SRCB_IMM    =   1'b0,
     SRCB_RD2    =   1'b1
 } srcb_types;
+`endif
+
+`ifndef SRCS_TYPES
+`define SRCS_TYPES
+//srcB select constants
+typedef enum logic [0 : 0]
+{
+    SRCS_SHAMT  =   1'b0,
+    SRCS_RD2    =   1'b1
+} srcs_types;
 `endif
 
 `ifndef RES_TYPES

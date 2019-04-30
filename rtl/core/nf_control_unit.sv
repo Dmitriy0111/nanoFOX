@@ -17,6 +17,7 @@ module nf_control_unit
     input   logic   [6 : 0]     funct7,         // funct 7 field in instruction code
     output  logic   [4 : 0]     imm_src,        // for enable immediate data
     output  logic   [0 : 0]     srcBsel,        // for selecting srcB ALU
+    output  logic   [0 : 0]     shift_sel,      // for selecting shift input
     output  logic   [0 : 0]     res_sel,        // for selecting result
     output  logic   [3 : 0]     branch_type,    // for executing branch instructions
     output  logic   [0 : 0]     branch_hf,      // branch help field
@@ -37,51 +38,122 @@ module nf_control_unit
 
     assign branch_hf  = ~ instr_cf_0.F3[0];
     assign branch_src = instr_cf_0.OP == JALR.OP;
+    assign shift_sel  = (instr_cf_0.OP == R_OP0) ? SRCS_RD2 : SRCS_SHAMT;
     assign we_dm      = instr_cf_0.OP == SW.OP;
     assign size_dm    = instr_cf_0.F3[0 +: 2];
 
+    // immediate source selecting
     always_comb
-    begin
-        we_rf       = '0;
-        rf_src      = RF_ALUR;
-        ALU_Code    = ALU_ADD;
-        srcBsel     = SRCB_IMM;
-        res_sel     = RES_ALU;
-        imm_src     = I_SEL;
-        branch_type = B_NONE;
+    begin : imm_comb
+        imm_src = I_SEL;
         case( instr_cf_0.IT )
-            `RVI :
-                casex( ret_code( instr_cf_0 ) )
-                    //  R - type commands
-                    ret_code( ADD   ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
-                    ret_code( AND   ) : begin we_rf = '1; ALU_Code = ALU_AND; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
-                    ret_code( SUB   ) : begin we_rf = '1; ALU_Code = ALU_SUB; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
-                    ret_code( SLL   ) : begin we_rf = '1; ALU_Code = ALU_SLL; srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
-                    ret_code( OR    ) : begin we_rf = '1; ALU_Code = ALU_OR;  srcBsel = SRCB_RD2; res_sel = RES_ALU;                                                            end
-                    //  I - type commands
-                    ret_code( ADDI  ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                           end
-                    ret_code( ORI   ) : begin we_rf = '1; ALU_Code = ALU_OR;  srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                           end
-                    ret_code( SLLI  ) : begin we_rf = '1; ALU_Code = ALU_SLL; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                                           end
-                    ret_code( LW    ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = I_SEL;                         rf_src = RF_DMEM; end
-                    ret_code( JALR  ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_UB ; imm_src = I_SEL; branch_type = B_UB;                       end
-                    //  U - type commands
-                    ret_code( LUI   ) : begin we_rf = '1; ALU_Code = ALU_LUI; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = U_SEL;                                           end
-                    //  B - type commands
-                    ret_code( BEQ   ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU; imm_src = B_SEL; branch_type = B_EQ_NEQ;                   end
-                    ret_code( BNE   ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_RD2; res_sel = RES_ALU; imm_src = B_SEL; branch_type = B_EQ_NEQ;                   end
-                    //  S - type commands
-                    ret_code( SW    ) : begin we_rf = '0; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_ALU; imm_src = S_SEL;                                           end
-                    //  J - type commands
-                    ret_code( JAL   ) : begin we_rf = '1; ALU_Code = ALU_ADD; srcBsel = SRCB_IMM; res_sel = RES_UB ; imm_src = J_SEL; branch_type = B_UB;                       end
-                    //  in the future
-                    default : ;
+            `RVI    :
+                case( instr_cf_0.OP )
+                    J_OP0                   : imm_src = J_SEL;
+                    S_OP0                   : imm_src = S_SEL;
+                    B_OP0                   : imm_src = B_SEL;
+                    U_OP0 , U_OP1           : imm_src = U_SEL;
+                    I_OP0 , I_OP1 , I_OP2   : imm_src = I_SEL;
+                    default                 :;
                 endcase
-            default : ;
+            default :;
         endcase
     end
-
-    function logic [8 : 0] ret_code(instr_cf instr_cf_);    // for selecting actual instruction bits
-        return  { instr_cf_.OP , instr_cf_.F3 , instr_cf_.F7[5] };
-    endfunction : ret_code
+    // register file source selecting
+    always_comb
+    begin : rf_src_comb
+        rf_src = RF_ALUR;
+        case( instr_cf_0.IT )
+            `RVI    :
+                case( instr_cf_0.OP )
+                    I_OP1   : rf_src = RF_DMEM;
+                    default :;
+                endcase
+            default :;
+        endcase
+    end
+    // write enable register file
+    always_comb
+    begin : we_rf_comb
+        we_rf = '0;
+        case( instr_cf_0.IT )
+            `RVI    :
+                case( instr_cf_0.OP )
+                    R_OP0                  : we_rf = '1;
+                    J_OP0                  : we_rf = '1;
+                    S_OP0                  : we_rf = '0;
+                    B_OP0                  : we_rf = '0;
+                    U_OP0 , U_OP1          : we_rf = '1;
+                    I_OP0 , I_OP1 , I_OP2  : we_rf = '1;
+                    default :;
+                endcase
+            default :;
+        endcase
+    end
+    // source B for ALU selecting
+    always_comb
+    begin : srcBsel_comb
+        srcBsel = SRCB_IMM;
+        case( instr_cf_0.IT )
+            `RVI    :
+                case( instr_cf_0.OP )
+                    R_OP0 , B_OP0   : srcBsel = SRCB_RD2;
+                    default         :;
+                endcase
+            default :;
+        endcase
+    end
+    // branch type finding
+    always_comb
+    begin : branch_type_comb
+        branch_type = B_NONE;
+        case( instr_cf_0.IT )
+            `RVI    :
+                case( instr_cf_0.OP )
+                    B_OP0           :
+                        case( instr_cf_0.F3[2 : 1] )
+                            2'b00   : branch_type = B_EQ_NEQ;
+                            default :;
+                        endcase
+                    J_OP0 , I_OP2   : branch_type = B_UB;
+                    default         :;
+                endcase
+            default :;
+        endcase
+    end
+    // result select
+    always_comb
+    begin : res_sel_comb
+        res_sel = RES_ALU;
+        case( instr_cf_0.IT )
+            `RVI    :
+                case( instr_cf_0.OP )
+                    J_OP0 , I_OP2   : res_sel = RES_UB;     // JAL or JALR
+                    default         :;
+                endcase
+            default :;
+        endcase
+    end
+    // setting code for ALU    
+    always_comb
+    begin : ALU_Code_comb
+        ALU_Code = ALU_ADD;
+        case( instr_cf_0.IT )
+            `RVI    :
+                case( instr_cf_0.OP )
+                    U_OP0           : ALU_Code = ALU_LUI;
+                    R_OP0 , I_OP0   : 
+                        case( instr_cf_0.F3 )
+                            ADD.F3  : ALU_Code = ALU_ADD;
+                            AND.F3  : ALU_Code = ALU_AND;
+                            OR.F3   : ALU_Code = ALU_OR;
+                            SLL.F3  : ALU_Code = ALU_SLL;
+                            default :;
+                        endcase    
+                    default         :;
+                endcase
+            default :;
+        endcase
+    end
 
 endmodule : nf_control_unit

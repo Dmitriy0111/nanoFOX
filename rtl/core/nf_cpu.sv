@@ -60,6 +60,120 @@ module nf_cpu
     **         Instruction Fetch  stage         **
     *********************************************/
     logic   [31 : 0]    instr_if;               // instruction fetch
+    /*********************************************
+    **         Instruction Decode stage         **
+    *********************************************/
+    logic   [31 : 0]    instr_id;           // instruction ( decode stage )
+    logic   [31 : 0]    pc_id;              // program counter ( decode stage )
+    logic   [4  : 0]    wa3_id;             // write address for register file ( decode stage )
+    logic   [4  : 0]    ra1_id;             // read address 1 from register file ( decode stage )
+    logic   [4  : 0]    ra2_id;             // read address 2 from register file ( decode stage )
+    logic   [31 : 0]    ext_data_id;        // extended immediate data ( decode stage )
+    logic   [31 : 0]    rd1_id;             // read data 1 from register file ( decode stage )
+    logic   [31 : 0]    rd2_id;             // read data 2 from register file ( decode stage )
+    logic   [0  : 0]    srcB_sel_id;        // source B selection ( decode stage )
+    logic   [0  : 0]    shift_sel_id;       // for selecting shift input ( decode stage )
+    logic   [0  : 0]    res_sel_id;         // result select ( decode stage )
+    logic   [0  : 0]    we_rf_id;           // write enable register file ( decode stage )
+    logic   [0  : 0]    we_dm_id;           // write enable data memory ( decode stage )
+    logic   [0  : 0]    rf_src_id;          // register file source ( decode stage )
+    logic   [3  : 0]    ALU_Code_id;        // code for execution unit ( decode stage )
+    logic   [4  : 0]    shamt_id;           // shift value for execution unit ( decode stage )
+    logic   [0  : 0]    branch_src;         // program counter selection
+    logic   [1  : 0]    size_dm_id;         // size for load/store instructions ( decode stage )
+    /*********************************************
+    **       Instruction execution stage        **
+    *********************************************/
+    logic   [31 : 0]    instr_iexe;         // instruction ( execution stage )
+    logic   [4  : 0]    wa3_iexe;           // write address for register file ( execution stage )
+    logic   [4  : 0]    ra1_iexe;           // read address 1 from register file ( execution stage )
+    logic   [4  : 0]    ra2_iexe;           // read address 2 from register file ( execution stage )
+    logic   [31 : 0]    ext_data_iexe;      // extended immediate data ( execution stage )
+    logic   [31 : 0]    rd1_iexe;           // read data 1 from register file ( execution stage )
+    logic   [31 : 0]    rd2_iexe;           // read data 2 from register file ( execution stage )
+    logic   [31 : 0]    pc_iexe;            // program counter value ( execution stage )
+    logic   [0  : 0]    srcB_sel_iexe;      // source B selection ( execution stage )
+    logic   [0  : 0]    shift_sel_iexe;     // for selecting shift input ( execution stage )
+    logic   [0  : 0]    res_sel_iexe;       // result select ( execution stage )
+    logic   [0  : 0]    we_rf_iexe;         // write enable register file ( execution stage )
+    logic   [0  : 0]    we_dm_iexe;         // write enable data memory ( execution stage )
+    logic   [0  : 0]    rf_src_iexe;        // register file source ( execution stage )
+    logic   [3  : 0]    ALU_Code_iexe;      // code for execution unit ( execution stage )
+    logic   [4  : 0]    shamt_iexe;         // shift value for execution unit ( execution stage )
+    logic   [1  : 0]    size_dm_iexe;       // size for load/store instructions ( execution stage )
+    logic   [31 : 0]    result_iexe;        // result from execution unit ( execution stage )
+    logic   [31 : 0]    result_iexe_e;      // selected result ( execution stage )
+    /*********************************************
+    **       Instruction memory stage           **
+    *********************************************/
+    logic   [31 : 0]    instr_imem;         // instruction ( memory stage )
+    logic   [31 : 0]    result_imem;        // result operation ( memory stage )
+    logic   [0  : 0]    we_dm_imem;         // write enable data memory ( memory stage )
+    logic   [31 : 0]    rd2_imem;           // read data 2 from register file ( memory stage )
+    logic   [0  : 0]    rf_src_imem;        // register file source ( memory stage )
+    logic   [4  : 0]    wa3_imem;           // write address for register file ( memory stage )
+    logic   [0  : 0]    we_rf_imem;         // write enable register file ( memory stage )
+    logic   [1  : 0]    size_dm_imem;       // size for load/store instructions ( memory stage )
+    /*********************************************
+    **       Instruction write back stage       **
+    *********************************************/
+    logic   [31 : 0]    instr_iwb;          // instruction ( write back stage )
+    logic   [4  : 0]    wa3_iwb;            // write address for register file ( write back stage )
+    logic   [0  : 0]    we_rf_iwb;          // write enable for register file ( write back stage )
+    logic   [0  : 0]    rf_src_iwb;         // register file source ( write back stage )
+    logic   [31 : 0]    result_iwb;         // result operation ( write back stage )
+    logic   [31 : 0]    wd_iwb;             // write data ( write back stage )
+    logic   [31 : 0]    rd_dm_iwb;          // read data from data memory ( write back stage )
+    logic   [0  : 0]    lsu_busy;           // load store unit busy
+
+    // next program counter value for branch command
+    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
+    assign result_iexe_e = res_sel_iexe  == RES_ALU  ? result_iexe : pc_iexe;
+    assign wa3    = wa3_iwb;
+    assign wd3    = wd_iwb;
+    assign wd_iwb = rf_src_iwb ? rd_dm_iwb : result_iwb;
+    assign we_rf  = we_rf_iwb;
+    // if2id
+    nf_register_we      #( 32 ) instr_if_id         ( clk , resetn , ~ stall_id   ,              instr_if      , instr_id       );
+    nf_register_we      #( 32 ) pc_if_id            ( clk , resetn , ~ stall_id   ,              addr_i        , pc_id          );
+    // id2iexe
+    nf_register_we_clr  #(  5 ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , wa3_id        , wa3_iexe       );
+    nf_register_we_clr  #(  5 ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra1_id        , ra1_iexe       );
+    nf_register_we_clr  #(  5 ) ra2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra2_id        , ra2_iexe       );
+    nf_register_we_clr  #(  5 ) shamt_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , shamt_id      , shamt_iexe     );
+    nf_register_we_clr  #( 32 ) sign_ex_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , ext_data_id   , ext_data_iexe  );
+    nf_register_we_clr  #( 32 ) rd1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd1_id        , rd1_iexe       );
+    nf_register_we_clr  #( 32 ) rd2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd2_id        , rd2_iexe       );
+    nf_register_we_clr  #( 32 ) pc_id_iexe          ( clk , resetn , ~ stall_iexe , flush_iexe , pc_id         , pc_iexe        );
+    nf_register_we_clr  #(  2 ) size_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , size_dm_id    , size_dm_iexe   );
+    nf_register_we_clr  #(  1 ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id   , srcB_sel_iexe  );
+    nf_register_we_clr  #(  1 ) shift_sel_id_iexe   ( clk , resetn , ~ stall_iexe , flush_iexe , shift_sel_id  , shift_sel_iexe );
+    nf_register_we_clr  #(  1 ) res_sel_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , res_sel_id    , res_sel_iexe   );
+    nf_register_we_clr  #(  1 ) we_rf_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_rf_id      , we_rf_iexe     );
+    nf_register_we_clr  #(  1 ) we_dm_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_dm_id      , we_dm_iexe     );
+    nf_register_we_clr  #(  1 ) rf_src_id_iexe      ( clk , resetn , ~ stall_iexe , flush_iexe , rf_src_id     , rf_src_iexe    );
+    nf_register_we_clr  #(  4 ) ALU_Code_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , ALU_Code_id   , ALU_Code_iexe  );
+    // iexe2imem
+    nf_register_we      #(  1 ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem ,              we_dm_iexe    , we_dm_imem     );
+    nf_register_we      #(  1 ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem ,              we_rf_iexe    , we_rf_imem     );
+    nf_register_we      #(  1 ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem ,              rf_src_iexe   , rf_src_imem    );
+    nf_register_we      #(  2 ) size_dm_iexe_imem   ( clk , resetn , ~ stall_imem ,              size_dm_iexe  , size_dm_imem   );
+    nf_register_we      #(  5 ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem ,              wa3_iexe      , wa3_imem       );
+    nf_register_we      #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd2_i_exu     , rd2_imem       );
+    nf_register_we      #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem ,              result_iexe_e , result_imem    );
+    // imem2iwb
+    nf_register_we      #(  1 ) we_rf_imem_iwb      ( clk , resetn , ~ stall_iwb  ,              we_rf_imem    , we_rf_iwb      );
+    nf_register_we      #(  1 ) rf_src_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              rf_src_imem   , rf_src_iwb     );
+    nf_register_we      #(  5 ) wa3_imem_iwb        ( clk , resetn , ~ stall_iwb  ,              wa3_imem      , wa3_iwb        );
+    nf_register_we      #( 32 ) result_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              result_imem   , result_iwb     );
+    
+    // for verification
+    // synthesis translate_off
+    nf_register_we_clr  #( 32 ) instr_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , instr_id   , instr_iexe );
+    nf_register_we      #( 32 ) instr_iexe_imem     ( clk , resetn , ~ stall_imem ,              instr_iexe , instr_imem );
+    nf_register_we      #( 32 ) instr_imem_iwb      ( clk , resetn , ~ stall_iwb  ,              instr_imem , instr_iwb  );
+    // synthesis translate_on
+
     // creating one instruction fetch unit
     nf_i_fu 
     nf_i_fu_0
@@ -82,36 +196,6 @@ module nf_cpu
         .req_i          ( req_i             ),  // request instruction memory signal
         .req_ack_i      ( req_ack_i         )   // request acknowledge instruction memory signal
     );
-
-    logic   [31 : 0]    instr_id;           // instruction ( decode stage )
-    logic   [31 : 0]    pc_id;              // program counter ( decode stage )
-
-    nf_register_we  #( 32 ) instr_if_id     ( clk , resetn , ~ stall_id , instr_if , instr_id );
-    nf_register_we  #( 32 ) pc_if_id        ( clk , resetn , ~ stall_id , addr_i   , pc_id    );
-
-    /*********************************************
-    **         Instruction Decode stage         **
-    *********************************************/
-
-    logic   [4  : 0]    wa3_id;             // write address for register file ( decode stage )
-    logic   [4  : 0]    ra1_id;             // read address 1 from register file ( decode stage )
-    logic   [4  : 0]    ra2_id;             // read address 2 from register file ( decode stage )
-    logic   [31 : 0]    ext_data_id;        // extended immediate data ( decode stage )
-    logic   [31 : 0]    rd1_id;             // read data 1 from register file ( decode stage )
-    logic   [31 : 0]    rd2_id;             // read data 2 from register file ( decode stage )
-    logic   [0  : 0]    srcB_sel_id;        // source B selection ( decode stage )
-    logic   [0  : 0]    res_sel_id;         // result select ( decode stage )
-    logic   [0  : 0]    we_rf_id;           // write enable register file ( decode stage )
-    logic   [0  : 0]    we_dm_id;           // write enable data memory ( decode stage )
-    logic   [0  : 0]    rf_src_id;          // register file source ( decode stage )
-    logic   [3  : 0]    ALU_Code_id;        // code for execution unit ( decode stage )
-    logic   [4  : 0]    shamt_id;           // shift value for execution unit ( decode stage )
-    logic   [0  : 0]    branch_src;         // program counter selection
-    logic   [1  : 0]    size_dm_id;         // size for load/store instructions ( decode stage )
-
-    // next program counter value for branch command
-    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
-
     // creating register file
     nf_reg_file 
     nf_reg_file_0
@@ -132,6 +216,7 @@ module nf_cpu
         .instr          ( instr_id          ),  // Instruction input
         .ext_data       ( ext_data_id       ),  // decoded extended data
         .srcB_sel       ( srcB_sel_id       ),  // decoded source B selection for ALU
+        .shift_sel      ( shift_sel_id      ),  // for selecting shift input
         .res_sel        ( res_sel_id        ),  // for selecting result
         .ALU_Code       ( ALU_Code_id       ),  // decoded ALU code
         .shamt          ( shamt_id          ),  // decoded for shift command's
@@ -148,54 +233,6 @@ module nf_cpu
         .branch_src     ( branch_src        ),  // for selecting branch source (JALR)
         .branch_type    ( branch_type       )   // branch type
     );
-
-    // for verification
-    // synthesis translate_off
-    logic   [31 : 0]    instr_iexe;         // instruction ( execution stage )
-    nf_register_we_clr  #( 32 ) instr_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , instr_id    , instr_iexe    );
-    // synthesis translate_on
-
-    logic   [4  : 0]    wa3_iexe;           // write address for register file ( execution stage )
-    logic   [4  : 0]    ra1_iexe;           // read address 1 from register file ( execution stage )
-    logic   [4  : 0]    ra2_iexe;           // read address 2 from register file ( execution stage )
-    logic   [31 : 0]    ext_data_iexe;      // extended immediate data ( execution stage )
-    logic   [31 : 0]    rd1_iexe;           // read data 1 from register file ( execution stage )
-    logic   [31 : 0]    rd2_iexe;           // read data 2 from register file ( execution stage )
-    logic   [31 : 0]    pc_iexe;            // program counter value ( execution stage )
-    logic   [0  : 0]    srcB_sel_iexe;      // source B selection ( execution stage )
-    logic   [0  : 0]    res_sel_iexe;       // result select ( execution stage )
-    logic   [0  : 0]    we_rf_iexe;         // write enable register file ( execution stage )
-    logic   [0  : 0]    we_dm_iexe;         // write enable data memory ( execution stage )
-    logic   [0  : 0]    rf_src_iexe;        // register file source ( execution stage )
-    logic   [3  : 0]    ALU_Code_iexe;      // code for execution unit ( execution stage )
-    logic   [4  : 0]    shamt_iexe;         // shift value for execution unit ( execution stage )
-    logic   [1  : 0]    size_dm_iexe;       // size for load/store instructions ( execution stage )
-    logic   [31 : 0]    result_iexe;        // result from execution unit ( execution stage )
-    logic   [31 : 0]    result_iexe_e;      // selected result ( execution stage )
-
-    assign result_iexe_e = res_sel_iexe  == RES_ALU  ? result_iexe : pc_iexe;
-
-    // data and address wires (flushed)
-    nf_register_we_clr  #( 5  ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , wa3_id      , wa3_iexe      );
-    nf_register_we_clr  #( 5  ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra1_id      , ra1_iexe      );
-    nf_register_we_clr  #( 5  ) ra2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra2_id      , ra2_iexe      );
-    nf_register_we_clr  #( 5  ) shamt_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , shamt_id    , shamt_iexe    );
-    nf_register_we_clr  #( 32 ) sign_ex_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , ext_data_id , ext_data_iexe );
-    nf_register_we_clr  #( 32 ) rd1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd1_id      , rd1_iexe      );
-    nf_register_we_clr  #( 32 ) rd2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd2_id      , rd2_iexe      );
-    nf_register_we_clr  #( 32 ) pc_id_iexe          ( clk , resetn , ~ stall_iexe , flush_iexe , pc_id       , pc_iexe       );
-    nf_register_we_clr  #( 2  ) size_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , size_dm_id  , size_dm_iexe  );
-    // control wires (flushed)
-    nf_register_we_clr  #( 1  ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id , srcB_sel_iexe );
-    nf_register_we_clr  #( 1  ) res_sel_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , res_sel_id  , res_sel_iexe  );
-    nf_register_we_clr  #( 1  ) we_rf_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_rf_id    , we_rf_iexe    );
-    nf_register_we_clr  #( 1  ) we_dm_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_dm_id    , we_dm_iexe    );
-    nf_register_we_clr  #( 1  ) rf_src_id_iexe      ( clk , resetn , ~ stall_iexe , flush_iexe , rf_src_id   , rf_src_iexe   );
-    nf_register_we_clr  #( 4  ) ALU_Code_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , ALU_Code_id , ALU_Code_iexe );
-
-    /*********************************************
-    **       Instruction execution stage        **
-    *********************************************/
     // creating instruction execution unit
     nf_i_exu 
     nf_i_exu_0
@@ -204,64 +241,12 @@ module nf_cpu
         .rd2            ( rd2_i_exu         ),  // read data from reg file (port2)
         .ext_data       ( ext_data_iexe     ),  // sign extended immediate data
         .srcB_sel       ( srcB_sel_iexe     ),  // source B enable signal for ALU
+        .shift_sel      ( shift_sel_iexe    ),  // for selecting shift input
         .shamt          ( shamt_iexe        ),  // for shift operations
         .ALU_Code       ( ALU_Code_iexe     ),  // code for ALU
         .result         ( result_iexe       )   // result of ALU operation
     );
-
-    /*********************************************
-    **       Instruction memory stage           **
-    *********************************************/
-    // for verification
-    // synthesis translate_off
-    logic   [31 : 0]    instr_imem;         // instruction ( memory stage )
-    nf_register_we  #( 32 ) instr_iexe_imem     ( clk , resetn , ~ stall_imem , instr_iexe , instr_imem  );
-    // synthesis translate_on
-
-    logic   [31 : 0]    result_imem;        // result operation ( memory stage )
-    logic   [0  : 0]    we_dm_imem;         // write enable data memory ( memory stage )
-    logic   [31 : 0]    rd2_imem;           // read data 2 from register file ( memory stage )
-    logic   [0  : 0]    rf_src_imem;        // register file source ( memory stage )
-    logic   [4  : 0]    wa3_imem;           // write address for register file ( memory stage )
-    logic   [0  : 0]    we_rf_imem;         // write enable register file ( memory stage )
-    logic   [1  : 0]    size_dm_imem;       // size for load/store instructions ( memory stage )
-
-    nf_register_we  #( 1  ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , we_dm_iexe    , we_dm_imem   );
-    nf_register_we  #( 1  ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , we_rf_iexe    , we_rf_imem   );
-    nf_register_we  #( 1  ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem , rf_src_iexe   , rf_src_imem  );
-    nf_register_we  #( 2  ) size_dm_iexe_imem   ( clk , resetn , ~ stall_imem , size_dm_iexe  , size_dm_imem );
-    nf_register_we  #( 5  ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem , wa3_iexe      , wa3_imem     );
-    nf_register_we  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , rd2_i_exu     , rd2_imem     );
-    nf_register_we  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , result_iexe_e , result_imem  );
-
-    /*********************************************
-    **       Instruction write back stage       **
-    *********************************************/
-
-    // for verification
-    // synthesis translate_off
-    logic   [31 : 0]    instr_iwb;          // instruction ( write back stage )
-    nf_register_we  #( 32 ) instr_imem_iwb  ( clk , resetn , ~ stall_iwb , instr_imem  , instr_iwb  );
-    // synthesis translate_on
-
-    logic   [4  : 0]    wa3_iwb;            // write address for register file ( write back stage )
-    logic   [0  : 0]    we_rf_iwb;          // write enable for register file ( write back stage )
-    logic   [0  : 0]    rf_src_iwb;         // register file source ( write back stage )
-    logic   [31 : 0]    result_iwb;         // result operation ( write back stage )
-    logic   [31 : 0]    wd_iwb;             // write data ( write back stage )
-    logic   [31 : 0]    rd_dm_iwb;          // read data from data memory ( write back stage )
-
-    nf_register_we  #( 1  ) we_rf_imem_iwb  ( clk , resetn , ~ stall_iwb , we_rf_imem  , we_rf_iwb  );
-    nf_register_we  #( 1  ) rf_src_imem_iwb ( clk , resetn , ~ stall_iwb , rf_src_imem , rf_src_iwb );
-    nf_register_we  #( 5  ) wa3_imem_iwb    ( clk , resetn , ~ stall_iwb , wa3_imem    , wa3_iwb    );
-    nf_register_we  #( 32 ) result_imem_iwb ( clk , resetn , ~ stall_iwb , result_imem , result_iwb );
-    logic   [0  : 0]     lsu_busy;          // load store unit busy
-
-    assign wa3    = wa3_iwb;
-    assign wd3    = wd_iwb;
-    assign wd_iwb = rf_src_iwb ? rd_dm_iwb : result_iwb;
-    assign we_rf  = we_rf_iwb;
-
+    // creating one load store unit
     nf_i_lsu 
     nf_i_lsu_0
     (

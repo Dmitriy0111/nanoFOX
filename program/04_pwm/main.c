@@ -11,17 +11,19 @@
 
 #define SYNTH   1
 #define SIM     0
-#define RUNTYPE SIM
+#define RUNTYPE SYNTH
 
 #if   RUNTYPE == SIM
     #define delay_value 20
 #elif RUNTYPE == SYNTH
-    #define delay_value 100000
+    #define delay_value 50000
 #endif
+
+volatile int delay_v;
 
 void delay(int delay_c)
 {
-    volatile int delay_v = delay_c;
+    delay_v = delay_c;
     while(delay_v)
         delay_v--;
 }

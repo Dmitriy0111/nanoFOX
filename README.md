@@ -4,7 +4,6 @@
 ## Supported instructions:
 *   add
 *   and
-*   sub
 *   sll
 *   or
 *   addi
