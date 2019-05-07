@@ -34,9 +34,9 @@ module nf_router
 
     assign clk_s     = clk;
     assign resetn_s  = resetn;
-    assign wd_dm_s   = { `SLAVE_NUMBER { wd_dm_m } };
+    assign wd_dm_s   = { `SLAVE_NUMBER { wd_dm_m   } };
     assign addr_dm_s = { `SLAVE_NUMBER { addr_dm_m } };
-    assign we_dm_s   = { `SLAVE_NUMBER { we_dm_m } } & slave_sel; // {we_dm_m && slave_sel[n-1] , we_dm_m && slave_sel[n-2] , ... , we_dm_m && slave_sel[0] };
+    assign we_dm_s   = { `SLAVE_NUMBER { we_dm_m   } } & slave_sel; // {we_dm_m && slave_sel[n-1] , we_dm_m && slave_sel[n-2] , ... , we_dm_m && slave_sel[0] };
     // creating one router decoder
     nf_router_dec
     #(

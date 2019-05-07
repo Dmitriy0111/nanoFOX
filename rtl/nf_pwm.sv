@@ -38,7 +38,7 @@ module nf_pwm
         else
             pwm_i <= pwm_i + 1'b1;
     end
-    
+    // loading new value in pwm register
     always_ff @(posedge clk, negedge resetn)
     begin : work_with_compare_pwm
         if( !resetn )

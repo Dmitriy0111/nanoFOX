@@ -110,7 +110,6 @@ module nf_cpu
         .datao          ( instr_addr        ),  // output data 
         .we             ( cpu_en            )   // write enable
     );
-
     // creating one register file
     nf_reg_file 
     nf_reg_file_0
@@ -156,10 +155,10 @@ module nf_cpu
     nf_branch_unit 
     nf_branch_unit_0
     (
-        .branch_type    ( branch_type       ),  // from control unit, '1 if branch instruction
+        .branch_type    ( branch_type       ),  // branch type
+        .branch_hf      ( branch_hf         ),  // branch help field
         .d1             ( rd1               ),  // from register file (rd1)
         .d2             ( rd2               ),  // from register file (rd2)
-        .branch_hf      ( branch_hf         ),  // branch help field
         .pc_src         ( pc_src            )   // selecting next program counter
     );
     // creating one sign extending unit

@@ -57,6 +57,12 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_control_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_clock_div.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_ram.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_gpio.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_router.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_router_mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_router_dec.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_static.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_dynamic.sv

@@ -24,8 +24,8 @@ RUN_DIR  = $(PWD)/run
 RTL_DIR  = $(PWD)/rtl
 TB_DIR   = $(PWD)/tb
 
-BOARDS_SUPPORTED ?= de10_lite
-BOARD            ?= de10_lite
+BOARDS_SUPPORTED ?= de10_lite de0_nano rz_easyFPGA_A2_1 Storm_IV_E6_V2
+BOARD            ?= rz_easyFPGA_A2_1
 
 ########################################################
 # common make targets

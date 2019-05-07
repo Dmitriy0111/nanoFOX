@@ -47,9 +47,9 @@ If log_en or log_html set as '1 (tb/nf_tb.svh) then you can see simulation resul
 ## Synthesis:
 *   **make synth_create** is used for creating synthesis folder for default board;
 *   **make synth_clean** is used for cleaning synthesis folder;
-*   **make synth_build_q** is used for building project;
+*   **make synth_build_q** is used for building project in Quartus;
 *   **make synth_gui_q** is used for open project in Quartus;
-*   **make synth_load_q** is used for loading bitstream in CPLD/FPGA.
+*   **make synth_load_q** is used for loading bitstream in CPLD/FPGA with Quartus.
 
 For selecting debug output (VGA or hex_display) change in verilog board file (board/[board name]/[board name].sv) value ("hex" or "vga") of localparam in string:
 ```verilog

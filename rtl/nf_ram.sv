@@ -19,13 +19,11 @@ module nf_ram
 );
 
     logic   [31 : 0]    ram     [depth-1 : 0];  // creating memory array
-
+    // reading data memory
     assign rd = ram[addr];
-
+    // writing data memory
     always_ff @(posedge clk)
-    begin
         if( we )
             ram[addr] <= wd;  
-    end
 
 endmodule : nf_ram

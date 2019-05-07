@@ -98,7 +98,7 @@
 
 // srcB select constants
 `define SRCB_IMM    1'b0
-`define SRCB_RD1    1'b1
+`define SRCB_RD2    1'b1
 
 // RF src constants
 `define RF_ALUR     1'b0        // RF write data is ALU result

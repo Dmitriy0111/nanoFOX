@@ -33,8 +33,8 @@ module nf_gpio
     // gpio direction
     logic   [gpio_w-1 : 0]  gpio_d;
     // write enable signals 
-    logic   [0        : 0]  gpo_we;
-    logic   [0        : 0]  gpd_we;
+    logic   [0        : 0]  gpo_we; // gpo write enable
+    logic   [0        : 0]  gpd_we; // gpd write enable
     // assign inputs/outputs
     assign gpo    = gpio_o;
     assign gpd    = gpio_d;
@@ -52,7 +52,7 @@ module nf_gpio
             `NF_GPIO_DIR :  rd = gpio_d;
         endcase
     end
-
+    // loading gpio output value
     always_ff @(posedge clk, negedge resetn)
     begin : load_gpo
         if( !resetn )
@@ -61,7 +61,7 @@ module nf_gpio
             if( gpo_we )
                 gpio_o <= wd;
     end
-
+    // loading gpio direction value
     always_ff @(posedge clk, negedge resetn)
     begin : load_gpd
         if( !resetn )
