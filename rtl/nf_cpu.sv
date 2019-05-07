@@ -137,7 +137,7 @@ module nf_cpu
     nf_branch_unit 
     nf_branch_unit_0
     (
-        .branch_type    ( branch_type   ),  // from control unit, '1 if branch instruction
+        .branch_type    ( branch_type   ),  // branch type
         .branch_hf      ( branch_hf     ),  // branch help field
         .d1             ( rd1           ),  // from register file (rd1)
         .d2             ( rd2           ),  // from register file (rd2)

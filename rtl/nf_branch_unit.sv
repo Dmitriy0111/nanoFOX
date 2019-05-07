@@ -11,7 +11,7 @@
 
 module nf_branch_unit
 (
-    input   logic   [0  : 0]    branch_type,    // from control unit, '1 if branch instruction
+    input   logic   [0  : 0]    branch_type,    // branch type
     input   logic   [0  : 0]    branch_hf,      // branch help field
     input   logic   [31 : 0]    d1,             // from register file (rd1)
     input   logic   [31 : 0]    d2,             // from register file (rd2)

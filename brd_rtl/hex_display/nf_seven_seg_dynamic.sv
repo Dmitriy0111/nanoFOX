@@ -50,7 +50,7 @@ module nf_seven_seg_dynamic
             if( counter[17] )
                 digit_enable <= digit_enable + 1'b1;
         end
-
+    // creating one nf_seven_seg_0 unit
     nf_seven_seg nf_seven_seg_0
     (
         .hex        ( hex[digit_enable*4 +: 4]  ),

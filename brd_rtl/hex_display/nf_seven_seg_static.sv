@@ -17,10 +17,11 @@ module nf_seven_seg_static
 );
 
     genvar hn_i;
-
+    // generate seven segment convertors
     generate
         for ( hn_i = 0; hn_i<hn; hn_i++) 
         begin : gen_seven_seg_convertors
+            // creating more nf_seven_seg_
             nf_seven_seg nf_seven_seg_
             (
                 .hex        ( hex[hn_i*4 +: 4]          ),

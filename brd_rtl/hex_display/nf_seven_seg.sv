@@ -14,7 +14,8 @@ module nf_seven_seg
     output  logic   [7 : 0]     seven_seg   // seven segments output
 );
 
-    logic   [7 : 0] sev_seg;
+    logic   [7 : 0]     sev_seg;    // seven segment internal
+    
     assign seven_seg = cc_ca ? ~ sev_seg : sev_seg;
 
     always_comb
