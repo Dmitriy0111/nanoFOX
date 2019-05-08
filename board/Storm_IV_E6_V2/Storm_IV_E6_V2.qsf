@@ -101,20 +101,20 @@ set_location_assignment PIN_33 -to sw[1]
 set_location_assignment PIN_88 -to sw[2]
 set_location_assignment PIN_89 -to sw[3]
 
-set_location_assignment PIN_39 -to led[0]
-set_location_assignment PIN_31 -to led[1]
-set_location_assignment PIN_3 -to led[2]
-set_location_assignment PIN_2 -to led[3]
-set_location_assignment PIN_1 -to led[4]
+set_location_assignment PIN_39  -to led[0]
+set_location_assignment PIN_31  -to led[1]
+set_location_assignment PIN_3   -to led[2]
+set_location_assignment PIN_2   -to led[3]
+set_location_assignment PIN_1   -to led[4]
 set_location_assignment PIN_144 -to led[5]
 set_location_assignment PIN_143 -to led[6]
 set_location_assignment PIN_142 -to led[7]
 
 set_location_assignment PIN_100 -to r
-set_location_assignment PIN_99 -to g
-set_location_assignment PIN_98 -to b
-set_location_assignment PIN_86 -to hsync
-set_location_assignment PIN_87 -to vsync
+set_location_assignment PIN_99  -to g
+set_location_assignment PIN_98  -to b
+set_location_assignment PIN_86  -to hsync
+set_location_assignment PIN_87  -to vsync
 
 set_location_assignment PIN_98 -to dig[0]
 set_location_assignment PIN_99 -to dig[1]

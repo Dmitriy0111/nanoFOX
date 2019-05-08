@@ -90,12 +90,9 @@ module nf_tb();
             send_uart_message( "Hello World!" , 100);
         end
     end
-    // reset all registers to '0
+    // reset zero register to '0
     initial
-        for( int i=0 ; i<32 ; i++ )
-        begin
-            nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[i] = '0;
-        end
+        nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[0] = '0;
     // generating clock
     initial
     begin
@@ -136,7 +133,7 @@ module nf_tb();
                     log_str = { log_str , $psprintf("cycle = %d, pc = 0x%h ", cycle_counter, nf_top_0.nf_cpu_0.addr_i     ) };
                     log_str = { log_str , $psprintf("%t\n", $time                                                         ) };
                     // form instruction fetch stage output
-                    log_str = { log_str , "Instruction decode stage        : "                                              };
+                    log_str = { log_str , "Instruction fetch stage         : "                                              };
                     log_str = { log_str , $psprintf("%s\n", instruction_if_stage                                          ) };
                     if( `debug_lev0 ) 
                         log_str = { log_str , $psprintf("                                  %s \n", instr_sep_s_if_stage   ) };

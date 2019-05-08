@@ -7,7 +7,7 @@
 #  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 #
 
-.equ    _stack_start,   0x00001000      # 400 << 2
+.equ    _stack_start,   0x00001000  # 400 << 2
 
 nanoFOX_vectors:
         j _main         # reset vector (0x00 vector)
@@ -28,6 +28,39 @@ nanoFOX_vectors:
         j vector_15     # 0x0f  vector
 
 _main:
+_clean_registers:
+        lui  ra,   0x00
+        lui  sp,   0x00
+        lui  gp,   0x00
+        lui  tp,   0x00
+        lui  t0,   0x00
+        lui  t1,   0x00
+        lui  t2,   0x00
+        lui  s0,   0x00
+        lui  s1,   0x00
+        lui  a0,   0x00
+        lui  a1,   0x00
+        lui  a2,   0x00
+        lui  a3,   0x00
+        lui  a4,   0x00
+        lui  a5,   0x00
+        lui  a6,   0x00
+        lui  a7,   0x00
+        lui  s2,   0x00
+        lui  s3,   0x00
+        lui  s4,   0x00
+        lui  s5,   0x00
+        lui  s6,   0x00
+        lui  s7,   0x00
+        lui  s8,   0x00
+        lui  s9,   0x00
+        lui  s10,  0x00
+        lui  s11,  0x00
+        lui  t3,   0x00
+        lui  t4,   0x00
+        lui  t5,   0x00
+        lui  t6,   0x00
+load_sp:
         lui  sp,     %hi(_stack_start)  # load stack pointer value
         addi sp, sp, %lo(_stack_start)  # load stack pointer value
         j    main

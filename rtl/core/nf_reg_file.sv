@@ -32,8 +32,4 @@ module nf_reg_file
         if( we3 && ( | wa3 ) )      // write enable without zero
             reg_file[wa3] <= wd3;
 
-    initial
-        for( int i = 0; i <= 31; i = i + 1'b1 )
-            reg_file[i] = '0;
-
 endmodule : nf_reg_file

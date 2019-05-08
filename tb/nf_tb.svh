@@ -14,6 +14,6 @@
 // enable txt logging
 `define log_txt     1
 // enable html logging
-`define log_html    0
+`define log_html    1
 // enable logging
 `define log_en      1

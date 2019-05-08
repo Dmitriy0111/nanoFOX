@@ -39,34 +39,61 @@ module nf_i_fu
     logic   [31 : 0]    pc_not_branch;          // program counter not branch value
     logic   [3  : 0]    branch_type_delayed;    // branch type delayed
     // flush instruction decode 
-    logic   [0  : 0]    flush_id_ifu;           // flush id stage
     logic   [0  : 0]    flush_id_branch;        // flush id stage ( branch operation )
-    logic   [0  : 0]    flush_id_delayed;       // flush id stage
+    logic   [0  : 0]    flush_id_branch_;       // flush id stage after branch and reset
     logic   [0  : 0]    flush_id_sw_instr;      // flush id stage ( store data instruction )
     // working with instruction fetch instruction (stalled and not stalled)
     assign instr_if      = flush_id ? '0 : ( sel_if_instr ? instr_if_stalled : rd_i );  // from fetch stage
     assign we_if_stalled = stall_if  && ( ~ sel_if_instr ) && ( ~ branch_type_delayed[3] );  // for sw and branch stalls
-    // finding pc values
-    assign pc_i = pc_src ? pc_branch : pc_not_branch;
+    // finding pc not branch value
     assign pc_not_branch = addr_i + 4;
     // finding flush instruction decode signals
     assign flush_id_sw_instr = ~ req_ack_i;
     assign flush_id_branch = pc_src && ( ~ stall_if );
-    assign flush_id = flush_id_ifu || flush_id_delayed || flush_id_branch || flush_id_sw_instr;
+    assign flush_id = flush_id_branch_ || flush_id_branch || flush_id_sw_instr;
     // setting instruction interface signals
     assign req_i  = '1;
     assign we_i   = '0;
     assign wd_i   = '0;
     assign size_i = 2'b10;  // word
+    // finding next program counter value
+    always_comb
+    begin
+        pc_i = pc_not_branch;
+        case( pc_src )
+            '0  :   pc_i = pc_not_branch;
+            '1  :   pc_i = pc_branch;
+        endcase
+    end
+
+    always_ff @(posedge clk, negedge resetn)
+        if( !resetn )
+            flush_id_branch_ <= '1; // flushing if-id after reset
+        else
+        begin
+            flush_id_branch_ <= '0;
+            if( flush_id_branch )
+                flush_id_branch_ <= '1; // set if branch and stall instruction fetch
+        end
     // selecting instruction fetch stage instruction
     nf_register         #( 1  ) sel_id_ff               ( clk, resetn, stall_if && ( ~ branch_type_delayed[3] ), sel_if_instr );
     // stalled instruction fetch instruction
     nf_register_we      #( 32 ) instr_if_stall          ( clk, resetn, we_if_stalled, rd_i, instr_if_stalled );
     // flush instruction decode signals
-    nf_register_we_r    #( 1, '0 ) reg_flush_id_ifu     ( clk, resetn, '1, '0, flush_id_ifu );
-    nf_register         #( 1  ) reg_flush_id_delayed    ( clk, resetn, flush_id_branch, flush_id_delayed );
     nf_register         #( 4  ) branch_type_delayed_ff  ( clk, resetn, branch_type, branch_type_delayed );
     // creating program counter
-    nf_register_we_r    #( 32, `PROG_START ) register_pc    ( clk, resetn, ~ stall_if, pc_i, addr_i );
+    nf_register_we_r    
+    #( 
+        .width      ( 32            ), 
+        .rst_val    ( `PROG_START   ) 
+    ) 
+    PC
+    ( 
+        .clk        ( clk           ), 
+        .resetn     ( resetn        ), 
+        .we         ( ~ stall_if    ), 
+        .datai      ( pc_i          ), 
+        .datao      ( addr_i        )
+    );
 
 endmodule : nf_i_fu

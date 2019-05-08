@@ -26,7 +26,7 @@ int main ()
         while( NF_UART_CR == ( NF_UART_TX_EN | NF_UART_TX_SEND ) );
         i++;
     }
-    NF_GPIO_GPO = 0x55;
+    NF_GPIO_GPO = i;
     while(1);
     return 0;
 }
