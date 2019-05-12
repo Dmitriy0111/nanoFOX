@@ -91,9 +91,16 @@ class nf_log_writer extends nf_bt_class;
         for( i = 0 ; i < 32 ; i++ )
         begin
             table_c[i] = reg_file_l[i] == reg_file[i] ? 2'b00 : 2'b01;
-            if( $isunknown( | reg_file[i] ) || $isunknown( | table_c[i] ) )
-                table_c[i] = 2'b10;
-            reg_file_l[i]  =    table_c[i] == 2'b00 ? 
+            if( $isunknown( | table_c[i] ) )
+            begin
+                if( $isunknown( | reg_file[i] ) )
+                    table_c[i] = 2'b10;
+                else
+                    table_c[i] = 2'b01;
+                reg_file_l[i] = reg_file[i];
+            end
+            else
+                reg_file_l[i] = table_c[i] == 2'b00 ? 
                                 reg_file_l[i] : 
                                 reg_file[i];
         end
