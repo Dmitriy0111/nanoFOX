@@ -28,19 +28,16 @@ Or download project from GitHub site <a href="https://github.com/Dmitriy0111/nan
 
 For working with project install:
 *   make
-*   Quartus Prime
-*   Modelsim
-*   Python
-*   RISC-V tools for <a href="https://">windows</a> or <a href="https://">linux</a>
+*   <a href="https://www.intel.ru/content/www/ru/ru/software/programmable/quartus-prime/download.html">Quartus Prime and Modelsim</a>
+*   <a href="https://www.python.org/downloads/">Python</a>
+*   <a href="https://github.com/gnu-mcu-eclipse/riscv-none-gcc/releases">RISC-V tools</a>
 
 **Impotant:** Before starting simulation or synthesis process make compilation program or create "program_file" folder and copy one of program.hex files from program folder.
 
 ## Compilation program:
 *   **set PROG_NAME="name of folder with main program"** is used for setting current program. For example "set PROG_NAME=02_running_bit";
-*   **make comp_lin_c** is used for compiling C code program on windows machine;
-*   **make comp_win_c** is used for compiling C code program on linux machine;
-*   **make comp_lin_asm** is used for compiling Assembler code program on windows machine;
-*   **make comp_win_asm** is used for compiling Assembler code program on linux machine;
+*   **make prog_comp_c** is used for compiling C code program;
+*   **make prog_comp_asm** is used for compiling Assembler code program;
 *   **make prog_clean** is used for cleaning compilation results folder.
 
 ## Simulation:
@@ -56,7 +53,7 @@ If log_txt or log_html set as '1 and log_en set as '1 (tb/nf_tb.svh) then you ca
 *   **make synth_clean** is used for cleaning synthesis folder;
 *   **make synth_build_q** is used for building project in Quartus;
 *   **make synth_gui_q** is used for open project in Quartus;
-*   **make synth_load_q** is used for loading bitstream in CPLD/FPGA.
+*   **make synth_load_q** is used for loading bitstream in CPLD/FPGA with Quartus.
 
 ## Core diagram:
 ![cpu_system](doc/cpu_system.jpg)

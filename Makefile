@@ -13,10 +13,8 @@ help:
 	$(info make synth_gui_q    - open the board project with quartus)
 	$(info make synth_load_q   - program the default FPGA board with quartus)
 	$(info make board_all      - run synthesis for all the supported boards)
-	$(info make comp_lin_c     - compile C program on windows and copy program.hex to program_file)
-	$(info make comp_win_c     - compile C program on linux and copy program.hex to program_file)
-	$(info make comp_lin_asm   - compile Assembler program on windows and copy program.hex to program_file)
-	$(info make comp_win_asm   - compile Assembler program on linux and copy program.hex to program_file)
+	$(info make prog_comp_c    - compile C program and copy program.hex to program_file)
+	$(info make prog_comp_asm  - compile Assembler program and copy program.hex to program_file)
 	$(info Open and read the Makefile for details)
 	@true
 
@@ -95,25 +93,7 @@ CCF	= -march=rv32i -mabi=ilp32
 LDF	= -b elf32-littleriscv
 CPF = ihex -O ihex
 
-comp_lin_c:
-	mkdir -p program_file
-	riscv64-unknown-elf-as program/startup/boot.S -c -o program_file/boot.o $(CCF)
-	riscv64-unknown-elf-gcc -O1 program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
-	riscv64-unknown-elf-gcc -O1 program/startup/vectors.c -c -o program_file/vectors.o $(CCF)
-	riscv64-unknown-elf-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/boot.o program_file/main.o program_file/vectors.o $(LDF)
-	riscv64-unknown-elf-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
-	riscv64-unknown-elf-objcopy program_file/main.elf program_file/program.$(CPF)
-	python program/startup/ihex2hex.py
-
-comp_lin_asm:
-	mkdir -p program_file
-	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
-	riscv64-unknown-elf-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o $(LDF)
-	riscv64-unknown-elf-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
-	riscv64-unknown-elf-objcopy program_file/main.elf program_file/program.$(CPF)
-	python program/startup/ihex2hex.py
-
-comp_win_c:
+prog_comp_c:
 	mkdir -p program_file
 	riscv-none-embed-as program/startup/boot.S -c -o program_file/boot.o $(CCF)
 	riscv-none-embed-gcc -O1 program/$(PROG_NAME)/main.c -c -o program_file/main.o $(CCF)
@@ -123,7 +103,7 @@ comp_win_c:
 	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py
 
-comp_win_asm:
+prog_comp_asm:
 	mkdir -p program_file
 	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
 	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o $(LDF)
@@ -156,21 +136,6 @@ synth_gui_q:
 
 synth_load_q:
 	quartus_pgm -c $(CABLE_NAME) -m JTAG -o "p;synth_$(BOARD)/output_files/$(BOARD).sof"
-
-########################################################
-# synthesis - all the supported boards
-
-BOARD_NAME         = $@
-BOARD_TEMPLATE_DIR = $(BRD_DIR)/$(BOARD_NAME)
-BOARD_BUILD_DIR    = $(PWD)/synth_$(BOARD_NAME)
-
-$(BOARDS_SUPPORTED):
-	rm -rfd $(BOARD_BUILD_DIR)
-	cp -r  $(BOARD_TEMPLATE_DIR) $(BOARD_BUILD_DIR)
-	make -C $(BOARD_BUILD_DIR) create
-	make -C $(BOARD_BUILD_DIR) build
-
-board_all: $(BOARDS_SUPPORTED)
 
 board_clean:
 	rm -rfd $(PWD)/synth_*

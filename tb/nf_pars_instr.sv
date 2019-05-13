@@ -17,20 +17,20 @@ class nf_pars_instr extends nf_bt_class;
     task instr_decode( instr_cf instr_cf_check, logic [31 : 0] instr, ref string instr_s, ref string instr_sep );
 
         // destination and sources registers
-        bit     [4  : 0]    ra1       ;
-        bit     [4  : 0]    ra2       ;
-        bit     [4  : 0]    wa3       ;
+        bit     [4  : 0]    ra1       ;     // read address 1 
+        bit     [4  : 0]    ra2       ;     // read address 2
+        bit     [4  : 0]    wa3       ;     // write address
         // immediate data
-        bit     [19 : 0]    imm_data_u;
-        bit     [11 : 0]    imm_data_i;
-        bit     [11 : 0]    imm_data_b;
-        bit     [11 : 0]    imm_data_s;
-        bit     [19 : 0]    imm_data_j;
+        bit     [19 : 0]    imm_data_u;     // immediate data for U-type
+        bit     [11 : 0]    imm_data_i;     // immediate data for I-type
+        bit     [11 : 0]    imm_data_b;     // immediate data for B-type
+        bit     [11 : 0]    imm_data_s;     // immediate data for S-type
+        bit     [19 : 0]    imm_data_j;     // immediate data for J-type
         // operation type fields
-        bit     [1  : 0]    instr_type;
-        bit     [4  : 0]    opcode    ;
-        bit     [2  : 0]    funct3    ;
-        bit     [6  : 0]    funct7    ;
+        bit     [1  : 0]    instr_type;     // instruction type
+        bit     [4  : 0]    opcode    ;     // instruction opcode
+        bit     [2  : 0]    funct3    ;     // instruction function 3 field
+        bit     [6  : 0]    funct7    ;     // instruction function 7 field
 
         // destination and sources registers
         ra1         = instr[15 +: 5];
@@ -94,9 +94,9 @@ class nf_pars_instr extends nf_bt_class;
 
     endtask : instr_decode
 
-    instr_cf instr_cf_0;
+    instr_cf instr_cf_0;    // instruction variable
 
-    instr_cf i_list [] = 
+    instr_cf i_list [] =    // instruction array
                         {
                             LUI,   
                             AUIPC, 
@@ -136,11 +136,11 @@ class nf_pars_instr extends nf_bt_class;
                             OR,    
                             AND   
                         };
-
+    // constructor
     function new();
         $timeformat(-9, 2, " ns", 7);
     endfunction : new
-
+    // task for parsing instruction
     task pars(logic [31 : 0] instr, ref string instruction_s, ref string instr_sep);
 
         // operation type fields

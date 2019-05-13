@@ -13,16 +13,16 @@
 `include "../tb/nf_tb.svh"
 
 module nf_tb();
-
+    // simulation settings
     timeprecision       1ns;
     timeunit            1ns;
-    
-    parameter           T = 20,                 // 50 MHz
-                        resetn_delay = 7,
-                        repeat_cycles = 200,
-                        work_freq  = 50_000_000,
-                        uart_speed = 115200,
-                        uart_rec_example = 0;
+    // simulation constants
+    parameter           T = 20,                     // 50 MHz (clock period)
+                        resetn_delay = 7,           // delay for reset signal (posedge clk)
+                        repeat_cycles = 200,        // number of repeat cycles before stop
+                        work_freq  = 50_000_000,    // core work frequency
+                        uart_speed = 115200,        // setting uart speed
+                        uart_rec_example = 0;       // for working with uart receive example
     
     // clock and reset
     bit     [0  : 0]    clk;            // clock
@@ -37,21 +37,19 @@ module nf_tb();
     // help variables
     bit     [31 : 0]    cycle_counter;  // variable for cpu cycle
     // instructions
-    string  instruction_if_stage;
-    string  instruction_id_stage;
-    string  instruction_iexe_stage;
-    string  instruction_imem_stage;
-    string  instruction_iwb_stage;
+    string  instruction_if_stage;       // instruction fetch stage string
+    string  instruction_id_stage;       // instruction decode stage string
+    string  instruction_iexe_stage;     // instruction execution stage string
+    string  instruction_imem_stage;     // instruction memory stage string
+    string  instruction_iwb_stage;      // instruction write back stage string
     // string for debug_lev0
-    string  instr_sep_s_if_stage;
-    string  instr_sep_s_id_stage;
-    string  instr_sep_s_iexe_stage;
-    string  instr_sep_s_imem_stage;
-    string  instr_sep_s_iwb_stage;
+    string  instr_sep_s_if_stage;       // instruction fetch stage string (debug level 0)
+    string  instr_sep_s_id_stage;       // instruction decode stage string (debug level 0)
+    string  instr_sep_s_iexe_stage;     // instruction execution stage string (debug level 0)
+    string  instr_sep_s_imem_stage;     // instruction memory stage string (debug level 0)
+    string  instr_sep_s_iwb_stage;      // instruction write back stage string (debug level 0)
     // string for txt, html and terminal logging
-    string  log_str = "";
-
-    assign  gpio_i_0 = 8'b1;
+    string  log_str = "";               
 
     nf_top 
     nf_top_0
@@ -113,6 +111,9 @@ module nf_tb();
     // parsing instruction
     initial
     begin
+        // set gpio input value
+        gpio_i_0 = 8'b1;
+        // build log wtiter
         nf_log_writer_0.build("../log/log");
         
         forever

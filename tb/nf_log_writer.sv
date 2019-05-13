@@ -13,19 +13,18 @@ import NF_BTC::*;
 
 class nf_log_writer extends nf_bt_class;
 
-    logic   [31 : 0]    reg_file_l  [31 : 0];
-    logic   [31 : 0]    table_html  [31 : 0];
-    logic   [1  : 0]    table_c     [31 : 0];
-    string              html_str = "";
-    string              txt_str = "";
+    logic   [31 : 0]    reg_file_l  [31 : 0];   // local register file
+    logic   [1  : 0]    table_c     [31 : 0];   // change table
+    string              html_str = "";          // html string
+    string              txt_str = "";           // text string
 
-    integer             html_p;
-    integer             txt_p;
-
+    integer             html_p;     // pointer to html log file
+    integer             txt_p;      // pointer to text log file
+    // constructor
     function new();
         name = "Log writer";
     endfunction : new
-
+    // task for building logger
     task build(string out_file);
 
         for(integer i = 0; i < 32; i++)
@@ -57,7 +56,7 @@ class nf_log_writer extends nf_bt_class;
         super.build();
 
     endtask : build
-    
+    // task for writing log info in file
     task write_log( logic [31 : 0] reg_file[31 : 0], string log_str);
 
         begin
@@ -65,8 +64,8 @@ class nf_log_writer extends nf_bt_class;
                 if( `log_html )
                 begin
                     html_str = "";
-                    write_info_html(reg_file,log_str);
-                    write_html_table(8, 4);
+                    form_info_html(reg_file,log_str);
+                    form_html_table(8, 4);
                     $fwrite(html_p,html_str);
                 end
                 begin
@@ -82,8 +81,8 @@ class nf_log_writer extends nf_bt_class;
         end
 
     endtask : write_log
-
-    task write_info_html(logic [31 : 0] reg_file[31 : 0], string log_str);
+    // task for formirate current instruction info in html
+    task form_info_html(logic [31 : 0] reg_file[31 : 0], string log_str);
 
         integer i;
         i = 0;
@@ -110,16 +109,16 @@ class nf_log_writer extends nf_bt_class;
         html_str = { html_str , "</pre>" };
         html_str = { html_str , "</font>\n" };
 
-    endtask : write_info_html
-
-    task write_html_table(integer row, integer col);
+    endtask : form_info_html
+    // task for formirate register file values in html table
+    task form_html_table(integer row, integer col);
 
         integer tr_i;
         integer td_i;
         string  reg_value;
-        reg_value = "";
         tr_i = 0;
         td_i = 0;
+        reg_value = "";
 
         html_str = { html_str , "<table border=\"1\">\n" };
 
@@ -147,8 +146,8 @@ class nf_log_writer extends nf_bt_class;
 
         html_str = { html_str , "</table>" };
 
-    endtask : write_html_table
-
+    endtask : form_html_table
+    // task for writing register file values in txt file ( table )
     task write_txt_table(logic [31 : 0] reg_file[31 : 0]);
 
         integer reg_addr;
