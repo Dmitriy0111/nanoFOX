@@ -14,33 +14,33 @@ module nf_tb();
     // simulation settings
     timeprecision       1ns;
     timeunit            1ns;
-    
-    parameter           T = 10,
-                        resetn_delay = 7,
-                        repeat_cycles = 200;
+    // simulation constants
+    parameter           T = 10,                 // 50 MHz (clock period)
+                        resetn_delay = 7,       // delay for reset signal (posedge clk)
+                        repeat_cycles = 200;    // number of repeat cycles before stop
     // clock and reset
-    bit                 clk;
-    bit                 resetn;
-    bit     [25 : 0]    div;
+    bit                 clk;            // clock
+    bit                 resetn;         // reset
+    bit     [25 : 0]    div;            // "clock divide" input
     // pwm side
-    bit                 pwm;
+    bit                 pwm;            // pwm output
     // gpid side
-    logic   [7  : 0]    gpi;
-    logic   [7  : 0]    gpo;
-    logic   [7  : 0]    gpd;
-    logic   [7  : 0]    gpio;
+    logic   [7  : 0]    gpi;            // gpio input
+    logic   [7  : 0]    gpo;            // gpio output
+    logic   [7  : 0]    gpd;            // gpio direction
+    logic   [7  : 0]    gpio;           // gpio
     // for debug
-    bit     [4  : 0]    reg_addr;
-    bit     [31 : 0]    reg_data;
-    bit     [31 : 0]    cycle_counter;
+    bit     [4  : 0]    reg_addr;       // register address
+    bit     [31 : 0]    reg_data;       // register data for reg_addr
+    bit     [31 : 0]    cycle_counter;  // variable for cpu cycle
 
-    integer             log;
-
-    string              instruction;
-    string              last_instr="";
-    string              instr_sep;
-    string              log_str;
-    string              reg_str;
+    integer             log;            // pointer to log file
+    // instructions
+    string              instruction;    // instruction string
+    string              last_instr="";  // last execute instruction
+    string              instr_sep;      // instruction string (debug level 0)
+    string              log_str;        // log string
+    string              reg_str;        // register file string
 
     genvar gpio_i;
     generate
@@ -50,12 +50,34 @@ module nf_tb();
             // assign  gpi[gpio_i]  = gpio[gpio_i];
         end
     endgenerate
+
     // creating one nf_top_0 DUT
+    nf_top 
+    nf_top_0
+    (
+        // clock and reset
+        .clk        ( clk       ),  // clock
+        .resetn     ( resetn    ),  // reset
+        .div        ( div       ),  // clock divide input
+        // pwm side
+        .pwm        ( pwm       ),  // PWM output
+        // gpio side
+        .gpi        ( gpi       ),  // GPIO input
+        .gpo        ( gpo       ),  // GPIO output
+        .gpd        ( gpd       ),  // GPIO direction
+        // for debug
+        .reg_addr   ( reg_addr  ),  // scan register address
+        .reg_data   ( reg_data  )   // scan register data
+    );
+
+    /*
+    or
     nf_top 
     nf_top_0
     (
         .*
     );
+    */
 
     // reset all register's in '0
     initial

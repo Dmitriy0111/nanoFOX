@@ -13,8 +13,7 @@ help:
 	$(info make synth_gui_q    - open the board project with quartus)
 	$(info make synth_load_q   - program the default FPGA board with quartus)
 	$(info make board_all      - run synthesis for all the supported boards)
-	$(info make prog_comp_win  - compile program on windows and copy program.hex to program_file)
-	$(info make prog_comp_lin  - compile program on linux and copy program.hex to program_file)
+	$(info make prog_comp      - compile program and copy program.hex to program_file folder)
 	$(info Open and read the Makefile for details)
 	@true
 
@@ -93,20 +92,12 @@ CCF	= -march=rv32i -mabi=ilp32
 LDF	= -b elf32-littleriscv
 CPF = ihex -O ihex
 
-prog_comp_win:
+prog_comp:
 	mkdir -p program_file
 	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
 	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/help_files/program.ld program_file/main.o $(LDF)
 	riscv-none-embed-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
 	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
-	python program/help_files/ihex2hex.py
-
-prog_comp_lin:
-	mkdir -p program_file
-	riscv64-unknown-elf-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
-	riscv64-unknown-elf-ld -o program_file/main.elf -Map program_file/main.map -T program/help_files/program.ld program_file/main.o $(LDF)
-	riscv64-unknown-elf-objdump -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
-	riscv64-unknown-elf-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/help_files/ihex2hex.py
 
 prog_clean:
@@ -133,22 +124,7 @@ synth_gui_q:
 	quartus $(PWD)/synth_$(BOARD)/$(BOARD).qpf &
 
 synth_load_q:
-	quartus_pgm -c $(CABLE_NAME) -m JTAG -o "p;synth_$(BOARD)/$(BOARD).sof"
-
-########################################################
-# synthesis - all the supported boards
-
-BOARD_NAME         = $@
-BOARD_TEMPLATE_DIR = $(BRD_DIR)/$(BOARD_NAME)
-BOARD_BUILD_DIR    = $(PWD)/synth_$(BOARD_NAME)
-
-$(BOARDS_SUPPORTED):
-	rm -rfd $(BOARD_BUILD_DIR)
-	cp -r  $(BOARD_TEMPLATE_DIR) $(BOARD_BUILD_DIR)
-	make -C $(BOARD_BUILD_DIR) create
-	make -C $(BOARD_BUILD_DIR) build
-
-board_all: $(BOARDS_SUPPORTED)
+	quartus_pgm -c $(CABLE_NAME) -m JTAG -o "p;synth_$(BOARD)/output_files/$(BOARD).sof"
 
 board_clean:
 	rm -rfd $(PWD)/synth_*
