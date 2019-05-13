@@ -12,23 +12,24 @@
 
 class nf_pars;
     // for parsing instruction
-    bit     [4  : 0]    ra1        ;
-    bit     [4  : 0]    ra2        ;
-    bit     [4  : 0]    wa3        ;
-    logic   [6  : 0]    opcode     ;
-    logic   [2  : 0]    funct3     ;
-    logic   [6  : 0]    funct7     ;
-    logic   [19 : 0]    imm_data_u ;
-    logic   [11 : 0]    imm_data_i ;
-    logic   [11 : 0]    imm_data_b ;
-    logic   [11 : 0]    imm_data_s ;
+    // destination and sources registers
+    bit     [4  : 0]    ra1       ;     // read address 1 
+    bit     [4  : 0]    ra2       ;     // read address 2
+    bit     [4  : 0]    wa3       ;     // write address
+    // operation type fields
+    logic   [6  : 0]    opcode    ;     // instruction opcode
+    logic   [2  : 0]    funct3    ;     // instruction function 3 field
+    logic   [6  : 0]    funct7    ;     // instruction function 7 field
+    // immediate data
+    logic   [19 : 0]    imm_data_u;     // immediate data for U-type
+    logic   [11 : 0]    imm_data_i;     // immediate data for I-type
+    logic   [11 : 0]    imm_data_b;     // immediate data for B-type
     // for working with register file
-    logic   [31 : 0]    reg_file_l  [31 : 0];
-    logic   [31 : 0]    table_html  [31 : 0];
-    logic   [1  : 0]    table_c     [31 : 0];
-    string              html_str = "";
-    integer             html_p;
-    // register file list names
+    logic   [31 : 0]    reg_file_l  [31 : 0];   // local register file
+    logic   [1  : 0]    table_c     [31 : 0];   // change table
+    string              html_str = "";          // html string
+    integer             html_p;                 // pointer to html log file
+    // register file list names 
     string registers_list [0:31] =  {
                                         "zero",
                                         "ra",
@@ -83,7 +84,6 @@ class nf_pars;
         imm_data_u = instr[12 +: 20];
         imm_data_i = instr[20 +: 12];
         imm_data_b = { instr[31] , instr[7] , instr[25 +: 6] , instr[8 +: 4] };
-        imm_data_s = { instr[25 +: 7] , instr[7 +: 5] };
 
         casex( { opcode , funct3 , funct7 } )
             // R - type command's
@@ -193,12 +193,20 @@ class nf_pars;
         integer i;
         html_str = "";
         i = 0;
+        
         for( i = 0 ; i < 32 ; i++ )
         begin
             table_c[i] = reg_file_l[i] == reg_file[i] ? 2'b00 : 2'b01;
-            if( $isunknown( | reg_file[i] ) )
-                table_c[i] = 2'b10;
-            reg_file_l[i]  =    table_c[i] == 2'b00 ? 
+            if( $isunknown( | table_c[i] ) )
+            begin
+                if( $isunknown( | reg_file[i] ) )
+                    table_c[i] = 2'b10;
+                else
+                    table_c[i] = 2'b01;
+                reg_file_l[i] = reg_file[i];
+            end
+            else
+                reg_file_l[i] = table_c[i] == 2'b00 ? 
                                 reg_file_l[i] : 
                                 reg_file[i];
         end

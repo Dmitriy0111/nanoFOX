@@ -13,35 +13,48 @@ module nf_tb();
     // simulation settings
     timeprecision       1ns;
     timeunit            1ns;
-    
-    parameter           T = 10,
-                        resetn_delay = 7,
-                        repeat_cycles = 200;
+    // simulation constants
+    parameter           T = 20,                 // 50 MHz (clock period)
+                        resetn_delay = 7,       // delay for reset signal (posedge clk)
+                        repeat_cycles = 200;    // number of repeat cycles before stop
     // clock and reset
-    bit                 clk;
-    bit                 resetn;
-    bit     [25 : 0]    div;
+    bit                 clk;                // clock
+    bit                 resetn;             // reset
+    bit     [25 : 0]    div;                // "clock divide" input
     // for debug
-    bit     [4  : 0]    reg_addr;
-    bit     [31 : 0]    reg_data;
-    bit     [31 : 0]    cycle_counter;
+    bit     [4  : 0]    reg_addr;           // register address
+    bit     [31 : 0]    reg_data;           // register data for reg_addr
+    bit     [31 : 0]    cycle_counter;      // variable for cpu cycle
 
-    integer             log;
-
-    string              instruction;
-    string              last_instr = "";
-    string              instr_sep;
-    string              log_str;
-    string              reg_str;
-
+    integer             log;                // pointer to log file
+    // instructions
+    string              instruction;        // instruction string
+    string              last_instr = "";    // last execute instruction
+    string              instr_sep;          // instruction string (debug level 0)
+    string              log_str;            // log string
+    string              reg_str;            // register file string
+    
     // creating one nf_top_0 DUT
+    nf_top 
+    nf_top_0 
+    (
+        .clk        ( clk       ),  // clock
+        .resetn     ( resetn    ),  // reset
+        .div        ( div       ),  // clock divide input
+        .reg_addr   ( reg_addr  ),  // scan register address
+        .reg_data   ( reg_data  )   // scan register data
+    );
+
+    /*
+    or
     nf_top 
     nf_top_0
     (
         .*
     );
+    */
 
-    // reset all register's in '0
+    // reset all register's in register file to '0
     initial
         for( int i=0 ; i<32 ; i++ )
             nf_top_0.nf_cpu_0.nf_reg_file_0.reg_file[i] = '0;
