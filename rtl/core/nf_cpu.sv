@@ -72,7 +72,8 @@ module nf_cpu
     logic   [31 : 0]    rd1_id;             // read data 1 from register file ( decode stage )
     logic   [31 : 0]    rd2_id;             // read data 2 from register file ( decode stage )
     logic   [0  : 0]    srcB_sel_id;        // source B selection ( decode stage )
-    logic   [0  : 0]    shift_sel_id;       // for selecting shift input ( decode stage )
+    logic   [1  : 0]    srcA_sel_id;        // source A selection ( decode stage )
+    logic   [1  : 0]    shift_sel_id;       // for selecting shift input ( decode stage )
     logic   [0  : 0]    res_sel_id;         // result select ( decode stage )
     logic   [0  : 0]    we_rf_id;           // write enable register file ( decode stage )
     logic   [0  : 0]    we_dm_id;           // write enable data memory ( decode stage )
@@ -93,7 +94,8 @@ module nf_cpu
     logic   [31 : 0]    rd2_iexe;           // read data 2 from register file ( execution stage )
     logic   [31 : 0]    pc_iexe;            // program counter value ( execution stage )
     logic   [0  : 0]    srcB_sel_iexe;      // source B selection ( execution stage )
-    logic   [0  : 0]    shift_sel_iexe;     // for selecting shift input ( execution stage )
+    logic   [1  : 0]    srcA_sel_iexe;      // source A selection ( execution stage )
+    logic   [1  : 0]    shift_sel_iexe;     // for selecting shift input ( execution stage )
     logic   [0  : 0]    res_sel_iexe;       // result select ( execution stage )
     logic   [0  : 0]    we_rf_iexe;         // write enable register file ( execution stage )
     logic   [0  : 0]    we_dm_iexe;         // write enable data memory ( execution stage )
@@ -128,7 +130,7 @@ module nf_cpu
 
     // next program counter value for branch command
     assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
-    assign result_iexe_e = res_sel_iexe  == RES_ALU  ? result_iexe : pc_iexe;
+    assign result_iexe_e = res_sel_iexe  == RES_ALU ? result_iexe : pc_iexe;
     assign wa3    = wa3_iwb;
     assign wd3    = wd_iwb;
     assign wd_iwb = rf_src_iwb ? rd_dm_iwb : result_iwb;
@@ -147,7 +149,8 @@ module nf_cpu
     nf_register_we_clr  #( 32 ) pc_id_iexe          ( clk , resetn , ~ stall_iexe , flush_iexe , pc_id         , pc_iexe        );
     nf_register_we_clr  #(  2 ) size_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , size_dm_id    , size_dm_iexe   );
     nf_register_we_clr  #(  1 ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id   , srcB_sel_iexe  );
-    nf_register_we_clr  #(  1 ) shift_sel_id_iexe   ( clk , resetn , ~ stall_iexe , flush_iexe , shift_sel_id  , shift_sel_iexe );
+    nf_register_we_clr  #(  1 ) srcA_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcA_sel_id   , srcA_sel_iexe  );
+    nf_register_we_clr  #(  2 ) shift_sel_id_iexe   ( clk , resetn , ~ stall_iexe , flush_iexe , shift_sel_id  , shift_sel_iexe );
     nf_register_we_clr  #(  1 ) res_sel_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , res_sel_id    , res_sel_iexe   );
     nf_register_we_clr  #(  1 ) we_rf_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_rf_id      , we_rf_iexe     );
     nf_register_we_clr  #(  1 ) we_dm_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_dm_id      , we_dm_iexe     );
@@ -216,6 +219,7 @@ module nf_cpu
         .instr          ( instr_id          ),  // Instruction input
         .ext_data       ( ext_data_id       ),  // decoded extended data
         .srcB_sel       ( srcB_sel_id       ),  // decoded source B selection for ALU
+        .srcA_sel       ( srcA_sel_id       ),  // decoded source A selection for ALU
         .shift_sel      ( shift_sel_id      ),  // for selecting shift input
         .res_sel        ( res_sel_id        ),  // for selecting result
         .ALU_Code       ( ALU_Code_id       ),  // decoded ALU code
@@ -240,6 +244,8 @@ module nf_cpu
         .rd1            ( rd1_i_exu         ),  // read data from reg file (port1)
         .rd2            ( rd2_i_exu         ),  // read data from reg file (port2)
         .ext_data       ( ext_data_iexe     ),  // sign extended immediate data
+        .pc_v           ( pc_iexe           ),  // program-counter value
+        .srcA_sel       ( srcA_sel_iexe     ),  // source A enable signal for ALU
         .srcB_sel       ( srcB_sel_iexe     ),  // source B enable signal for ALU
         .shift_sel      ( shift_sel_iexe    ),  // for selecting shift input
         .shamt          ( shamt_iexe        ),  // for shift operations

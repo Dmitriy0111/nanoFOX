@@ -17,11 +17,31 @@ module nf_branch_unit
     input   logic   [31 : 0]    d2,             // from register file (rd2)
     output  logic   [0  : 0]    pc_src          // next program counter
 );
+
+    logic   [0  : 0]    beq_bne;
+    logic   [0  : 0]    blt_bge;
+    logic   [0  : 0]    bltu_bgeu;
+    logic   [32 : 0]    sub_res;
     // for equal and not equal operation
     logic   [0 : 0]     equal;  // For beq and bne instructions
+    // for less and greater operation
+    logic   [0 : 0]     less;   // For blt and bge instructions
+    // for less and greater operation ( unsigned )
+    logic   [0 : 0]     less_u; // For bltu and bgeu instructions
     // finding equality
     assign equal  = ( d2 == d1 );
+    // finding less or greater
+    assign less   = ( d2 < d1 );
+    // finding less or greater (unsigned)
+    assign sub_res = d1 - d2;
+    assign less_u  = sub_res[32];
+    // finding result for beq or bne operation
+    assign beq_bne   = branch_type[0] && ( ! ( equal  ^ branch_hf ) );
+    // finding result for blt or bge operation
+    assign blt_bge   = branch_type[1] && ( ! ( less   ^ branch_hf ) );
+    // finding result for bltu or bgeu operation
+    assign bltu_bgeu = branch_type[2] && ( ! ( less_u ^ branch_hf ) );
     // finding pc source
-    assign pc_src = ( branch_type[0] && ( ! ( equal ^ branch_hf ) ) ) || branch_type[3];
+    assign pc_src = beq_bne || blt_bge || bltu_bgeu || branch_type[3];
 
 endmodule : nf_branch_unit

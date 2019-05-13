@@ -184,12 +184,13 @@ parameter instr_cf VER   = { "  VER",`RVI , 5'b????? , 3'b??? , 7'b??????? };
 typedef enum logic [3 : 0]
 {
     ALU_ADD,
-    ALU_OR, 
-    ALU_LUI,
     ALU_SLL,
+    ALU_SLT,
+    ALU_SLTU,
+    ALU_XOR,
     ALU_SRL,
-    ALU_AND,
-    ALU_XOR
+    ALU_OR, 
+    ALU_AND
 } alu_types;
 `endif
 
@@ -231,13 +232,25 @@ typedef enum logic [0 : 0]
 } srcb_types;
 `endif
 
+`ifndef SRCA_TYPES
+`define SRCA_TYPES
+//srcA select constants
+typedef enum logic [1 : 0]
+{
+    SRCA_IMM    =   2'b00,
+    SRCA_RD1    =   2'b01,
+    SRCA_PC     =   2'b10
+} srca_types;
+`endif
+
 `ifndef SRCS_TYPES
 `define SRCS_TYPES
-//srcB select constants
-typedef enum logic [0 : 0]
+//shift select constants
+typedef enum logic [1 : 0]
 {
-    SRCS_SHAMT  =   1'b0,
-    SRCS_RD2    =   1'b1
+    SRCS_SHAMT  =   2'b00,
+    SRCS_RD2    =   2'b01,
+    SRCS_12     =   2'b10
 } srcs_types;
 `endif
 

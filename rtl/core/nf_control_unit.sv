@@ -16,8 +16,9 @@ module nf_control_unit
     input   logic   [2 : 0]     funct3,         // funct 3 field in instruction code
     input   logic   [6 : 0]     funct7,         // funct 7 field in instruction code
     output  logic   [4 : 0]     imm_src,        // for enable immediate data
-    output  logic   [0 : 0]     srcBsel,        // for selecting srcB ALU
-    output  logic   [0 : 0]     shift_sel,      // for selecting shift input
+    output  logic   [0 : 0]     srcB_sel,       // for selecting srcB ALU
+    output  logic   [1 : 0]     srcA_sel,       // for selecting srcA ALU
+    output  logic   [1 : 0]     shift_sel,      // for selecting shift input
     output  logic   [0 : 0]     res_sel,        // for selecting result
     output  logic   [3 : 0]     branch_type,    // for executing branch instructions
     output  logic   [0 : 0]     branch_hf,      // branch help field
@@ -38,10 +39,21 @@ module nf_control_unit
 
     assign branch_hf  = ~ instr_cf_0.F3[0];
     assign branch_src = instr_cf_0.OP == JALR.OP;
-    assign shift_sel  = (instr_cf_0.OP == R_OP0) ? SRCS_RD2 : SRCS_SHAMT;
     assign we_dm      = instr_cf_0.OP == SW.OP;
     assign size_dm    = instr_cf_0.F3[0 +: 2];
-
+    
+    // shift input selecting
+    always_comb
+    begin : shift_sel_log
+        shift_sel = SRCS_RD2;
+        if( instr_cf_0.IT == `RVI )
+            case( instr_cf_0.OP )
+                R_OP0   :   shift_sel = SRCS_RD2;
+                I_OP0   :   shift_sel = SRCS_SHAMT;
+                U_OP0   :   shift_sel = SRCS_12;
+                default :;
+            endcase
+    end
     // immediate source selecting
     always_comb
     begin : imm_comb
@@ -79,12 +91,27 @@ module nf_control_unit
         case( instr_cf_0.IT )
             `RVI    :
                 case( instr_cf_0.OP )
-                    R_OP0                  : we_rf = '1;
-                    J_OP0                  : we_rf = '1;
-                    S_OP0                  : we_rf = '0;
-                    B_OP0                  : we_rf = '0;
-                    U_OP0 , U_OP1          : we_rf = '1;
-                    I_OP0 , I_OP1 , I_OP2  : we_rf = '1;
+                    R_OP0                   : we_rf = '1;
+                    J_OP0                   : we_rf = '1;
+                    S_OP0                   : we_rf = '0;
+                    B_OP0                   : we_rf = '0;
+                    U_OP0 , U_OP1           : we_rf = '1;
+                    I_OP0 , I_OP1 , I_OP2   : we_rf = '1;
+                    default                 :;
+                endcase
+            default :;
+        endcase
+    end
+    // source A for ALU selecting
+    always_comb
+    begin : srcA_sel_comb
+        srcA_sel = SRCA_RD1;
+        case( instr_cf_0.IT )
+            `RVI    :
+                case( instr_cf_0.OP )
+                    R_OP0   :   srcA_sel = SRCA_RD1;
+                    U_OP0   :   srcA_sel = SRCA_IMM;
+                    U_OP1   :   srcA_sel = SRCA_PC;
                     default :;
                 endcase
             default :;
@@ -92,12 +119,12 @@ module nf_control_unit
     end
     // source B for ALU selecting
     always_comb
-    begin : srcBsel_comb
-        srcBsel = SRCB_IMM;
+    begin : srcB_sel_comb
+        srcB_sel = SRCB_IMM;
         case( instr_cf_0.IT )
             `RVI    :
                 case( instr_cf_0.OP )
-                    R_OP0 , B_OP0   : srcBsel = SRCB_RD2;
+                    R_OP0 , B_OP0   : srcB_sel = SRCB_RD2;
                     default         :;
                 endcase
             default :;
@@ -141,13 +168,17 @@ module nf_control_unit
         case( instr_cf_0.IT )
             `RVI    :
                 case( instr_cf_0.OP )
-                    U_OP0           : ALU_Code = ALU_LUI;
+                    U_OP0           : ALU_Code = ALU_SLL;
                     R_OP0 , I_OP0   : 
                         case( instr_cf_0.F3 )
                             ADD.F3  : ALU_Code = ALU_ADD;
                             AND.F3  : ALU_Code = ALU_AND;
                             OR.F3   : ALU_Code = ALU_OR;
                             SLL.F3  : ALU_Code = ALU_SLL;
+                            SRL.F3  : ALU_Code = ALU_SRL;
+                            XOR.F3  : ALU_Code = ALU_XOR;
+                            SLT.F3  : ALU_Code = ALU_SLT;
+                            SLTU.F3 : ALU_Code = ALU_SLTU;
                             default :;
                         endcase    
                     default         :;

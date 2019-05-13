@@ -18,17 +18,24 @@ module nf_alu
     output  logic   [31 : 0]    result      // result of ALU operation
 );
 
+    logic   [0  : 0]    less;
+    logic   [32 : 0]    add_sub;
+
+    assign add_sub = srcA - srcB;
+    assign less = add_sub[32];
+
     always_comb
     begin
         result = 0;
-        casex( ALU_Code )
-            ALU_LUI     : result = srcB << 12;
+        case( ALU_Code )
             ALU_ADD     : result = srcA + srcB;
             ALU_SLL     : result = srcA << shift;
             ALU_SRL     : result = srcA >> shift;
             ALU_OR      : result = srcA | srcB;
             ALU_XOR     : result = srcA ^ srcB;
             ALU_AND     : result = srcA & srcB;
+            ALU_SLT     : result = ($signed(srcA) < $signed(srcB));
+            ALU_SLTU    : result = less;
             default     : result = 0;
         endcase
     end

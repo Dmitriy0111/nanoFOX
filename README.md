@@ -1,30 +1,53 @@
 # **nanoFOX**
-    A small RISC-V CPU core. This is a pipeline version of CPU with AHB.
+    A small RISC-V CPU core. This is a pipeline version of CPU with AHB (full command list RV32I).
     
 ## Supported instructions:
-*   add
-*   and
-*   sll
-*   or
-*   addi
-*   ori
-*   slli
-*   lw
-*   jalr
 *   lui
+*   auipc
+*   jal
+*   jalr
 *   beq
 *   bne
+*   (blt)
+*   (bge)
+*   (bltu)
+*   (bgeu)
+*   (lb)
+*   (lh)
+*   lw
+*   (lbu)
+*   (lhu)
+*   (sb)
+*   (sh)
 *   sw
-*   jal
+*   addi
+*   (slti)
+*   sltiu
+*   xori
+*   ori
+*   andi
+*   slli
+*   srli
+*   (srai)
+*   add
+*   (sub)
+*   sll
+*   (slt)
+*   sltu
+*   xor
+*   srl
+*   (sra)
+*   or
+*   and
 
 ## Quickstart:
 For loading project with git program:
 
     $ git clone https://github.com/Dmitriy0111/nanoFOX.git 
     $ cd nanoFOX 
-    $ git checkout 02_pipe_risc_v_cpu
+    $ git checkout 03_pipe_risc_v_cpu_fc
 
-Or download project from GitHub site <a href="https://github.com/Dmitriy0111/nanoFOX">02_pipe_risc_v_cpu</a>
+Or download project from GitHub site <a href="https://github.com/Dmitriy0111/nanoFOX">03_pipe_risc_v_cpu_fc</a>
 
 For working with project install:
 *   make
