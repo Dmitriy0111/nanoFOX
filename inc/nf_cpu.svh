@@ -39,7 +39,7 @@
 
 typedef struct packed
 {
-    logic   [39 : 0]    I_NAME; // instruction name
+    logic   [47 : 0]    I_NAME; // instruction name
     logic   [1  : 0]    IT;     // instruction type
     logic   [4  : 0]    OP;     // instruction opcode
     logic   [2  : 0]    F3;     // instruction function field 3
@@ -174,6 +174,28 @@ parameter instr_cf OR    = { "   OR",`RVI , 5'b01100 , 3'b110 , 7'b0000000 };
 // AND      -    R-type, And two register
 //          rd = rs1 & rs2
 parameter instr_cf AND   = { "  AND",`RVI , 5'b01100 , 3'b111 , 7'b0000000 };
+// FENCE instructions
+// FENCE    -    FENCE
+parameter instr_cf FENCE    = { " FENCE",`RVI , 5'b00011 , 3'b000 , 7'b??????? };
+// FENCEI   -    FENCE.I
+parameter instr_cf FENCEI   = { "FENCEI",`RVI , 5'b00011 , 3'b001 , 7'b??????? };
+// CSR instructions
+// ECALL    -    ECALL
+parameter instr_cf ECALL    = { " ECALL",`RVI , 5'b11100 , 3'b000 , 7'b0000000 };
+// EBREAK   -    EBREAK
+parameter instr_cf EBREAK   = { "EBREAK",`RVI , 5'b11100 , 3'b000 , 7'b0000001 };
+// CSRRW    -    Atomic Read/Write CSR
+parameter instr_cf CSRRW    = { " CSRRW",`RVI , 5'b11100 , 3'b001 , 7'b??????? };
+// CSRRS    -    Atomic Read and Set Bits in CSR
+parameter instr_cf CSRRS    = { " CSRRS",`RVI , 5'b11100 , 3'b010 , 7'b??????? };
+// CSRRC    -    Atomic Read and Clear Bits in CSR
+parameter instr_cf CSRRC    = { " CSRRC",`RVI , 5'b11100 , 3'b011 , 7'b??????? };
+// CSRRWI   -    Atomic Read/Write CSR (unsigned immediate)
+parameter instr_cf CSRRWI   = { "CSRRWI",`RVI , 5'b11100 , 3'b101 , 7'b??????? };
+// CSRRSI   -    Atomic Read and Set Bits in CSR (unsigned immediate)
+parameter instr_cf CSRRSI   = { "CSRRSI",`RVI , 5'b11100 , 3'b110 , 7'b??????? };
+// CSRRCI   -    Atomic Read and Clear Bits in CSR (unsigned immediate)
+parameter instr_cf CSRRCI   = { "CSRRCI",`RVI , 5'b11100 , 3'b111 , 7'b??????? };
 // VER      -    For verification
 parameter instr_cf VER   = { "  VER",`RVI , 5'b????? , 3'b??? , 7'b??????? };
 `endif
@@ -184,6 +206,8 @@ parameter instr_cf VER   = { "  VER",`RVI , 5'b????? , 3'b??? , 7'b??????? };
 typedef enum logic [3 : 0]
 {
     ALU_ADD,
+    ALU_SUB,
+    ALU_SRA,
     ALU_SLL,
     ALU_SLT,
     ALU_SLTU,

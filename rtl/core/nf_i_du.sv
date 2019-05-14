@@ -29,6 +29,7 @@ module nf_i_du
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
     output  logic   [0  : 0]    rf_src,     // decoded source register file signal
     output  logic   [1  : 0]    size_dm,    // size for load/store instructions
+    output  logic   [0  : 0]    sign_dm,    // sign extended data memory for load instructions
     output  logic   [0  : 0]    branch_src, // for selecting branch source (JALR)
     output  logic   [3  : 0]    branch_type // branch type
 );
@@ -83,6 +84,7 @@ module nf_i_du
         .rf_src         ( rf_src        ),  // write data select for register file
         .imm_src        ( imm_src       ),  // selection immediate data input
         .size_dm        ( size_dm       ),  // size for load/store instructions
+        .sign_dm        ( sign_dm       ),  // sign extended data memory for load instructions
         .ALU_Code       ( ALU_Code      )   // output code for ALU unit
     );
     // creating sign extending unit

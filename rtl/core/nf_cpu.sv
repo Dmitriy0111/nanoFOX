@@ -82,6 +82,7 @@ module nf_cpu
     logic   [4  : 0]    shamt_id;           // shift value for execution unit ( decode stage )
     logic   [0  : 0]    branch_src;         // program counter selection
     logic   [1  : 0]    size_dm_id;         // size for load/store instructions ( decode stage )
+    logic   [0  : 0]    sign_dm_id;         // sign extended data memory for load instructions
     /*********************************************
     **       Instruction execution stage        **
     *********************************************/
@@ -103,6 +104,7 @@ module nf_cpu
     logic   [3  : 0]    ALU_Code_iexe;      // code for execution unit ( execution stage )
     logic   [4  : 0]    shamt_iexe;         // shift value for execution unit ( execution stage )
     logic   [1  : 0]    size_dm_iexe;       // size for load/store instructions ( execution stage )
+    logic   [0  : 0]    sign_dm_iexe;       // sign extended data memory for load instructions
     logic   [31 : 0]    result_iexe;        // result from execution unit ( execution stage )
     logic   [31 : 0]    result_iexe_e;      // selected result ( execution stage )
     /*********************************************
@@ -116,6 +118,7 @@ module nf_cpu
     logic   [4  : 0]    wa3_imem;           // write address for register file ( memory stage )
     logic   [0  : 0]    we_rf_imem;         // write enable register file ( memory stage )
     logic   [1  : 0]    size_dm_imem;       // size for load/store instructions ( memory stage )
+    logic   [0  : 0]    sign_dm_imem;       // sign extended data memory for load instructions
     /*********************************************
     **       Instruction write back stage       **
     *********************************************/
@@ -148,8 +151,9 @@ module nf_cpu
     nf_register_we_clr  #( 32 ) rd2_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , rd2_id        , rd2_iexe       );
     nf_register_we_clr  #( 32 ) pc_id_iexe          ( clk , resetn , ~ stall_iexe , flush_iexe , pc_id         , pc_iexe        );
     nf_register_we_clr  #(  2 ) size_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , size_dm_id    , size_dm_iexe   );
+    nf_register_we_clr  #(  1 ) sign_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , sign_dm_id    , sign_dm_iexe   );
     nf_register_we_clr  #(  1 ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id   , srcB_sel_iexe  );
-    nf_register_we_clr  #(  1 ) srcA_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcA_sel_id   , srcA_sel_iexe  );
+    nf_register_we_clr  #(  2 ) srcA_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcA_sel_id   , srcA_sel_iexe  );
     nf_register_we_clr  #(  2 ) shift_sel_id_iexe   ( clk , resetn , ~ stall_iexe , flush_iexe , shift_sel_id  , shift_sel_iexe );
     nf_register_we_clr  #(  1 ) res_sel_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , res_sel_id    , res_sel_iexe   );
     nf_register_we_clr  #(  1 ) we_rf_id_iexe       ( clk , resetn , ~ stall_iexe , flush_iexe , we_rf_id      , we_rf_iexe     );
@@ -160,6 +164,7 @@ module nf_cpu
     nf_register_we      #(  1 ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem ,              we_dm_iexe    , we_dm_imem     );
     nf_register_we      #(  1 ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem ,              we_rf_iexe    , we_rf_imem     );
     nf_register_we      #(  1 ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem ,              rf_src_iexe   , rf_src_imem    );
+    nf_register_we      #(  1 ) sign_dm_iexe_imem   ( clk , resetn , ~ stall_imem ,              sign_dm_iexe  , sign_dm_imem   );
     nf_register_we      #(  2 ) size_dm_iexe_imem   ( clk , resetn , ~ stall_imem ,              size_dm_iexe  , size_dm_imem   );
     nf_register_we      #(  5 ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem ,              wa3_iexe      , wa3_imem       );
     nf_register_we      #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd2_i_exu     , rd2_imem       );
@@ -241,6 +246,7 @@ module nf_cpu
     nf_i_exu 
     nf_i_exu_0
     (
+        .clk            ( clk               ),  // clock
         .rd1            ( rd1_i_exu         ),  // read data from reg file (port1)
         .rd2            ( rd2_i_exu         ),  // read data from reg file (port2)
         .ext_data       ( ext_data_iexe     ),  // sign extended immediate data
@@ -265,6 +271,7 @@ module nf_cpu
         .we_dm_imem     ( we_dm_imem    ),      // write enable data memory from imem stage
         .rf_src_imem    ( rf_src_imem   ),      // register file source enable from imem stage
         .size_dm_imem   ( size_dm_imem  ),      // size data memory from imem stage
+        .sign_dm_imem   ( sign_dm_imem  ),
         .rd_dm_iwb      ( rd_dm_iwb     ),      // read data for write back stage
         .lsu_busy       ( lsu_busy      ),      // load store unit busy
         // data memory and other's
@@ -328,5 +335,27 @@ module nf_cpu
         .cmp_d1         ( cmp_d1        ),  // bypass data 1 for decode stage (branch)
         .cmp_d2         ( cmp_d2        )   // bypass data 2 for decode stage (branch)
     );
+
+    // synthesis translate_off
+    /***************************************************
+    **                   Assertions                   **
+    ***************************************************/
+
+    // creating propertis
+
+    property INSTR_ID_CHECK;
+        @(posedge clk) disable iff(resetn) ! $isunknown( instr_id );
+    endproperty
+
+    property PC_ID_CHECK;
+        @(posedge clk) disable iff(resetn) ! $isunknown( pc_id    );
+    endproperty
+
+    // assertions
+
+    NF_UNK_INSTR_ID : assert property ( INSTR_ID_CHECK ) else begin $error("nf_cpu error! instr_id is unknown"); $stop; end
+    NF_UNK_PC_ID    : assert property (    PC_ID_CHECK ) else begin $error("nf_cpu error! pc_id is unknown");    $stop; end
+
+    // synthesis translate_on
     
 endmodule : nf_cpu

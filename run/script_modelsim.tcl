@@ -3,6 +3,8 @@ vlib work
 
 #set test "core test"
 set test "alu test"
+#set test "ahb test"
+#set test "uart test"
 
 set i0 +incdir+../rtl/common
 set i1 +incdir+../rtl/core

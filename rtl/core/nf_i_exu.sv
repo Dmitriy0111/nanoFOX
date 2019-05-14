@@ -12,6 +12,7 @@
 
 module nf_i_exu
 (
+    input   logic   [0  : 0]    clk,        // clock
     input   logic   [31 : 0]    rd1,        // read data from reg file (port1)
     input   logic   [31 : 0]    rd2,        // read data from reg file (port2)
     input   logic   [31 : 0]    ext_data,   // sign extended immediate data
@@ -27,7 +28,7 @@ module nf_i_exu
     // wires for ALU inputs
     logic   [31 : 0]    srcA;   // source A ALU
     logic   [31 : 0]    srcB;   // source B ALU
-    logic   [31 : 0]    shift;  // for shift ALU input
+    logic   [4  : 0]    shift;  // for shift ALU input
     // finding srcA value
     always_comb
     begin
@@ -52,11 +53,11 @@ module nf_i_exu
     // finding shift value
     always_comb
     begin
-        shift = rd2;
+        shift = rd2[0 +: 5];
         case( shift_sel )
-            SRCS_SHAMT  :   shift = '0 | shamt;
-            SRCS_RD2    :   shift = rd2;
-            SRCS_12     :   shift = 32'd12;
+            SRCS_SHAMT  :   shift = shamt;
+            SRCS_RD2    :   shift = rd2[0 +: 5];
+            SRCS_12     :   shift = 5'd12;
             default     :   ;
         endcase
     end
@@ -64,6 +65,7 @@ module nf_i_exu
     nf_alu 
     alu_0
     (
+        .clk            ( clk           ),  // clock
         .srcA           ( srcA          ),  // source A for ALU unit
         .srcB           ( srcB          ),  // source B for ALU unit
         .shift          ( shift         ),  // for shift operation

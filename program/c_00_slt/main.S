@@ -1,10 +1,10 @@
 # 
 #  File            :   main.S
 #  Autor           :   Vlasov D.V.
-#  Data            :   2018.11.30
+#  Data            :   2019.05.13
 #  Language        :   Assembler
-#  Description     :   This is simple counter example
-#  Copyright(c)    :   2018 - 2019 Vlasov D.V.
+#  Description     :   This is test program for slt command
+#  Copyright(c)    :   2019 Vlasov D.V.
 # 
 
 .section    .text

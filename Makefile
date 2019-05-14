@@ -82,6 +82,9 @@ sim_dir: sim_clean
 sim_cmd: sim_dir
 	$(VSIM_BIN) $(VSIM_OPT_COMMON) $(VSIM_OPT_CMD)
 
+sim_cmd_log: sim_dir
+	$(VSIM_BIN) $(VSIM_OPT_COMMON) $(VSIM_OPT_CMD) > sim.log
+
 sim_gui: sim_dir
 	$(VSIM_BIN) $(VSIM_OPT_COMMON) $(VSIM_OPT_GUI) &
 

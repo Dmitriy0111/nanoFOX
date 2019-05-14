@@ -20,6 +20,7 @@ module nf_i_lsu
     input   logic   [31 : 0]    rd2_imem,       // read data 2 from imem stage
     input   logic   [0  : 0]    we_dm_imem,     // write enable data memory from imem stage
     input   logic   [0  : 0]    rf_src_imem,    // register file source enable from imem stage
+    input   logic   [0  : 0]    sign_dm_imem,
     input   logic   [1  : 0]    size_dm_imem,   // size data memory from imem stage
     output  logic   [31 : 0]    rd_dm_iwb,      // read data for write back stage
     output  logic   [0  : 0]    lsu_busy,       // load store unit busy
@@ -71,7 +72,12 @@ module nf_i_lsu
         if( !resetn )
             rd_dm_iwb <= '0;
         else if( req_ack_dm )
-            rd_dm_iwb <= rd_dm;
+            case( size_dm )
+                2'b00   : rd_dm_iwb <= { { 24 { rd_dm[ 7] && sign_dm_imem } } , rd_dm[7  : 0] };
+                2'b01   : rd_dm_iwb <= { { 16 { rd_dm[15] && sign_dm_imem } } , rd_dm[15 : 0] };
+                2'b10   : rd_dm_iwb <= rd_dm[31 : 0];
+                default : rd_dm_iwb <= rd_dm[31 : 0];
+            endcase
     end
 
 endmodule : nf_i_lsu

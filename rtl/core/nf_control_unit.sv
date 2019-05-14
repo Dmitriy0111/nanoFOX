@@ -27,6 +27,7 @@ module nf_control_unit
     output  logic   [0 : 0]     we_dm,          // write enable signal for data memory and others
     output  logic   [0 : 0]     rf_src,         // write data select for register file
     output  logic   [1 : 0]     size_dm,        // size for load/store instructions
+    output  logic   [0 : 0]     sign_dm,        // sign extended data memory for load instructions
     output  logic   [3 : 0]     ALU_Code        // output code for ALU unit
 );
 
@@ -41,6 +42,7 @@ module nf_control_unit
     assign branch_src = instr_cf_0.OP == JALR.OP;
     assign we_dm      = instr_cf_0.OP == SW.OP;
     assign size_dm    = instr_cf_0.F3[0 +: 2];
+    assign sign_dm    = instr_cf_0.F3[2];
     
     // shift input selecting
     always_comb
@@ -140,6 +142,8 @@ module nf_control_unit
                     B_OP0           :
                         case( instr_cf_0.F3[2 : 1] )
                             2'b00   : branch_type = B_EQ_NEQ;
+                            2'b10   : branch_type = B_GE_LT;
+                            2'b11   : branch_type = B_GEU_LTU;
                             default :;
                         endcase
                     J_OP0 , I_OP2   : branch_type = B_UB;
@@ -171,11 +175,11 @@ module nf_control_unit
                     U_OP0           : ALU_Code = ALU_SLL;
                     R_OP0 , I_OP0   : 
                         case( instr_cf_0.F3 )
-                            ADD.F3  : ALU_Code = ALU_ADD;
+                            ADD.F3  : ALU_Code = instr_cf_0.F7[5] && (instr_cf_0.OP == R_OP0) ? ALU_SUB : ALU_ADD;
                             AND.F3  : ALU_Code = ALU_AND;
                             OR.F3   : ALU_Code = ALU_OR;
                             SLL.F3  : ALU_Code = ALU_SLL;
-                            SRL.F3  : ALU_Code = ALU_SRL;
+                            SRL.F3  : ALU_Code = instr_cf_0.F7[5] ? ALU_SRA : ALU_SRL;
                             XOR.F3  : ALU_Code = ALU_XOR;
                             SLT.F3  : ALU_Code = ALU_SLT;
                             SLTU.F3 : ALU_Code = ALU_SLTU;
