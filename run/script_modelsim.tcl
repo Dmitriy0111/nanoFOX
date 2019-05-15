@@ -1,8 +1,8 @@
 
 vlib work
 
-#set test "core test"
-set test "alu test"
+set test "core test"
+#set test "alu test"
 #set test "ahb test"
 #set test "uart test"
 

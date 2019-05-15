@@ -15,6 +15,7 @@ module nf_control_unit
     input   logic   [4 : 0]     opcode,         // operation code field in instruction code
     input   logic   [2 : 0]     funct3,         // funct 3 field in instruction code
     input   logic   [6 : 0]     funct7,         // funct 7 field in instruction code
+    input   logic   [4 : 0]     wa3,            // write address field
     output  logic   [4 : 0]     imm_src,        // for enable immediate data
     output  logic   [0 : 0]     srcB_sel,       // for selecting srcB ALU
     output  logic   [1 : 0]     srcA_sel,       // for selecting srcA ALU
@@ -28,6 +29,9 @@ module nf_control_unit
     output  logic   [0 : 0]     rf_src,         // write data select for register file
     output  logic   [1 : 0]     size_dm,        // size for load/store instructions
     output  logic   [0 : 0]     sign_dm,        // sign extended data memory for load instructions
+    output  logic   [0 : 0]     csr_rreq,       // read request to csr
+    output  logic   [0 : 0]     csr_wreq,       // write request to csr
+    output  logic   [0 : 0]     csr_sel,        // csr select ( zimm or rd1 )
     output  logic   [3 : 0]     ALU_Code        // output code for ALU unit
 );
 
@@ -42,7 +46,11 @@ module nf_control_unit
     assign branch_src = instr_cf_0.OP == JALR.OP;
     assign we_dm      = instr_cf_0.OP == SW.OP;
     assign size_dm    = instr_cf_0.F3[0 +: 2];
-    assign sign_dm    = instr_cf_0.F3[2];
+    assign sign_dm    = ~ instr_cf_0.F3[2];
+
+    assign csr_rreq = ( instr_cf_0.OP == CSR_OP ) && ( instr_cf_0.F3[1 : 0] == CSRRW.F3[1 : 0] ) && ( | wa3 );
+    assign csr_wreq = ( instr_cf_0.OP == CSR_OP ) && ( instr_cf_0.F3[1 : 0] == CSRRW.F3[1 : 0] );
+    assign csr_sel  = ( instr_cf_0.F3[2] == '1 );
     
     // shift input selecting
     always_comb

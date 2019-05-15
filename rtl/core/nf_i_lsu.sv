@@ -34,7 +34,24 @@ module nf_i_lsu
     input   logic   [0  : 0]    req_ack_dm      // request acknowledge data memory signal
 );
 
+    // load data wires
+    logic   [7  : 0]    l_data_3;   // load data 3
+    logic   [7  : 0]    l_data_2;   // load data 2
+    logic   [7  : 0]    l_data_1;   // load data 1
+    logic   [7  : 0]    l_data_0;   // load data 0
+    logic   [31 : 0]    l_data_f;   // full load data
+    // store data wires
+    logic   [7  : 0]    s_data_3;   // store data 3
+    logic   [7  : 0]    s_data_2;   // store data 2
+    logic   [7  : 0]    s_data_1;   // store data 1
+    logic   [7  : 0]    s_data_0;   // store data 0
+    logic   [31 : 0]    s_data_f;   // full store data
+
+    logic   [0  : 0]    sign_dm;    // unsigned load data memory?
+
     assign req_dm = lsu_busy;
+    assign l_data_f = { l_data_3 , l_data_2 , l_data_1 , l_data_0 };
+    assign s_data_f = { s_data_3 , s_data_2 , s_data_1 , s_data_0 };
 
     always_ff @(posedge clk, negedge resetn)
     begin
@@ -57,14 +74,62 @@ module nf_i_lsu
             wd_dm   <= '0;
             we_dm   <= '0;
             size_dm <= '0;
+            sign_dm <= '0;
         end
         else if( ( we_dm_imem || rf_src_imem ) && !lsu_busy )
         begin
             addr_dm <= result_imem;
-            wd_dm   <= rd2_imem;
+            wd_dm   <= s_data_f;
             we_dm   <= we_dm_imem;
             size_dm <= size_dm_imem;
+            sign_dm <= sign_dm_imem;
         end
+    end
+    // form load data value
+    always_comb
+    begin
+        l_data_3 = rd_dm[24 +: 8];
+        l_data_2 = rd_dm[16 +: 8];
+        l_data_1 = rd_dm[8  +: 8];
+        l_data_0 = rd_dm[0  +: 8];
+        case( addr_dm[0 +: 2])
+            2'b00   : l_data_0 = rd_dm[0  +: 8];
+            2'b01   : l_data_0 = rd_dm[8  +: 8];
+            2'b10   : l_data_0 = rd_dm[16 +: 8];
+            2'b11   : l_data_0 = rd_dm[24 +: 8];
+            default : ;
+        endcase
+        case( addr_dm[0 +: 2])
+            2'b00   : l_data_1 = rd_dm[8  +: 8];
+            2'b01   : l_data_1 = rd_dm[8  +: 8];
+            2'b10   : l_data_1 = rd_dm[24 +: 8];
+            2'b11   : l_data_1 = rd_dm[24 +: 8];
+            default : ;
+        endcase
+    end
+    // form store data value
+    always_comb
+    begin
+        s_data_3 = rd2_imem[24 +: 8];
+        s_data_2 = rd2_imem[16 +: 8];
+        s_data_1 = rd2_imem[8  +: 8];
+        s_data_0 = rd2_imem[0  +: 8];
+        case( result_imem[0 +: 2])
+            2'b00   : s_data_1 = rd2_imem[8  +: 8];
+            2'b01   : s_data_1 = rd2_imem[0  +: 8];
+            default : ;
+        endcase
+        case( result_imem[0 +: 2])
+            2'b00   : s_data_2 = rd2_imem[16 +: 8];
+            2'b10   : s_data_2 = rd2_imem[0  +: 8];
+            default : ;
+        endcase
+        case( result_imem[0 +: 2])
+            2'b00   : s_data_3 = rd2_imem[24 +: 8];
+            2'b10   : s_data_3 = rd2_imem[8  +: 8];
+            2'b11   : s_data_3 = rd2_imem[0  +: 8];
+            default : ;
+        endcase
     end
     
     always_ff @(posedge clk, negedge resetn)
@@ -73,10 +138,10 @@ module nf_i_lsu
             rd_dm_iwb <= '0;
         else if( req_ack_dm )
             case( size_dm )
-                2'b00   : rd_dm_iwb <= { { 24 { rd_dm[ 7] && sign_dm_imem } } , rd_dm[7  : 0] };
-                2'b01   : rd_dm_iwb <= { { 16 { rd_dm[15] && sign_dm_imem } } , rd_dm[15 : 0] };
-                2'b10   : rd_dm_iwb <= rd_dm[31 : 0];
-                default : rd_dm_iwb <= rd_dm[31 : 0];
+                2'b00   : rd_dm_iwb <= { { 24 { l_data_f[ 7] && sign_dm } } , l_data_f[7  : 0] };
+                2'b01   : rd_dm_iwb <= { { 16 { l_data_f[15] && sign_dm } } , l_data_f[15 : 0] };
+                2'b10   : rd_dm_iwb <= l_data_f[31 : 0];
+                default : rd_dm_iwb <= l_data_f[31 : 0];
             endcase
     end
 

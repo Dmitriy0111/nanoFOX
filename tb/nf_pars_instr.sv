@@ -148,15 +148,17 @@ class nf_pars_instr extends nf_bt_class;
         logic   [4  : 0]    opcode    ;
         logic   [2  : 0]    funct3    ;
         logic   [6  : 0]    funct7    ;
+        logic   [11 : 0]    funct12   ;
         // operation type fields
-        instr_type  = instr[0  +: 2];
-        opcode      = instr[2  +: 5];
-        funct3      = instr[12 +: 3];
-        funct7      = instr[25 +: 7];
+        instr_type  = instr[0  +:  2];
+        opcode      = instr[2  +:  5];
+        funct3      = instr[12 +:  3];
+        funct7      = instr[25 +:  7];
+        funct12     = instr[20 +: 12];
         instruction_s = "";
         instr_sep     = "";
 
-        instr_cf_0 = { "",instr_type , opcode , funct3 , funct7 };
+        instr_cf_0 = { "",instr_type , opcode , funct3 , funct7 , funct12 };
         casex( instr_cf_0.IT )
             `RVI    :
             begin

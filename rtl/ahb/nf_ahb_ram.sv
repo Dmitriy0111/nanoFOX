@@ -39,12 +39,32 @@ module nf_ahb_ram
     logic   [2  : 0]    hsize_s_ff;     // hsize flip-flop
 
     assign ram_addr  = ram_addr_;
-    assign ram_we    = ( hsize_s_ff == `AHB_HSIZE_W ) && ram_we_ ? 4'hf : '0;   // only lw/sw instructions
     assign ram_wd    = hwdata_s;
     assign hrdata_s  = ram_rd;
     assign hresp_s   = `AHB_HRESP_OKAY;
     assign ram_request  = hsel_s && ( htrans_s != `AHB_HTRANS_IDLE);
     assign ram_wrequest = ram_request && hwrite_s; 
+    // finding write enable for ram
+    assign ram_we[0] =  ( ( hsize_s_ff == `AHB_HSIZE_W ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_HW ) && ( ram_addr_[1 : 0] == 2'b00 ) ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_B  ) && ( ram_addr_[1 : 0] == 2'b00 ) ) ) &&
+                        ram_we_;
+    // finding write enable for ram
+    assign ram_we[1] =  ( ( hsize_s_ff == `AHB_HSIZE_W ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_HW ) && ( ram_addr_[1 : 0] == 2'b00 ) ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_B  ) && ( ram_addr_[1 : 0] == 2'b01 ) ) ) &&
+                        ram_we_;
+    // finding write enable for ram
+    assign ram_we[2] =  ( ( hsize_s_ff == `AHB_HSIZE_W ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_HW ) && ( ram_addr_[1 : 0] == 2'b10 ) ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_B  ) && ( ram_addr_[1 : 0] == 2'b10 ) ) ) &&
+                        ram_we_;
+    // finding write enable for ram
+    assign ram_we[3] =  ( ( hsize_s_ff == `AHB_HSIZE_W ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_HW ) && ( ram_addr_[1 : 0] == 2'b10 ) ) || 
+                        ( ( hsize_s_ff == `AHB_HSIZE_B  ) && ( ram_addr_[1 : 0] == 2'b11 ) ) ) &&
+                        ram_we_;
+
     // creating control and address registers
     nf_register_we  #( 32 ) ram_addr_ff ( hclk, hresetn, ram_request , haddr_s, ram_addr_ );
     nf_register     #( 1  ) ram_wreq_ff ( hclk, hresetn, ram_wrequest, ram_we_    );

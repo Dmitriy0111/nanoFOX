@@ -24,6 +24,10 @@ module nf_i_du
     output  logic   [4  : 0]    ra2,        // decoded read address 2 for register file
     input   logic   [31 : 0]    rd2,        // read data 2 from register file
     output  logic   [4  : 0]    wa3,        // decoded write address 2 for register file
+    output  logic   [11 : 0]    csr_addr,   // csr address
+    output  logic   [0  : 0]    csr_rreq,   // read request to csr
+    output  logic   [0  : 0]    csr_wreq,   // write request to csr
+    output  logic   [0  : 0]    csr_sel,    // csr select ( zimm or rd1 )
     output  logic   [0  : 0]    pc_src,     // decoded next program counter value enable
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
@@ -32,7 +36,7 @@ module nf_i_du
     output  logic   [0  : 0]    sign_dm,    // sign extended data memory for load instructions
     output  logic   [0  : 0]    branch_src, // for selecting branch source (JALR)
     output  logic   [3  : 0]    branch_type // branch type
-);
+);  
 
     // sign extend wires
     logic   [11 : 0]    imm_data_i;     // for I-type command's
@@ -59,6 +63,8 @@ module nf_i_du
     assign ra1 = instr[15 +: 5];
     assign ra2 = instr[20 +: 5];
     assign wa3 = instr[7  +: 5];
+    // findind csr address
+    assign csr_addr = instr[20 +: 12];
     // operation code, funct3 and funct7 field's in instruction
     assign instr_type = instr[0   +: 2];
     assign opcode     = instr[2   +: 5];
@@ -72,8 +78,9 @@ module nf_i_du
         .opcode         ( opcode        ),  // operation code field in instruction code
         .funct3         ( funct3        ),  // funct 3 field in instruction code
         .funct7         ( funct7        ),  // funct 7 field in instruction code
+        .wa3            ( wa3           ),  // wa3 field
         .srcB_sel       ( srcB_sel      ),  // for selecting srcB ALU
-        .srcA_sel       ( srcA_sel      ),   // decoded source A selection for ALU
+        .srcA_sel       ( srcA_sel      ),  // decoded source A selection for ALU
         .shift_sel      ( shift_sel     ),  // for selecting shift input
         .res_sel        ( res_sel       ),  // for selecting result
         .branch_type    ( branch_type   ),  // branch type 
@@ -85,6 +92,9 @@ module nf_i_du
         .imm_src        ( imm_src       ),  // selection immediate data input
         .size_dm        ( size_dm       ),  // size for load/store instructions
         .sign_dm        ( sign_dm       ),  // sign extended data memory for load instructions
+        .csr_rreq       ( csr_rreq      ),  // read request to csr
+        .csr_wreq       ( csr_wreq      ),  // write request to csr
+        .csr_sel        ( csr_sel       ),  // csr select ( zimm or rd1 )
         .ALU_Code       ( ALU_Code      )   // output code for ALU unit
     );
     // creating sign extending unit
