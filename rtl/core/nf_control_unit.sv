@@ -29,6 +29,7 @@ module nf_control_unit
     output  logic   [0 : 0]     rf_src,         // write data select for register file
     output  logic   [1 : 0]     size_dm,        // size for load/store instructions
     output  logic   [0 : 0]     sign_dm,        // sign extended data memory for load instructions
+    output  logic   [1  : 0]    csr_cmd,        // csr command
     output  logic   [0 : 0]     csr_rreq,       // read request to csr
     output  logic   [0 : 0]     csr_wreq,       // write request to csr
     output  logic   [0 : 0]     csr_sel,        // csr select ( zimm or rd1 )
@@ -48,10 +49,20 @@ module nf_control_unit
     assign size_dm    = instr_cf_0.F3[0 +: 2];
     assign sign_dm    = ~ instr_cf_0.F3[2];
 
-    assign csr_rreq = ( instr_cf_0.OP == CSR_OP ) && ( instr_cf_0.F3[1 : 0] == CSRRW.F3[1 : 0] ) && ( | wa3 );
-    assign csr_wreq = ( instr_cf_0.OP == CSR_OP ) && ( instr_cf_0.F3[1 : 0] == CSRRW.F3[1 : 0] );
+    assign csr_rreq = ( instr_cf_0.OP == CSR_OP ) && ( | instr_cf_0.F3 ) && ( | wa3 );
+    assign csr_wreq = ( instr_cf_0.OP == CSR_OP ) && ( | instr_cf_0.F3 );
     assign csr_sel  = ( instr_cf_0.F3[2] == '1 );
-    
+
+    // csr command select
+    always_comb
+    begin : csr_cmd_sel
+        csr_cmd = CSR_NONE;
+        if( instr_cf_0.IT == `RVI )
+            case( instr_cf_0.OP )
+                CSR_OP  :   csr_cmd = | instr_cf_0.F3 ? instr_cf_0.F3[1 : 0] : CSR_NONE;
+                default :;
+            endcase
+    end
     // shift input selecting
     always_comb
     begin : shift_sel_log
@@ -107,6 +118,7 @@ module nf_control_unit
                     B_OP0                   : we_rf = '0;
                     U_OP0 , U_OP1           : we_rf = '1;
                     I_OP0 , I_OP1 , I_OP2   : we_rf = '1;
+                    CSR_OP                  : we_rf = | wa3;
                     default                 :;
                 endcase
             default :;

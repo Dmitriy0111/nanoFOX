@@ -39,12 +39,12 @@
 *   sra
 *   or
 *   and
-*   (csrrw)
-*   (csrrs)
-*   (csrrc)
-*   (csrrwi)
-*   (csrrsi)
-*   (csrrci)
+*   csrrw
+*   csrrs
+*   csrrc
+*   csrrwi
+*   csrrsi
+*   csrrci
 
 ## Quickstart:
 For loading project with git program:

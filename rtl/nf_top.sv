@@ -75,6 +75,13 @@ module nf_top
     logic   [slave_c-1 : 0][1  : 0]     hresp_s;    // AHB - Slave HRESP 
     logic   [slave_c-1 : 0][0  : 0]     hready_s;   // AHB - Slave HREADYOUT 
     logic   [slave_c-1 : 0]             hsel_s;     // AHB - Slave HSEL
+    // CSR
+    logic   [11 : 0]    csr_addr;   // csr address
+    logic   [31 : 0]    csr_rd;     // csr read data
+    logic   [31 : 0]    csr_wd;     // csr write data
+    logic   [1  : 0]    csr_cmd;    // csr command
+    logic   [0  : 0]    csr_wreq;   // csr write request
+    logic   [0  : 0]    csr_rreq;   // csr read request
 
     assign pwm_clk    = clk;
     assign pwm_resetn = resetn;    
@@ -104,9 +111,30 @@ module nf_top
         .we_dm          ( we_dm         ),      // write enable data memory signal
         .size_dm        ( size_dm       ),      // size for load/store instructions
         .req_dm         ( req_dm        ),      // request data memory signal
-        .req_ack_dm     ( req_ack_dm    )       // request acknowledge data memory signal
+        .req_ack_dm     ( req_ack_dm    ),      // request acknowledge data memory signal
+        // csr
+        .csr_addr       ( csr_addr      ),      // csr address
+        .csr_rd         ( csr_rd        ),      // csr read data
+        .csr_wd         ( csr_wd        ),      // csr write data
+        .csr_cmd        ( csr_cmd       ),      // csr command
+        .csr_wreq       ( csr_wreq      ),      // csr write request
+        .csr_rreq       ( csr_rreq      )       // csr read request
     );
-
+    // creating one nf_csr unit
+    nf_csr
+    nf_csr_0
+    (
+        // clock and reset
+        .clk            ( clk           ),      // clk  
+        .resetn         ( resetn        ),      // resetn
+        // csr
+        .csr_addr       ( csr_addr      ),      // csr address
+        .csr_rd         ( csr_rd        ),      // csr read data
+        .csr_wd         ( csr_wd        ),      // csr write data
+        .csr_cmd        ( csr_cmd       ),      // csr command
+        .csr_wreq       ( csr_wreq      ),      // csr write request
+        .csr_rreq       ( csr_rreq      )       // csr read request
+    );
     // Creating one nf_cpu_cc_0
     nf_cpu_cc 
     nf_cpu_cc_0

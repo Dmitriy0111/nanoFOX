@@ -301,3 +301,15 @@ typedef enum logic [0 : 0]
     RF_DMEM     =   1'b1    // RF write data is data memory read data
 } rf_src_types;
 `endif
+
+`ifndef CSR_CMD_TYPES
+`define CSR_CMD_TYPES
+//CSR command constants
+typedef enum logic [1 : 0]
+{
+    CSR_NONE    =   2'b00,  // none edit csr value
+    CSR_WR      =   2'b01,  // csr write data
+    CSR_SET     =   2'b10,  // csr set with mask
+    CSR_CLR     =   2'b11   // csr clear with mask
+} csr_cmd_types;
+`endif

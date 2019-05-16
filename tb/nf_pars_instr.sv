@@ -48,48 +48,53 @@ class nf_pars_instr extends nf_bt_class;
         funct3      = instr[12 +: 3];
         funct7      = instr[25 +: 7];
 
-        if( instr_cf_check.OP == 'b01100 ) 
+        if( instr_cf_check.OP == R_OP0 ) 
         begin
             instr_s =   $psprintf("%s rd  = %4s, rs1 = %4s, rs2 = %4s"          , instr_cf_check.I_NAME , reg_list[wa3] , reg_list[ra1] , reg_list[ra2]                     );
             if( `debug_lev0 )
                 instr_sep = $psprintf("R-type  : %b_%b_%b_%b_%b_%b_%b"          , funct7, ra2, ra1, funct3, wa3, opcode, instr_type                                         );
         end
         else if ( 
-                    instr_cf_check.OP == 'b00100 ||
-                    instr_cf_check.OP == 'b00000 ||
-                    instr_cf_check.OP == 'b11001 
+                    instr_cf_check.OP == I_OP0 ||
+                    instr_cf_check.OP == I_OP1 ||
+                    instr_cf_check.OP == I_OP2 
                 ) 
         begin
             instr_s =   $psprintf("%s rd  = %4s, rs1 = %4s, Imm = 0x%h"         , instr_cf_check.I_NAME , reg_list[wa3] , reg_list[ra1] , imm_data_i                        );
             if( `debug_lev0 )
                 instr_sep = $psprintf("I-type  : %b_%b_%b_%b_%b_%b"             , instr[20 +: 12], ra1, funct3, wa3, opcode, instr_type                                     );
         end
-        else if ( instr_cf_check.OP == 'b11000 ) 
+        else if ( instr_cf_check.OP == B_OP0 ) 
         begin
             instr_s =   $psprintf("%s rs1 = %4s, rs2 = %4s, Imm = 0x%h"         , instr_cf_check.I_NAME , reg_list[ra1] , reg_list[ra2] , imm_data_b                        );
             if( `debug_lev0 )
                 instr_sep = $psprintf("B-type  : %b_%b_%b_%b_%b_%b_%b_%b_%b"    , instr[31], instr[25 +: 6], ra2, ra1, funct3, instr[8  +: 5], instr[7], opcode, instr_type );
         end
-        else if ( instr_cf_check.OP == 'b01000 ) 
+        else if ( instr_cf_check.OP == S_OP0 ) 
         begin
             instr_s =   $psprintf("%s rs1 = %4s, rs2 = %4s, Imm = 0x%h"         , instr_cf_check.I_NAME , reg_list[ra1] , reg_list[ra2] , imm_data_s                        );
             if( `debug_lev0 )
                 instr_sep = $psprintf("S-type  : %b_%b_%b_%b_%b_%b_%b"          , instr[25 +: 7], ra2, ra1, funct3, instr[7  +: 5], opcode, instr_type                      );
         end
         else if ( 
-                    instr_cf_check.OP == 'b01101 ||
-                    instr_cf_check.OP == 'b00101 
+                    instr_cf_check.OP == U_OP0 ||
+                    instr_cf_check.OP == U_OP1 
                 ) 
         begin
             instr_s =   $psprintf("%s rd  = %4s, Imm = 0x%h"                    , instr_cf_check.I_NAME , reg_list[wa3] , imm_data_u                                        );
             if( `debug_lev0 )
                 instr_sep = $psprintf("U-type  : %b_%b_%b_%b"                   , instr[12 +: 20], wa3, opcode, instr_type                                                  );
         end
-        else if ( instr_cf_check.OP == 'b11011 ) 
+        else if ( instr_cf_check.OP == J_OP0 ) 
         begin
             instr_s =   $psprintf("%s rd  = %4s, Imm = 0x%h"                    , instr_cf_check.I_NAME , reg_list[wa3] , imm_data_j                                        );
             if( `debug_lev0 )
                 instr_sep = $psprintf("J-type  : %b_%b_%b_%b_%b_%b_%b"          , instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode, instr_type            );
+        end if ( instr_cf_check.OP == CSR_OP ) 
+        begin
+            instr_s =   $psprintf("%s rd  = %4s, rs1 = %4s, zimm = 0b%5b"       , instr_cf_check.I_NAME , reg_list[wa3] , reg_list[ra1] , ra1                               );
+            if( `debug_lev0 )
+                instr_sep = $psprintf("CSR     : %b_%b_%b_%b_%b_%b_%b"          , instr[31], instr[21 +: 10], instr[20], instr[12 +: 8], wa3, opcode, instr_type            );
         end
 
     endtask : instr_decode
@@ -134,7 +139,13 @@ class nf_pars_instr extends nf_bt_class;
                             SRL,   
                             SRA,   
                             OR,    
-                            AND   
+                            AND,
+                            CSRRW,
+                            CSRRS,
+                            CSRRC,
+                            CSRRWI,
+                            CSRRSI,
+                            CSRRCI
                         };
     // constructor
     function new();

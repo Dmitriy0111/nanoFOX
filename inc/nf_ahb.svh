@@ -1,5 +1,5 @@
 /*
-*  File            :   nf_ahb.sv
+*  File            :   nf_ahb.svh
 *  Autor           :   Vlasov D.V.
 *  Data            :   2019.01.30
 *  Language        :   SystemVerilog

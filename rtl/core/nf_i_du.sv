@@ -25,6 +25,7 @@ module nf_i_du
     input   logic   [31 : 0]    rd2,        // read data 2 from register file
     output  logic   [4  : 0]    wa3,        // decoded write address 2 for register file
     output  logic   [11 : 0]    csr_addr,   // csr address
+    output  logic   [1  : 0]    csr_cmd,    // csr command
     output  logic   [0  : 0]    csr_rreq,   // read request to csr
     output  logic   [0  : 0]    csr_wreq,   // write request to csr
     output  logic   [0  : 0]    csr_sel,    // csr select ( zimm or rd1 )
@@ -92,6 +93,7 @@ module nf_i_du
         .imm_src        ( imm_src       ),  // selection immediate data input
         .size_dm        ( size_dm       ),  // size for load/store instructions
         .sign_dm        ( sign_dm       ),  // sign extended data memory for load instructions
+        .csr_cmd        ( csr_cmd       ),  // csr command
         .csr_rreq       ( csr_rreq      ),  // read request to csr
         .csr_wreq       ( csr_wreq      ),  // write request to csr
         .csr_sel        ( csr_sel       ),  // csr select ( zimm or rd1 )
