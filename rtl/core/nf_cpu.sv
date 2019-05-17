@@ -124,6 +124,7 @@ module nf_cpu
     logic   [0  : 0]    csr_rreq_iexe;      // read request to csr ( execution stage )
     logic   [0  : 0]    csr_wreq_iexe;      // write request to csr ( execution stage )
     logic   [0  : 0]    csr_sel_iexe;       // csr select ( zimm or rd1 ) ( execution stage )
+    logic   [4  : 0]    csr_zimm;           // csr zero immediate data ( execution stage )
     /*********************************************
     **       Instruction memory stage           **
     *********************************************/
@@ -137,12 +138,6 @@ module nf_cpu
     logic   [0  : 0]    we_rf_imem;         // write enable register file ( memory stage )
     logic   [1  : 0]    size_dm_imem;       // size for load/store instructions ( memory stage )
     logic   [0  : 0]    sign_dm_imem;       // sign extended data memory for load instructions ( memory stage )
-    logic   [4  : 0]    csr_zimm;           // csr zero immediate data ( memory stage )
-    logic   [11 : 0]    csr_addr_imem;      // csr address ( memory stage )
-    logic   [1  : 0]    csr_cmd_imem;       // csr command ( memory stage )
-    logic   [0  : 0]    csr_rreq_imem;      // read request to csr ( memory stage )
-    logic   [0  : 0]    csr_wreq_imem;      // write request to csr ( memory stage )
-    logic   [0  : 0]    csr_sel_imem;       // csr select ( zimm or rd1 ) ( memory stage )
     /*********************************************
     **       Instruction write back stage       **
     *********************************************/
@@ -154,29 +149,37 @@ module nf_cpu
     logic   [31 : 0]    wd_iwb;             // write data ( write back stage )
     logic   [31 : 0]    rd_dm_iwb;          // read data from data memory ( write back stage )
     logic   [0  : 0]    lsu_busy;           // load store unit busy
-    logic   [0  : 0]    csr_rreq_iwb;       // read request to csr ( write back stage )
 
     // next program counter value for branch command
     assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
-    assign result_iexe_e = res_sel_iexe  == RES_ALU ? result_iexe : pc_iexe;
     assign wa3    = wa3_iwb;
     assign wd3    = wd_iwb;
-    // assign wd_iwb = rf_src_iwb ? rd_dm_iwb : result_iwb;
     assign we_rf  = we_rf_iwb;
     // connecting csr wires to cpu output
-    assign csr_addr = csr_addr_imem;
-    assign csr_wd   = csr_sel_imem ? '0 | csr_zimm : rd1_imem ;
-    assign csr_rreq = csr_rreq_imem;
-    assign csr_wreq = csr_wreq_imem;
-    assign csr_cmd  = csr_cmd_imem;
+    assign csr_addr = csr_addr_iexe;
+    assign csr_zimm = ra1_iexe;
+    assign csr_wd   = csr_sel_iexe ? '0 | csr_zimm : rd1_iexe ;
+    assign csr_rreq = csr_rreq_iexe;
+    assign csr_wreq = csr_wreq_iexe;
+    assign csr_cmd  = csr_cmd_iexe;
     // selecting write data to reg file
     always_comb
     begin
         wd_iwb = result_iwb;
-        case( { rf_src_iwb , csr_rreq_iwb} )
-            2'b00   :   wd_iwb = result_iwb;
-            2'b10   :   wd_iwb = rd_dm_iwb;
-            2'b01   :   wd_iwb = csr_rd;
+        case( rf_src_iwb )
+            1'b0   :   wd_iwb = result_iwb;
+            1'b1   :   wd_iwb = rd_dm_iwb;
+            default :   ;
+        endcase
+    end
+    // selecting data for iexe stage
+    always_comb
+    begin
+        result_iexe_e = result_iexe;
+        case( { csr_rreq_iexe , res_sel_iexe } )
+            2'b00   :   result_iexe_e = result_iexe;    // RES_ALU
+            2'b01   :   result_iexe_e = pc_iexe;        // RES_UB
+            2'b10   :   result_iexe_e = csr_rd;         // RES_CSR
             default :   ;
         endcase
     end
@@ -218,18 +221,11 @@ module nf_cpu
     nf_register_we      #( 32 ) rd1_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd1_i_exu     , rd1_imem       );
     nf_register_we      #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd2_i_exu     , rd2_imem       );
     nf_register_we      #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem ,              result_iexe_e , result_imem    );
-    nf_register_we      #( 12 ) csr_addr_iexe_imem  ( clk , resetn , ~ stall_imem ,              csr_addr_iexe , csr_addr_imem  );
-    nf_register_we      #(  2 ) csr_cmd_iexe_imem   ( clk , resetn , ~ stall_imem ,              csr_cmd_iexe  , csr_cmd_imem   );
-    nf_register_we      #(  1 ) csr_rreq_iexe_imem  ( clk , resetn , ~ stall_imem ,              csr_rreq_iexe , csr_rreq_imem  );
-    nf_register_we      #(  1 ) csr_wreq_iexe_imem  ( clk , resetn , ~ stall_imem ,              csr_wreq_iexe , csr_wreq_imem  );
-    nf_register_we      #(  1 ) csr_sel_iexe_imem   ( clk , resetn , ~ stall_imem ,              csr_sel_iexe  , csr_sel_imem   );
-    nf_register_we      #(  5 ) csr_zimm_iexe_imem  ( clk , resetn , ~ stall_imem ,              ra1_iexe      , csr_zimm       );
     // imem2iwb
     nf_register_we      #(  1 ) we_rf_imem_iwb      ( clk , resetn , ~ stall_iwb  ,              we_rf_imem    , we_rf_iwb      );
     nf_register_we      #(  1 ) rf_src_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              rf_src_imem   , rf_src_iwb     );
     nf_register_we      #(  5 ) wa3_imem_iwb        ( clk , resetn , ~ stall_iwb  ,              wa3_imem      , wa3_iwb        );
     nf_register_we      #( 32 ) result_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              result_imem   , result_iwb     );
-    nf_register_we      #(  1 ) csr_rreq_imem_iwb   ( clk , resetn , ~ stall_iwb  ,              csr_rreq_imem , csr_rreq_iwb   );
     
     // for verification
     // synthesis translate_off

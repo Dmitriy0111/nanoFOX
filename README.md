@@ -1,5 +1,5 @@
 # **nanoFOX**
-    A small RISC-V CPU core. This is a pipeline version of CPU with AHB (full command list RV32I).
+    A small RISC-V CPU core. This is a pipeline version of CPU with AHB (full command list RV32I (without fence, fence.i, ecall, ebreak)).
     
 ## Supported instructions:
 *   lui

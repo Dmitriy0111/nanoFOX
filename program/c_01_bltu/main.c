@@ -13,7 +13,7 @@ void main (void)
 {
     while(1)
     {
-        if(x < 20)
+        if(x < 20)  // WHY it doesnt work??? WHY jal instruction before sw ???
             x++;
         else
             x = 0; 

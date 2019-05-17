@@ -29,7 +29,7 @@ module nf_control_unit
     output  logic   [0 : 0]     rf_src,         // write data select for register file
     output  logic   [1 : 0]     size_dm,        // size for load/store instructions
     output  logic   [0 : 0]     sign_dm,        // sign extended data memory for load instructions
-    output  logic   [1  : 0]    csr_cmd,        // csr command
+    output  logic   [1 : 0]     csr_cmd,        // csr command
     output  logic   [0 : 0]     csr_rreq,       // read request to csr
     output  logic   [0 : 0]     csr_wreq,       // write request to csr
     output  logic   [0 : 0]     csr_sel,        // csr select ( zimm or rd1 )

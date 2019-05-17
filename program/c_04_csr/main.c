@@ -34,8 +34,9 @@ int main ()
     delay(400);
 
     cycle_e = read_csr_v(mcycle);
-    __asm("nop");
+
     cycle_res = cycle_e - cycle_s;
+
     NF_GPIO_GPO = cycle_res;
 
     while( 1 )
