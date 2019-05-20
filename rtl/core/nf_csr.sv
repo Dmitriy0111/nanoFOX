@@ -21,7 +21,16 @@ module nf_csr
     input   logic   [31 : 0]    csr_wd,     // csr write data
     input   logic   [1  : 0]    csr_cmd,    // csr command
     input   logic   [0  : 0]    csr_wreq,   // csr write request
-    input   logic   [0  : 0]    csr_rreq    // csr read request
+    input   logic   [0  : 0]    csr_rreq,   // csr read request
+    // pmp
+    output  logic   [11 : 0]    pmp_addr,   // csr address
+    input   logic   [31 : 0]    pmp_rd,     // csr read data
+    output  logic   [31 : 0]    pmp_wd,     // csr write data
+    output  logic   [0  : 0]    pmp_wreq,   // csr write request
+    output  logic   [0  : 0]    pmp_rreq,   // csr read request
+    // scan wires
+    input   logic   [0  : 0]    pmp_err,    // pmp_error
+    input   logic   [31 : 0]    scan_addr   // address for scan
 );
 
     logic   [31 : 0]    ustatus;    // user status
@@ -30,75 +39,29 @@ module nf_csr
     logic   [31 : 0]    mcycle;     // Machine cycle counter
     logic   [31 : 0]    csr_rd_i;   // csr_rd internal
     logic   [31 : 0]    csr_wd_i;   // csr_wd internal
-
-    logic   [31 : 0]    pmpaddr0;
-    logic   [31 : 0]    pmpaddr1;
-    logic   [31 : 0]    pmpaddr2;
-    logic   [31 : 0]    pmpaddr3;
-    logic   [31 : 0]    pmpaddr4;
-    logic   [31 : 0]    pmpaddr5;
-    logic   [31 : 0]    pmpaddr6;
-    logic   [31 : 0]    pmpaddr7;
-    logic   [31 : 0]    pmpaddr8;
-    logic   [31 : 0]    pmpaddr9;
-    logic   [31 : 0]    pmpaddr10;
-    logic   [31 : 0]    pmpaddr11;
-    logic   [31 : 0]    pmpaddr12;
-    logic   [31 : 0]    pmpaddr13;
-    logic   [31 : 0]    pmpaddr14;
-    logic   [31 : 0]    pmpaddr15;
-
-    pmp_cfg_b           pmp0cfg;
-    pmp_cfg_b           pmp1cfg;
-    pmp_cfg_b           pmp2cfg;
-    pmp_cfg_b           pmp3cfg;
-    pmp_cfg_b           pmp4cfg;
-    pmp_cfg_b           pmp5cfg;
-    pmp_cfg_b           pmp6cfg;
-    pmp_cfg_b           pmp7cfg;
-    pmp_cfg_b           pmp8cfg;
-    pmp_cfg_b           pmp9cfg;
-    pmp_cfg_b           pmp10cfg;
-    pmp_cfg_b           pmp11cfg;
-    pmp_cfg_b           pmp12cfg;
-    pmp_cfg_b           pmp13cfg;
-    pmp_cfg_b           pmp14cfg;
-    pmp_cfg_b           pmp15cfg;
+    logic   [31 : 0]    s_out;      // supervisor output
+    logic   [31 : 0]    u_out;      // user output
+    logic   [31 : 0]    sepc;       // supervisor exception program counter
+    logic   [31 : 0]    scause;     // supervisor cause register
     
     assign csr_rd = csr_rd_i;
 
-    // edit pmpcfg_0 register
+    assign pmp_addr = csr_addr;
+    assign pmp_wd   = csr_wd_i;
+    assign pmp_wreq = csr_wreq;
+    assign pmp_rreq = csr_rreq;
+    // loading data in supervisor cause register
     always_ff @(posedge clk, negedge resetn)
-    begin
-        if( ! resetn )
-            { pmp0cfg , pmp1cfg , pmp2cfg , pmp3cfg } <= '0;
-        else if( csr_wreq && ( csr_addr == `PMPCFG0_A ) )
-            { pmp0cfg , pmp1cfg , pmp2cfg , pmp3cfg } <= csr_wd_i;
-    end
-    // edit pmpcfg_1 register
+        if( !resetn )
+            scause <= '0;
+        else if( pmp_err )
+            scause <= 32'h00000005;
+    // loading data in supervisor exception program counter
     always_ff @(posedge clk, negedge resetn)
-    begin
-        if( ! resetn )
-            { pmp4cfg , pmp5cfg , pmp6cfg , pmp7cfg } <= '0;
-        else if( csr_wreq && ( csr_addr == `PMPCFG1_A ) )
-            { pmp4cfg , pmp5cfg , pmp6cfg , pmp7cfg } <= csr_wd_i;
-    end
-    // edit pmpcfg_2 register
-    always_ff @(posedge clk, negedge resetn)
-    begin
-        if( ! resetn )
-            { pmp8cfg , pmp9cfg , pmp10cfg , pmp11cfg } <= '0;
-        else if( csr_wreq && ( csr_addr == `PMPCFG2_A ) )
-            { pmp8cfg , pmp9cfg , pmp10cfg , pmp11cfg } <= csr_wd_i;
-    end
-    // edit pmpcfg_3 register
-    always_ff @(posedge clk, negedge resetn)
-    begin
-        if( ! resetn )
-            { pmp12cfg , pmp13cfg , pmp14cfg , pmp15cfg } <= '0;
-        else if( csr_wreq && ( csr_addr == `PMPCFG3_A ) )
-            { pmp12cfg , pmp13cfg , pmp14cfg , pmp15cfg } <= csr_wd_i;
-    end
+        if( !resetn )
+            sepc <= '0;
+        else if( pmp_err )
+            sepc <= scan_addr;
     // write csr data
     always_ff @(posedge clk, negedge resetn)
     begin
@@ -141,16 +104,60 @@ module nf_csr
         else
             mcycle <= csr_wreq && ( csr_addr == `MCYCLE_A ) ? csr_wd_i : mcycle + 1'b1;
     end
+    // find s_out read data
+    always_comb
+    begin
+        s_out = '0;
+        case( csr_addr )
+            `SEPC_A         :   s_out = sepc;
+            `SCAUSE_A       :   s_out = scause;
+            default         :   ;
+        endcase
+    end
+    // find u_out read data
+    always_comb
+    begin
+        u_out = '0;
+        case( csr_addr )
+            `USTATUS_A      :   u_out = ustatus;
+            `UIE_A          :   u_out = uie;
+            `UTVEC_A        :   u_out = utvec;
+            default         :   ;
+        endcase
+    end
     // find csr read data
     always_comb
     begin
         csr_rd_i = '0;
         case( csr_addr )
-            `USTATUS_A  :   csr_rd_i = ustatus;
-            `UIE_A      :   csr_rd_i = uie;
-            `UTVEC_A    :   csr_rd_i = utvec;
-            `MCYCLE_A   :   csr_rd_i = mcycle;
-            default     :   ;
+            `USTATUS_A,
+            `UIE_A,
+            `UTVEC_A        :   csr_rd_i = u_out;
+            `MCYCLE_A       :   csr_rd_i = mcycle;
+            `PMPCFG0_A,
+            `PMPCFG1_A,
+            `PMPCFG2_A,
+            `PMPCFG3_A,
+            `PMPADDR0_A,
+            `PMPADDR1_A,
+            `PMPADDR2_A,
+            `PMPADDR3_A,
+            `PMPADDR4_A,
+            `PMPADDR5_A,
+            `PMPADDR6_A,
+            `PMPADDR7_A,
+            `PMPADDR8_A,
+            `PMPADDR9_A, 
+            `PMPADDR10_A,
+            `PMPADDR11_A,
+            `PMPADDR12_A,
+            `PMPADDR13_A,
+            `PMPADDR14_A,
+            `PMPADDR15_A    :   csr_rd_i = pmp_rd;
+            `SEPC_A,
+            `SCAUSE_A       :   csr_rd_i = s_out;
+            `MISA_A         :   csr_rd_i = `MISA_V; // read only
+            default         :   ;
         endcase
     end
 

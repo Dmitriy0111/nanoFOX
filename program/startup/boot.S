@@ -10,8 +10,8 @@
 .equ    _stack_start,   0x00001000  # 400 << 2
 
 nanoFOX_vectors:
-        j _main         # reset vector (0x00 vector)
-        j vector_1      # 0x01  vector
+        j _main         # 0x00  vector  ( reset vector )
+        j vector_1      # 0x01  vector  ( exception vector )
         j vector_2      # 0x02  vector
         j vector_3      # 0x03  vector
         j vector_4      # 0x04  vector

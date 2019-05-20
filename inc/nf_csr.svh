@@ -31,13 +31,23 @@
 `define PMPADDR13_A 12'h3BD
 `define PMPADDR14_A 12'h3BE
 `define PMPADDR15_A 12'h3BF
+`define SEPC_A      12'h141
+`define SCAUSE_A    12'h142
+`define MISA_A      12'h301
+                    // MXL_WIRI_Extensions
+`define MISA_V      32'b01_0000_00000000000000000100000000  // RV32I
 
 typedef struct packed
 {
     logic   [0  : 0]    L_WARL;
-    logic   [2  : 0]    WIRI;  
-    logic   [2  : 0]    A_WARL;
+    logic   [1  : 0]    WIRI;  
+    logic   [1  : 0]    A_WARL;
     logic   [0  : 0]    X_WARL;
     logic   [0  : 0]    W_WARL;
     logic   [0  : 0]    R_WARL;
 } pmp_cfg_b;    // pmp_cfg_byte
+
+`define OFF     2'b00
+`define TOR     2'b01
+`define NA4     2'b10
+`define NAPOT   2'b11

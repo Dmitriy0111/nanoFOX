@@ -15,6 +15,7 @@ module nf_i_fu
     input   logic   [0  : 0]    clk,            // clock
     input   logic   [0  : 0]    resetn,         // reset
     // program counter inputs   
+    input   logic   [0  : 0]    exc,            // exception
     input   logic   [31 : 0]    pc_branch,      // program counter branch value from decode stage
     input   logic   [0  : 0]    pc_src,         // next program counter source
     input   logic   [3  : 0]    branch_type,    // branch type
@@ -29,7 +30,9 @@ module nf_i_fu
     output  logic   [0  : 0]    req_i,          // request instruction memory signal
     input   logic   [0  : 0]    req_ack_i       // request acknowledge instruction memory signal
 );
+
     logic   [0  : 0]    flush_id;               // for flushing instruction decode stage
+    logic   [0  : 0]    exc_stalled;            //
     // instruction fetch stage
     logic   [0  : 0]    sel_if_instr;           // selected instruction 
     logic   [0  : 0]    we_if_stalled;          // write enable for stall ( fetch stage )
@@ -60,12 +63,13 @@ module nf_i_fu
     always_comb
     begin
         pc_i = pc_not_branch;
-        case( pc_src )
-            '0  :   pc_i = pc_not_branch;
-            '1  :   pc_i = pc_branch;
+        casex( { exc || exc_stalled , pc_src } )
+            2'b00   :   pc_i = pc_not_branch;
+            2'b01   :   pc_i = pc_branch;
+            2'b1?   :   pc_i = 32'h4;
         endcase
     end
-
+    //
     always_ff @(posedge clk, negedge resetn)
         if( !resetn )
             flush_id_branch_ <= '1; // flushing if-id after reset
@@ -74,6 +78,17 @@ module nf_i_fu
             flush_id_branch_ <= '0;
             if( flush_id_branch )
                 flush_id_branch_ <= '1; // set if branch and stall instruction fetch
+        end
+    // finding stalled exception
+    always_ff @(posedge clk, negedge resetn)
+        if( !resetn ) 
+            exc_stalled <= '0;
+        else
+        begin
+            if( ( stall_if && exc ) || exc )
+                exc_stalled <= '1;
+            else if( !stall_if )    
+                exc_stalled <= '0;
         end
     // selecting instruction fetch stage instruction
     nf_register         #( 1  ) sel_id_ff               ( clk, resetn, stall_if && ( ~ branch_type_delayed[3] ), sel_if_instr );

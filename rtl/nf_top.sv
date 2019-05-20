@@ -52,6 +52,9 @@ module nf_top
     logic   [1  : 0]    size_cc;        // size for load/store instructions
     logic   [0  : 0]    req_cc;         // request cc_data memory signal
     logic   [0  : 0]    req_ack_cc;     // request acknowledge cc_data memory signal
+    //
+    logic   [31 : 0]    ex_pc;
+    logic   [0  : 0]    exc;            // exception
     // RAM side
     logic   [31 : 0]    ram_addr;       // addr memory
     logic   [3  : 0]    ram_we;         // write enable
@@ -82,12 +85,20 @@ module nf_top
     logic   [1  : 0]    csr_cmd;    // csr command
     logic   [0  : 0]    csr_wreq;   // csr write request
     logic   [0  : 0]    csr_rreq;   // csr read request
+    // PMP
+    logic   [11 : 0]    pmp_addr;
+    logic   [31 : 0]    pmp_rd;
+    logic   [31 : 0]    pmp_wd;
+    logic   [0  : 0]    pmp_wreq;
+    logic   [0  : 0]    pmp_rreq;
+    logic   [0  : 0]    pmp_ex;
 
     assign pwm_clk    = clk;
     assign pwm_resetn = resetn;    
     assign gpi_0      = gpio_i_0;
     assign gpio_o_0   = gpo_0;
     assign gpio_d_0   = gpd_0;
+    assign exc        = pmp_ex;
  
     // Creating one nf_cpu_0
     nf_cpu 
@@ -118,7 +129,10 @@ module nf_top
         .csr_wd         ( csr_wd        ),      // csr write data
         .csr_cmd        ( csr_cmd       ),      // csr command
         .csr_wreq       ( csr_wreq      ),      // csr write request
-        .csr_rreq       ( csr_rreq      )       // csr read request
+        .csr_rreq       ( csr_rreq      ),      // csr read request
+        //
+        .ex_pc          ( ex_pc         ),
+        .exc            ( exc           )
     );
     // creating one nf_csr unit
     nf_csr
@@ -133,7 +147,34 @@ module nf_top
         .csr_wd         ( csr_wd        ),      // csr write data
         .csr_cmd        ( csr_cmd       ),      // csr command
         .csr_wreq       ( csr_wreq      ),      // csr write request
-        .csr_rreq       ( csr_rreq      )       // csr read request
+        .csr_rreq       ( csr_rreq      ),      // csr read request
+        // pmp
+        .pmp_addr       ( pmp_addr      ),      // csr address
+        .pmp_rd         ( pmp_rd        ),      // csr read data
+        .pmp_wd         ( pmp_wd        ),      // csr write data
+        .pmp_wreq       ( pmp_wreq      ),      // csr write request
+        .pmp_rreq       ( pmp_rreq      ),      // csr read request
+        // scan wires
+        .pmp_err        ( pmp_ex        ),      // pmp_error
+        .scan_addr      ( ex_pc         )       // address for scan
+    );
+    // creating one nf_pmp unit
+    nf_pmp
+    nf_pmp_0
+    (
+        // clock and reset
+        .clk            ( clk           ),      // clk  
+        .resetn         ( resetn        ),      // resetn
+        // pmp if
+        .pmp_addr       ( pmp_addr      ),      // pmp address
+        .pmp_rd         ( pmp_rd        ),      // pmp read data
+        .pmp_wd         ( pmp_wd        ),      // pmp write data
+        .pmp_wreq       ( pmp_wreq      ),      // pmp write request
+        .pmp_rreq       ( pmp_rreq      ),      // pmp read request
+        // protect sidew
+        .scan_addr      ( addr_cc       ),      // address for scan
+        .scan_we        ( we_cc         ),      // write enable for scan
+        .pmp_ex         ( pmp_ex        )       // pmp_exception
     );
     // Creating one nf_cpu_cc_0
     nf_cpu_cc 

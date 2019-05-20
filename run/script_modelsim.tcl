@@ -46,6 +46,8 @@ if {$test == "core test"} {
 #    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_cc_0/*
     add wave -divider  "csr signals"
     add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_csr_0/*
+    add wave -divider  "pmp signals"
+    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_pmp_0/*
     add wave -divider  "testbench signals"
     add wave -position insertpoint sim:/nf_tb/*
 } elseif {$test == "ahb test"} {

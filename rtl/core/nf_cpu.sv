@@ -39,7 +39,10 @@ module nf_cpu
     output  logic   [31 : 0]    csr_wd,     // csr write data
     output  logic   [1  : 0]    csr_cmd,    // csr command
     output  logic   [0  : 0]    csr_wreq,   // csr write request
-    output  logic   [0  : 0]    csr_rreq    // csr read request
+    output  logic   [0  : 0]    csr_rreq,   // csr read request
+    //
+    input   logic   [0  : 0]    exc,        // exception
+    output  logic   [31 : 0]    ex_pc       // 
 );
 
     // program counter wires
@@ -138,6 +141,7 @@ module nf_cpu
     logic   [0  : 0]    we_rf_imem;         // write enable register file ( memory stage )
     logic   [1  : 0]    size_dm_imem;       // size for load/store instructions ( memory stage )
     logic   [0  : 0]    sign_dm_imem;       // sign extended data memory for load instructions ( memory stage )
+    logic   [31 : 0]    pc_imem;            // program counter value ( memory stage )
     /*********************************************
     **       Instruction write back stage       **
     *********************************************/
@@ -148,6 +152,7 @@ module nf_cpu
     logic   [31 : 0]    result_iwb;         // result operation ( write back stage )
     logic   [31 : 0]    wd_iwb;             // write data ( write back stage )
     logic   [31 : 0]    rd_dm_iwb;          // read data from data memory ( write back stage )
+    logic   [31 : 0]    pc_iwb;             // program counter value ( write back stage )
     logic   [0  : 0]    lsu_busy;           // load store unit busy
 
     // next program counter value for branch command
@@ -158,7 +163,7 @@ module nf_cpu
     // connecting csr wires to cpu output
     assign csr_addr = csr_addr_iexe;
     assign csr_zimm = ra1_iexe;
-    assign csr_wd   = csr_sel_iexe ? '0 | csr_zimm : rd1_iexe ;
+    assign csr_wd   = csr_sel_iexe ? '0 | csr_zimm : rd1_i_exu;
     assign csr_rreq = csr_rreq_iexe;
     assign csr_wreq = csr_wreq_iexe;
     assign csr_cmd  = csr_cmd_iexe;
@@ -221,11 +226,14 @@ module nf_cpu
     nf_register_we      #( 32 ) rd1_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd1_i_exu     , rd1_imem       );
     nf_register_we      #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd2_i_exu     , rd2_imem       );
     nf_register_we      #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem ,              result_iexe_e , result_imem    );
+    nf_register_we      #( 32 ) pc_iexe_imem        ( clk , resetn , ~ stall_imem ,              pc_iexe       , pc_imem        );
     // imem2iwb
     nf_register_we      #(  1 ) we_rf_imem_iwb      ( clk , resetn , ~ stall_iwb  ,              we_rf_imem    , we_rf_iwb      );
     nf_register_we      #(  1 ) rf_src_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              rf_src_imem   , rf_src_iwb     );
     nf_register_we      #(  5 ) wa3_imem_iwb        ( clk , resetn , ~ stall_iwb  ,              wa3_imem      , wa3_iwb        );
     nf_register_we      #( 32 ) result_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              result_imem   , result_iwb     );
+    nf_register_we      #( 32 ) pc_imem_iwb         ( clk , resetn , ~ stall_iwb  ,              pc_imem       , pc_iwb         );
+    nf_register_we      #( 32 ) pc_iwb_ex           ( clk , resetn , ~ stall_iwb  ,              pc_iwb        , ex_pc          );
     
     // for verification
     // synthesis translate_off
@@ -242,6 +250,7 @@ module nf_cpu
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset
         // program counter inputs
+        .exc            ( exc               ),  // exception
         .pc_branch      ( pc_branch         ),  // program counter branch value from decode stage
         .pc_src         ( pc_src            ),  // next program counter source
         .branch_type    ( branch_type       ),  // branch type

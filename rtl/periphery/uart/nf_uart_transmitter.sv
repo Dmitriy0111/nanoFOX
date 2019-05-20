@@ -77,55 +77,59 @@ module nf_uart_transmitter
         end
         else
         begin
-            case( state )
-                IDLE_s      : 
-                        begin
-                            uart_tx <= '1;
-                            req_ack <= '0;
-                            if( idle2start )
+            if( tr_en )
+            begin
+                case( state )
+                    IDLE_s      : 
                             begin
-                                bit_counter <= '0;
-                                counter <= '0;
-                                int_reg <= tx_data;
-                            end
-                        end
-                START_s     : 
-                        begin
-                            uart_tx <= '0;
-                            counter <= counter + 1'b1;
-                            if( counter >= comp )
-                            begin
-                                counter <= '0;
-                            end
-                        end
-                TRANSMIT_s  : 
-                        begin
-                            uart_tx <= int_reg[ bit_counter[2 : 0] ];
-                            counter <= counter + 1'b1;
-                            if( counter >= comp )
-                            begin
-                                counter <= '0;
-                                bit_counter <= bit_counter + 1'b1;
-                            end
-                            if( bit_counter == 4'h8 )
-                            begin
-                                bit_counter <= '0;
                                 uart_tx <= '1;
+                                req_ack <= '0;
+                                if( idle2start )
+                                begin
+                                    bit_counter <= '0;
+                                    counter <= '0;
+                                    int_reg <= tx_data;
+                                end
                             end
-                        end
-                STOP_s      : 
-                        begin
-                            counter <= counter + 1'b1;
-                            if( counter >= comp )
+                    START_s     : 
                             begin
-                                counter <= '0;
-                                req_ack <= '1;
+                                uart_tx <= '0;
+                                counter <= counter + 1'b1;
+                                if( counter >= comp )
+                                begin
+                                    counter <= '0;
+                                end
                             end
-                        end
-            endcase
-            if( !tr_en )
+                    TRANSMIT_s  : 
+                            begin
+                                uart_tx <= int_reg[ bit_counter[2 : 0] ];
+                                counter <= counter + 1'b1;
+                                if( counter >= comp )
+                                begin
+                                    counter <= '0;
+                                    bit_counter <= bit_counter + 1'b1;
+                                end
+                                if( bit_counter == 4'h8 )
+                                begin
+                                    bit_counter <= '0;
+                                    uart_tx <= '1;
+                                end
+                            end
+                    STOP_s      : 
+                            begin
+                                counter <= counter + 1'b1;
+                                if( counter >= comp )
+                                begin
+                                    counter <= '0;
+                                    req_ack <= '1;
+                                end
+                            end
+                endcase
+            end
+            else
             begin
                 bit_counter <= '0;
+                counter <= '0;
                 int_reg <= '1;
                 uart_tx <= '1;
             end

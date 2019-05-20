@@ -71,6 +71,7 @@ module nf_uart_receiver
         else
         begin
             if( rec_en )
+            begin
                 case( state )
                     IDLE_s :
                     begin
@@ -94,6 +95,7 @@ module nf_uart_receiver
                         rx_valid <= '1;
                     end
                 endcase
+            end
             else
             begin
                 counter <= '0;
