@@ -7,11 +7,11 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../../inc/nf_settings.svh"
+`include "nf_gpio.svh"
 
 module nf_gpio
 #(
-    parameter                       gpio_w = `NF_GPIO_WIDTH
+    parameter                       gpio_w = 8
 )(
     // clock and reset
     input   logic   [0        : 0]  clk,    // clk  
@@ -26,6 +26,8 @@ module nf_gpio
     output  logic   [gpio_w-1 : 0]  gpo,    // GPIO output
     output  logic   [gpio_w-1 : 0]  gpd     // GPIO direction
 );
+    // gpio enable
+    logic   [0        : 0]  gpio_en;    // gpio enable
     // gpio input
     logic   [gpio_w-1 : 0]  gpio_i;     // gpio input
     // gpio output
@@ -35,41 +37,30 @@ module nf_gpio
     // write enable signals 
     logic   [0        : 0]  gpo_we;     // gpio output write enable
     logic   [0        : 0]  gpd_we;     // gpio direction write enable
+    logic   [0        : 0]  gpio_en_we; // gpio enable write enable
     // assign inputs/outputs
     assign gpo    = gpio_o;
     assign gpd    = gpio_d;
     assign gpio_i = gpi;
     // assign write enable signals
-    assign gpo_we = we && ( addr[0 +: 4] == `NF_GPIO_GPO ); 
-    assign gpd_we = we && ( addr[0 +: 4] == `NF_GPIO_DIR ); 
+    assign gpo_we     = we && ( addr[0 +: 4] == NF_GPIO_GPO ); 
+    assign gpd_we     = we && ( addr[0 +: 4] == NF_GPIO_DIR ); 
+    assign gpio_en_we = we && ( addr[0 +: 4] == NF_GPIO_EN  ); 
     // mux for routing one register value
     always_comb
     begin
-        rd = gpio_i;
+        rd = '0 | gpio_i;
         casex( addr[0 +: 4] )
-            `NF_GPIO_GPI :  rd = gpio_i;
-            `NF_GPIO_GPO :  rd = gpio_o;
-            `NF_GPIO_DIR :  rd = gpio_d;
+            NF_GPIO_GPI  :  rd = '0 | gpio_i;
+            NF_GPIO_GPO  :  rd = '0 | gpio_o;
+            NF_GPIO_DIR  :  rd = '0 | gpio_d;
+            NF_GPIO_EN   :  rd = '0 | gpio_en;
             default      : ;
         endcase
     end
-    // writing value in gpio output register
-    always_ff @(posedge clk, negedge resetn)
-    begin : load_gpo
-        if( !resetn )
-            gpio_o <= '0;
-        else
-            if( gpo_we )
-                gpio_o <= wd;
-    end
-    // writing value in gpio direction register
-    always_ff @(posedge clk, negedge resetn)
-    begin : load_gpd
-        if( !resetn )
-            gpio_d <= '0;
-        else
-            if( gpd_we )
-                gpio_d <= wd;
-    end
+    // creating gpio registers
+    nf_register_we  #( gpio_w ) gpo_reg     ( clk , resetn , gpo_we && gpio_en , wd , gpio_o  );
+    nf_register_we  #( gpio_w ) gpd_reg     ( clk , resetn , gpd_we && gpio_en , wd , gpio_d  );
+    nf_register_we  #(      1 ) gpio_en_reg ( clk , resetn , gpio_en_we        , wd , gpio_en );
 
 endmodule : nf_gpio

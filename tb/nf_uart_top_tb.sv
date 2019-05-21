@@ -7,7 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../../inc/nf_settings.svh"
+`include "../rtl/periphery/uart/nf_uart.svh"
 
 `define     tx_req      0
 `define     rx_valid    1
@@ -67,15 +67,15 @@ module nf_uart_top_tb ();
     endtask : read_reg
     // task for setting bandwidth
     task set_bw( logic [15 : 0] bw );
-        write_reg( '0 | `NF_UART_DR, '0 | bw );
+        write_reg( '0 | NF_UART_DR, '0 | bw );
     endtask : set_bw
     // task for writing data in transmit register
     task write_tr( logic [7 : 0] tx_data );
-        write_reg( '0 | `NF_UART_TX, '0 | tx_data );
+        write_reg( '0 | NF_UART_TX, '0 | tx_data );
     endtask : write_tr
     // task for writing data in control register
     task write_cr( logic [7 : 0] control );
-        write_reg( '0 | `NF_UART_CR, '0 | control );
+        write_reg( '0 | NF_UART_CR, '0 | control );
     endtask : write_cr
     // task for creating transaction for uart sender
     task send_message( string message );
@@ -84,7 +84,7 @@ module nf_uart_top_tb ();
             write_tr(message[i]);
             write_cr( ( 1'b1 << `tr_en ) | ( 1'b1 << `rec_en ) );
             do
-                read_reg('0 | `NF_UART_CR );
+                read_reg('0 | NF_UART_CR );
             while(read_data[0]!=0);
         end
     endtask : send_message

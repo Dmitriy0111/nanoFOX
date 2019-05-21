@@ -9,6 +9,8 @@
 
 `include "../inc/nf_settings.svh"
 `include "../tb/nf_tb.svh"
+`include "../rtl/periphery/uart/nf_uart.svh"
+`include "../rtl/periphery/gpio/nf_gpio.svh"
 
 module nf_ahb_tb();
 
@@ -115,7 +117,7 @@ module nf_ahb_tb();
     end
     initial
     begin
-        addr_dm = `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO;       
+        addr_dm = `NF_GPIO_A_ADDR_MATCH | NF_GPIO_GPO;       
         wd_dm   = 8'h5a;     
         we_dm   = '0;
         req_dm  = '0;
@@ -125,15 +127,15 @@ module nf_ahb_tb();
         data_read   ( `NF_PWM_ADDR_MATCH    | '0           );
         data_write  ( `NF_PWM_ADDR_MATCH    | '0          , 32'd10  );
         wait_clk    ( 3 );
-        data_write  ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO, 32'h5a );
-        data_write  ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_DIR, 32'ha5 );
-        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_DIR );
-        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO );
-        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPI );
+        data_write  ( `NF_GPIO_A_ADDR_MATCH | NF_GPIO_GPO, 32'h5a );
+        data_write  ( `NF_GPIO_A_ADDR_MATCH | NF_GPIO_DIR, 32'ha5 );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | NF_GPIO_DIR );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | NF_GPIO_GPO );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | NF_GPIO_GPI );
         wait_clk    ( 5 );
         addr_dm = '0;
         wait_clk    ( 5 );
-        data_read   ( `NF_GPIO_A_ADDR_MATCH | `NF_GPIO_GPO );
+        data_read   ( `NF_GPIO_A_ADDR_MATCH | NF_GPIO_GPO );
         wait_clk    ( 20 );
         $stop;
     end

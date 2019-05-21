@@ -12,7 +12,7 @@ set i2 +incdir+../rtl/periphery
 set i3 +incdir+../rtl/periphery/uart
 set i4 +incdir+../rtl/periphery/pwm
 set i5 +incdir+../rtl/periphery/gpio
-set i6 +incdir+../rtl/ahb
+set i6 +incdir+../rtl/bus/ahb
 set i7 +incdir+../rtl
 set i8 +incdir+../tb
 
@@ -22,7 +22,7 @@ set s2 ../rtl/periphery/*.*v
 set s3 ../rtl/periphery/uart/*.*v
 set s4 ../rtl/periphery/pwm/*.*v
 set s5 ../rtl/periphery/gpio/*.*v
-set s6 ../rtl/ahb/*.*v
+set s6 ../rtl/bus/ahb/*.*v
 set s7 ../rtl/*.*v
 set s8 ../tb/*.*v
 

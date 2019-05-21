@@ -14,8 +14,8 @@ char message[14] = "Hello World!\n\r";
 
 int main ()
 {
-    message[0] = 149;
     int i;
+    NF_GPIO_EN = 1;
     i=0;
     NF_UART_DV = NF_UART_SP_115200;
     NF_UART_CR = NF_UART_TX_EN;

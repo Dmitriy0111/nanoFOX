@@ -7,7 +7,7 @@
 #  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 #
 
-.equ    _stack_start,   0x00001000  # 400 << 2
+.equ    _stack_start,   0x0000f00  # 3C0 << 2
 
 nanoFOX_vectors:
         j _main         # 0x00  vector  ( reset vector )

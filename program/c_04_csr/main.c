@@ -23,6 +23,7 @@ volatile int cycle_res=0;
 
 int main ()
 {
+    NF_GPIO_EN = 1;
     int cycle_s=0;
     int cycle_e=0;
     cycle_s = read_csr_v(mcycle);

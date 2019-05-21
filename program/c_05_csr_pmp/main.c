@@ -32,8 +32,8 @@ void delay(int delay_c)
 int main ()
 {
     write_csr_v(pmpaddr0, 0x00000000);
-    write_csr_v(pmpaddr1, 0x00000800);  // only read from 0x0000_0000 to 0x00000800
-    write_csr_v(pmpaddr2, 0xffffffff);  // can write
+    write_csr_v(pmpaddr1, 0x00000800);  // read only from 0x0000_0000 to 0x0000_0800
+    write_csr_v(pmpaddr2, 0xffffffff);  // can write from 0x0000_0800 to 0xffff_ffff
 
     write_csr_v(pmpcfg0, ( 0x22 << 16 ) | ( 0x20 << 8 ) );
 

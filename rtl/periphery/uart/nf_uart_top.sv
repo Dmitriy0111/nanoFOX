@@ -7,8 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../../inc/nf_settings.svh"
-`include "../../inc/nf_uart_regs.svh"
+`include "nf_uart.svh"
 
 module nf_uart_top
 (
@@ -42,9 +41,9 @@ module nf_uart_top
     logic   [0  : 0]    rx_val_set;     // receiver data valid set
     
     // assign write enable signals
-    assign uart_cr_we = we && ( addr[0 +: 4] == `NF_UART_CR );
-    assign uart_tx_we = we && ( addr[0 +: 4] == `NF_UART_TX );
-    assign uart_dv_we = we && ( addr[0 +: 4] == `NF_UART_DR );
+    assign uart_cr_we = we && ( addr[0 +: 4] == NF_UART_CR );
+    assign uart_tx_we = we && ( addr[0 +: 4] == NF_UART_TX );
+    assign uart_dv_we = we && ( addr[0 +: 4] == NF_UART_DR );
 
     assign CRI.TX_REQ = wd[0];
     assign CRI.RX_VAL = wd[1];
@@ -58,18 +57,18 @@ module nf_uart_top
     begin
         rd = '0 | CRO;
         casex( addr[0 +: 4] )
-            `NF_UART_CR :   rd = '0 | CRO    ;
-            `NF_UART_TX :   rd = '0 | UDR_TX ;
-            `NF_UART_RX :   rd = '0 | UDR_RX ;
-            `NF_UART_DR :   rd = '0 | UDVR_0 ;
+            NF_UART_CR  :   rd = '0 | CRO    ;
+            NF_UART_TX  :   rd = '0 | UDR_TX ;
+            NF_UART_RX  :   rd = '0 | UDR_RX ;
+            NF_UART_DR  :   rd = '0 | UDVR_0 ;
             default     : ;
         endcase
     end
     // creating control and data registers
-    nf_register_we #( 8  ) nf_uart_tx_reg    ( clk , resetn , uart_tx_we , wd        , UDR_TX    );
+    nf_register_we #(  8 ) nf_uart_tx_reg    ( clk , resetn , uart_tx_we , wd        , UDR_TX    );
     nf_register_we #( 16 ) nf_uart_dv_reg    ( clk , resetn , uart_dv_we , wd        , UDVR_0    );
-    nf_register_we #( 1  ) nf_uart_tx_en     ( clk , resetn , uart_cr_we , CRI.TX_EN , CRO.TX_EN );
-    nf_register_we #( 1  ) nf_uart_rx_en     ( clk , resetn , uart_cr_we , CRI.RX_EN , CRO.RX_EN );
+    nf_register_we #(  1 ) nf_uart_tx_en     ( clk , resetn , uart_cr_we , CRI.TX_EN , CRO.TX_EN );
+    nf_register_we #(  1 ) nf_uart_rx_en     ( clk , resetn , uart_cr_we , CRI.RX_EN , CRO.RX_EN );
     // creating one cross domain crossing for tx request
     nf_cdc 
     nf_cdc_req

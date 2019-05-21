@@ -15,6 +15,7 @@ void main (void)
 {
     int i;
     i=0;
+    NF_GPIO_EN = 1;
     while( i != 3 )
     {
         NF_GPIO_GPO = msg[i];

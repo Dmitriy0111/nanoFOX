@@ -7,7 +7,7 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../../inc/nf_ahb.svh"
+`include "nf_ahb.svh"
 
 module nf_ahb2core
 (

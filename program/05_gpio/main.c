@@ -19,10 +19,10 @@
     #define delay_value 100000
 #endif
 
+volatile int delay_v;
 
 void delay(int delay_c)
 {
-    volatile int delay_v;
     delay_v = delay_c;
     while(delay_v)
         delay_v--;
@@ -31,6 +31,7 @@ void delay(int delay_c)
 void main (void)
 {
     int i = 1;
+    NF_GPIO_EN = 1;
     NF_GPIO_GPO = i;
     while(1)
     {

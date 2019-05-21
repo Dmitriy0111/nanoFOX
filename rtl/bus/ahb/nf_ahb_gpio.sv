@@ -7,12 +7,11 @@
 *  Copyright(c)    :   2018 - 2019 Vlasov D.V.
 */
 
-`include "../../inc/nf_settings.svh"
-`include "../../inc/nf_ahb.svh"
+`include "nf_ahb.svh"
 
 module nf_ahb_gpio
 #(
-    parameter                       gpio_w = `NF_GPIO_WIDTH
+    parameter                       gpio_w = 8
 )(
     // clock and reset
     input   logic   [0        : 0]  hclk,       // hclock

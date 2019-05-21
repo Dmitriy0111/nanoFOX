@@ -62,13 +62,4 @@
 `endif
 
 //constant's for gpio module
-`define NF_GPIO_GPI         'h0
-`define NF_GPIO_GPO         'h4
-`define NF_GPIO_DIR         'h8
 `define NF_GPIO_WIDTH       8
-
-//constant's for uart module
-`define NF_UART_CR          'h0
-`define NF_UART_TX          'h4
-`define NF_UART_RX          'h8
-`define NF_UART_DR          'hC
