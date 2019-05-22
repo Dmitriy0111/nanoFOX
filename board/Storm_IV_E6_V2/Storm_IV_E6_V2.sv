@@ -39,8 +39,12 @@ module Storm_IV_E6_V2
     assign hsync    = dig[2];
     assign vsync    = dig[3];
     assign led[0]   = pwm; 
+
+    `define nf_top nf_top_ahb
+
     // creating one nf_top_0 unit
-    nf_top nf_top_0
+    `nf_top
+    nf_top_0
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),
@@ -52,7 +56,8 @@ module Storm_IV_E6_V2
         .uart_rx    ( uart_rx   )
     );
     // creating one nf_seven_seg_dynamic_0 unit
-    nf_seven_seg_dynamic nf_seven_seg_dynamic_0
+    nf_seven_seg_dynamic 
+    nf_seven_seg_dynamic_0
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),

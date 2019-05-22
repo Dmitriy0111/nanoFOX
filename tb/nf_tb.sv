@@ -49,9 +49,11 @@ module nf_tb();
     string  instr_sep_s_imem_stage;     // instruction memory stage string (debug level 0)
     string  instr_sep_s_iwb_stage;      // instruction write back stage string (debug level 0)
     // string for txt, html and terminal logging
-    string  log_str = "";               
+    string  log_str = "";  
 
-    nf_top 
+    `define nf_top  nf_top_ahb             
+
+    `nf_top 
     nf_top_0
     (   
         // clock and reset
@@ -70,7 +72,7 @@ module nf_tb();
 
     /*
     or
-    nf_top 
+    `nf_top
     nf_top_0
     (
         .*

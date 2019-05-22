@@ -149,8 +149,12 @@ input 		     [1:0]		GPIO_1_IN;
     assign gpio_i_0 = '0 | SW;
 	assign GPIO_0[4] = uart_tx;
 	assign uart_rx   = GPIO_0[5];
+
+	`define nf_top nf_top_ahb
+
 	// creating one nf_top_0 unit
-    nf_top nf_top_0
+    `nf_top 
+	nf_top_0
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),

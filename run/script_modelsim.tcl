@@ -13,7 +13,7 @@ set i3 +incdir+../rtl/periphery/uart
 set i4 +incdir+../rtl/periphery/pwm
 set i5 +incdir+../rtl/periphery/gpio
 set i6 +incdir+../rtl/bus/ahb
-set i7 +incdir+../rtl
+set i7 +incdir+../rtl/top
 set i8 +incdir+../tb
 
 set s0 ../rtl/common/*.*v
@@ -23,7 +23,7 @@ set s3 ../rtl/periphery/uart/*.*v
 set s4 ../rtl/periphery/pwm/*.*v
 set s5 ../rtl/periphery/gpio/*.*v
 set s6 ../rtl/bus/ahb/*.*v
-set s7 ../rtl/*.*v
+set s7 ../rtl/top/*.*v
 set s8 ../tb/*.*v
 
 vlog $i0 $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $s0 $s1 $s2 $s3 $s4 $s5 $s6 $s7 $s8

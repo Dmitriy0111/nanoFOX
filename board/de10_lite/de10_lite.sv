@@ -44,8 +44,11 @@ module de10_lite
     assign ledr[0 +: 8] = gpio_o_0;
     assign { hex5 , hex4 , hex3 , hex2 , hex1 , hex0 } = hex;
 
+    `define nf_top nf_top_ahb
+
     // creating one nf_top_0 unit
-    nf_top nf_top_0
+    `nf_top 
+    nf_top_0
     (
         .clk        ( clk       ),
         .resetn     ( resetn    ),

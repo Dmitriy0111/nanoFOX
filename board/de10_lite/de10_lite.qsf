@@ -302,7 +302,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_branch_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_static.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg_dynamic.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/hex_display/nf_seven_seg.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/top/nf_top_ahb.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_sign_ex.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/common/nf_registers.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_reg_file.sv

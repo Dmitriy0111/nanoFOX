@@ -1,5 +1,5 @@
 /*
-*  File            :   nf_top.sv
+*  File            :   nf_top_ahb.sv
 *  Autor           :   Vlasov D.V.
 *  Data            :   2018.11.27
 *  Language        :   SystemVerilog
@@ -9,7 +9,7 @@
 
 `include "../inc/nf_settings.svh"
 
-module nf_top
+module nf_top_ahb
 (
     // clock and reset
     input   logic   [0  : 0]    clk,        // clock input
@@ -357,4 +357,4 @@ module nf_top
         .rd             ( ram_rd        )       // read data
     );
 
-endmodule : nf_top
+endmodule : nf_top_ahb
