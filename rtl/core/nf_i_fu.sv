@@ -21,6 +21,7 @@ module nf_i_fu
     input   logic   [3  : 0]    branch_type,    // branch type
     input   logic   [0  : 0]    stall_if,       // stalling instruction fetch stage
     output  logic   [31 : 0]    instr_if,       // instruction fetch
+    output  logic   [31 : 0]    last_pc,        // last program_counter
     // memory inputs/outputs
     output  logic   [31 : 0]    addr_i,         // address instruction memory
     input   logic   [31 : 0]    rd_i,           // read instruction memory
@@ -59,6 +60,14 @@ module nf_i_fu
     assign we_i   = '0;
     assign wd_i   = '0;
     assign size_i = 2'b10;  // word
+
+    always_ff @(posedge clk, negedge resetn)
+    begin
+        if( !resetn )
+            last_pc <= '0;
+        else if( !stall_if )
+            last_pc <= addr_i;
+    end
     // finding next program counter value
     always_comb
     begin

@@ -344,7 +344,7 @@ module nf_top_ahb
     //creating one instruction/data memory
     nf_ram
     #(
-        .depth          ( 'h400         ),
+        .depth          ( 'h10000        ),      // for testing all commands
         .load           ( 1             ),
         .path2file      ( `path2file    )
     )

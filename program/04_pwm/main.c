@@ -31,12 +31,13 @@ void delay(int delay_c)
 void main (void)
 {
     int i = 1;
-    NF_PWM = i;
+    NF_PWM_ENR = 1;
+    NF_PWM_CR = i;
     while(1)
     {
         delay(delay_value);
-        i = NF_PWM;
+        i = NF_PWM_CR;
         i++;
-        NF_PWM = i;
+        NF_PWM_CR = i;
     }
 }

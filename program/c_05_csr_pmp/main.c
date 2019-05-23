@@ -12,7 +12,7 @@
 
 #define SYNTH   1
 #define SIM     0
-#define RUNTYPE SIM
+#define RUNTYPE SYNTH
 
 #if   RUNTYPE == SIM
     #define delay_value 2
@@ -39,6 +39,7 @@ int main ()
 
     int i = 1;
     NF_GPIO_GPO = i;
+    NF_GPIO_EN = 1;
 
     while( 1 )
     {

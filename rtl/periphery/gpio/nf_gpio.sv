@@ -55,7 +55,7 @@ module nf_gpio
             NF_GPIO_GPO  :  rd = '0 | gpio_o;
             NF_GPIO_DIR  :  rd = '0 | gpio_d;
             NF_GPIO_EN   :  rd = '0 | gpio_en;
-            default      : ;
+            default      :  ;
         endcase
     end
     // creating gpio registers

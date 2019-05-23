@@ -17,7 +17,7 @@ module nf_control_unit
     input   logic   [6 : 0]     funct7,         // funct 7 field in instruction code
     input   logic   [4 : 0]     wa3,            // write address field
     output  logic   [4 : 0]     imm_src,        // for enable immediate data
-    output  logic   [0 : 0]     srcB_sel,       // for selecting srcB ALU
+    output  logic   [1 : 0]     srcB_sel,       // for selecting srcB ALU
     output  logic   [1 : 0]     srcA_sel,       // for selecting srcA ALU
     output  logic   [1 : 0]     shift_sel,      // for selecting shift input
     output  logic   [0 : 0]     res_sel,        // for selecting result
@@ -146,6 +146,7 @@ module nf_control_unit
         case( instr_cf_0.IT )
             `RVI    :
                 case( instr_cf_0.OP )
+                    U_OP1           : srcB_sel = SRCB_12;
                     R_OP0 , B_OP0   : srcB_sel = SRCB_RD2;
                     default         :;
                 endcase

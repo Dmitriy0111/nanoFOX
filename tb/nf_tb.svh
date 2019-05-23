@@ -12,8 +12,8 @@
 // enable term logging
 `define log_term    1
 // enable txt logging
-`define log_txt     1
+`define log_txt     0
 // enable html logging
-`define log_html    1
+`define log_html    0
 // enable logging
 `define log_en      1

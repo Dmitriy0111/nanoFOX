@@ -85,4 +85,21 @@ module nf_ahb_router
         .hready         ( hready        )   // AHB ready master
     );
 
+    // synthesis translate_off
+    /***************************************************
+    **                   Assertions                   **
+    ***************************************************/
+
+    // creating propertis
+
+    property HSEL_ID_CHECK;
+        @(posedge hclk) disable iff(hresetn) ( hsel != '0 );
+    endproperty
+
+    // assertions
+
+    NF_HSEL_ID_CHECK : assert property ( HSEL_ID_CHECK ) else begin $error("nf_ahb_router error! hsel = 0"); $stop; end
+
+    // synthesis translate_on
+
 endmodule : nf_ahb_router

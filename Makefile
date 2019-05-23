@@ -15,6 +15,9 @@ help:
 	$(info make board_all      - run synthesis for all the supported boards)
 	$(info make prog_comp_c    - compile C program and copy program.hex to program_file)
 	$(info make prog_comp_asm  - compile Assembler program and copy program.hex to program_file)
+	$(info make prog_comp_rvc  - compile riscv-compliance program)
+	$(info make copy_rvc 	   - clone riscv-compliance to program folder)
+	$(info make clean_rvc	   - clean riscv-compliance folder)
 	$(info Open and read the Makefile for details)
 	@true
 
@@ -37,7 +40,8 @@ clean: \
 	sim_clean \
 	board_clean \
 	log_clean \
-	prog_clean
+	prog_clean \
+	clean_rvc
 
 sim_all: \
 	sim_cmd 
@@ -110,6 +114,40 @@ prog_comp_asm:
 	mkdir -p program_file
 	riscv-none-embed-gcc program/$(PROG_NAME)/main.S -c -o program_file/main.o $(CCF)
 	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/program.ld program_file/main.o $(LDF)
+	riscv-none-embed-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
+	python program/startup/ihex2hex.py
+
+clean_rvc:
+	rm -rfd $(PWD)/program/riscv-compliance
+
+copy_rvc:
+	git clone https://github.com/riscv/riscv-compliance program/riscv-compliance
+
+RVC_TEST ?= I-ADD-01
+
+prog_comp_rvc:
+	mkdir -p program_file
+	riscv-none-embed-gcc \
+	program/riscv-compliance/riscv-test-suite/rv32i/src/$(RVC_TEST).S \
+	-Iprogram/riscv-compliance/riscv-test-env/p \
+	-Iprogram/riscv-compliance/riscv-target/sifive-formal/formalspec-env/ \
+	-Iprogram/riscv-compliance/riscv-target/riscvOVPsim/ -c \
+	-o program_file/main.o $(CCF)
+	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/rvc.ld program_file/main.o $(LDF)
+	riscv-none-embed-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
+	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
+	python program/startup/ihex2hex.py
+
+prog_comp_rvc_sifive_formal:
+	mkdir -p program_file
+	riscv-none-embed-gcc \
+	program/riscv-compliance/riscv-test-suite/rv32i/src/$(RVC_TEST).S \
+	-Iprogram/riscv-compliance/riscv-target/sifive-formal/formalspec-env/p \
+	-Iprogram/riscv-compliance/riscv-target/sifive-formal/formalspec-env/ \
+	-Iprogram/riscv-compliance/riscv-target/sifive-formal/ -c \
+	-o program_file/main.o $(CCF)
+	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/rvc.ld program_file/main.o $(LDF)
 	riscv-none-embed-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
 	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
 	python program/startup/ihex2hex.py

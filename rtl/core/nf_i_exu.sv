@@ -18,7 +18,7 @@ module nf_i_exu
     input   logic   [31 : 0]    ext_data,   // sign extended immediate data
     input   logic   [31 : 0]    pc_v,       // program-counter value
     input   logic   [1  : 0]    srcA_sel,   // source A enable signal for ALU
-    input   logic   [0  : 0]    srcB_sel,   // source B enable signal for ALU
+    input   logic   [1  : 0]    srcB_sel,   // source B enable signal for ALU
     input   logic   [1  : 0]    shift_sel,  // for selecting shift input
     input   logic   [4  : 0]    shamt,      // for shift operations
     input   logic   [3  : 0]    ALU_Code,   // code for ALU
@@ -47,6 +47,7 @@ module nf_i_exu
         case( srcB_sel )
             SRCB_RD2    :   srcB = rd2;
             SRCB_IMM    :   srcB = ext_data;
+            SRCB_12     :   srcB = ext_data << 12;
             default     :   ;
         endcase
     end

@@ -47,6 +47,7 @@ module nf_cpu
 
     // program counter wires
     logic   [31 : 0]    pc_branch;          // program counter branch value
+    logic   [31 : 0]    last_pc;
     logic   [0  : 0]    pc_src;             // program counter source
     logic   [3  : 0]    branch_type;        // branch type
     // register file wires
@@ -81,7 +82,7 @@ module nf_cpu
     logic   [31 : 0]    ext_data_id;        // extended immediate data ( decode stage )
     logic   [31 : 0]    rd1_id;             // read data 1 from register file ( decode stage )
     logic   [31 : 0]    rd2_id;             // read data 2 from register file ( decode stage )
-    logic   [0  : 0]    srcB_sel_id;        // source B selection ( decode stage )
+    logic   [1  : 0]    srcB_sel_id;        // source B selection ( decode stage )
     logic   [1  : 0]    srcA_sel_id;        // source A selection ( decode stage )
     logic   [1  : 0]    shift_sel_id;       // for selecting shift input ( decode stage )
     logic   [0  : 0]    res_sel_id;         // result select ( decode stage )
@@ -109,7 +110,7 @@ module nf_cpu
     logic   [31 : 0]    rd1_iexe;           // read data 1 from register file ( execution stage )
     logic   [31 : 0]    rd2_iexe;           // read data 2 from register file ( execution stage )
     logic   [31 : 0]    pc_iexe;            // program counter value ( execution stage )
-    logic   [0  : 0]    srcB_sel_iexe;      // source B selection ( execution stage )
+    logic   [1  : 0]    srcB_sel_iexe;      // source B selection ( execution stage )
     logic   [1  : 0]    srcA_sel_iexe;      // source A selection ( execution stage )
     logic   [1  : 0]    shift_sel_iexe;     // for selecting shift input ( execution stage )
     logic   [0  : 0]    res_sel_iexe;       // result select ( execution stage )
@@ -156,7 +157,8 @@ module nf_cpu
     logic   [0  : 0]    lsu_busy;           // load store unit busy
 
     // next program counter value for branch command
-    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
+    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) : rd1_id + ( ext_data_id << 1 ) + 4;
+    assign ex_pc  = pc_iwb;
     assign wa3    = wa3_iwb;
     assign wd3    = wd_iwb;
     assign we_rf  = we_rf_iwb;
@@ -191,7 +193,7 @@ module nf_cpu
 
     // if2id
     nf_register_we      #( 32 ) instr_if_id         ( clk , resetn , ~ stall_id   ,              instr_if      , instr_id       );
-    nf_register_we      #( 32 ) pc_if_id            ( clk , resetn , ~ stall_id   ,              addr_i        , pc_id          );
+    nf_register_we      #( 32 ) pc_if_id            ( clk , resetn , ~ stall_id   ,              last_pc        , pc_id          );
     // id2iexe
     nf_register_we_clr  #(  5 ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , wa3_id        , wa3_iexe       );
     nf_register_we_clr  #(  5 ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra1_id        , ra1_iexe       );
@@ -203,7 +205,7 @@ module nf_cpu
     nf_register_we_clr  #( 32 ) pc_id_iexe          ( clk , resetn , ~ stall_iexe , flush_iexe , pc_id         , pc_iexe        );
     nf_register_we_clr  #(  2 ) size_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , size_dm_id    , size_dm_iexe   );
     nf_register_we_clr  #(  1 ) sign_dm_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , sign_dm_id    , sign_dm_iexe   );
-    nf_register_we_clr  #(  1 ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id   , srcB_sel_iexe  );
+    nf_register_we_clr  #(  2 ) srcB_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcB_sel_id   , srcB_sel_iexe  );
     nf_register_we_clr  #(  2 ) srcA_sel_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , srcA_sel_id   , srcA_sel_iexe  );
     nf_register_we_clr  #(  2 ) shift_sel_id_iexe   ( clk , resetn , ~ stall_iexe , flush_iexe , shift_sel_id  , shift_sel_iexe );
     nf_register_we_clr  #(  1 ) res_sel_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , res_sel_id    , res_sel_iexe   );
@@ -233,7 +235,6 @@ module nf_cpu
     nf_register_we      #(  5 ) wa3_imem_iwb        ( clk , resetn , ~ stall_iwb  ,              wa3_imem      , wa3_iwb        );
     nf_register_we      #( 32 ) result_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              result_imem   , result_iwb     );
     nf_register_we      #( 32 ) pc_imem_iwb         ( clk , resetn , ~ stall_iwb  ,              pc_imem       , pc_iwb         );
-    nf_register_we      #( 32 ) pc_iwb_ex           ( clk , resetn , ~ stall_iwb  ,              pc_iwb        , ex_pc          );
     
     // for verification
     // synthesis translate_off
@@ -256,6 +257,7 @@ module nf_cpu
         .branch_type    ( branch_type       ),  // branch type
         .stall_if       ( stall_if          ),  // stalling instruction fetch stage
         .instr_if       ( instr_if          ),  // instruction fetch
+        .last_pc        ( last_pc           ),
         // memory inputs/outputs
         .addr_i         ( addr_i            ),  // address instruction memory
         .rd_i           ( rd_i              ),  // read instruction memory
@@ -330,77 +332,77 @@ module nf_cpu
     nf_i_lsu_0
     (
         // clock and reset
-        .clk            ( clk           ),      // clock
-        .resetn         ( resetn        ),      // reset
+        .clk            ( clk               ),  // clock
+        .resetn         ( resetn            ),  // reset
         // pipeline wires
-        .result_imem    ( result_imem   ),      // result from imem stage
-        .rd2_imem       ( rd2_imem      ),      // read data 2 from imem stage
-        .we_dm_imem     ( we_dm_imem    ),      // write enable data memory from imem stage
-        .rf_src_imem    ( rf_src_imem   ),      // register file source enable from imem stage
-        .size_dm_imem   ( size_dm_imem  ),      // size data memory from imem stage
-        .sign_dm_imem   ( sign_dm_imem  ),
-        .rd_dm_iwb      ( rd_dm_iwb     ),      // read data for write back stage
-        .lsu_busy       ( lsu_busy      ),      // load store unit busy
+        .result_imem    ( result_imem       ),  // result from imem stage
+        .rd2_imem       ( rd2_imem          ),  // read data 2 from imem stage
+        .we_dm_imem     ( we_dm_imem        ),  // write enable data memory from imem stage
+        .rf_src_imem    ( rf_src_imem       ),  // register file source enable from imem stage
+        .size_dm_imem   ( size_dm_imem      ),  // size data memory from imem stage
+        .sign_dm_imem   ( sign_dm_imem      ),  
+        .rd_dm_iwb      ( rd_dm_iwb         ),  // read data for write back stage
+        .lsu_busy       ( lsu_busy          ),  // load store unit busy
         // data memory and other's
-        .addr_dm        ( addr_dm       ),      // address data memory
-        .rd_dm          ( rd_dm         ),      // read data memory
-        .wd_dm          ( wd_dm         ),      // write data memory
-        .we_dm          ( we_dm         ),      // write enable data memory signal
-        .size_dm        ( size_dm       ),      // size for load/store instructions
-        .req_dm         ( req_dm        ),      // request data memory signal
-        .req_ack_dm     ( req_ack_dm    )       // request acknowledge data memory signal
+        .addr_dm        ( addr_dm           ),  // address data memory
+        .rd_dm          ( rd_dm             ),  // read data memory
+        .wd_dm          ( wd_dm             ),  // write data memory
+        .we_dm          ( we_dm             ),  // write enable data memory signal
+        .size_dm        ( size_dm           ),  // size for load/store instructions
+        .req_dm         ( req_dm            ),  // request data memory signal
+        .req_ack_dm     ( req_ack_dm        )   // request acknowledge data memory signal
     );
     // creating stall and flush unit (hazard)
     nf_hz_stall_unit 
     nf_hz_stall_unit_0
     (   
         // scan wires
-        .we_rf_imem     ( we_rf_imem    ),  // write enable register from memory stage
-        .wa3_iexe       ( wa3_iexe      ),  // write address from execution stage
-        .wa3_imem       ( wa3_imem      ),
-        .we_rf_iexe     ( we_rf_iexe    ),  // write enable register from memory stage
-        .rf_src_iexe    ( rf_src_iexe   ),  // register source from execution stage
-        .ra1_id         ( ra1_id        ),  // read address 1 from decode stage
-        .ra2_id         ( ra2_id        ),  // read address 2 from decode stage
-        .branch_type    ( branch_type   ),  // branch type
-        .we_dm_imem     ( we_dm_imem    ),  // write enable data memory from memory stage
-        .req_ack_dm     ( req_ack_dm    ),  // request acknowledge data memory
-        .req_ack_i      ( req_ack_i     ),  // request acknowledge instruction
-        .rf_src_imem    ( rf_src_imem   ),  // register source from memory stage
-        .lsu_busy       ( lsu_busy      ),  // load store unit busy
+        .we_rf_imem     ( we_rf_imem        ),  // write enable register from memory stage
+        .wa3_iexe       ( wa3_iexe          ),  // write address from execution stage
+        .wa3_imem       ( wa3_imem          ),  
+        .we_rf_iexe     ( we_rf_iexe        ),  // write enable register from memory stage
+        .rf_src_iexe    ( rf_src_iexe       ),  // register source from execution stage
+        .ra1_id         ( ra1_id            ),  // read address 1 from decode stage
+        .ra2_id         ( ra2_id            ),  // read address 2 from decode stage
+        .branch_type    ( branch_type       ),  // branch type
+        .we_dm_imem     ( we_dm_imem        ),  // write enable data memory from memory stage
+        .req_ack_dm     ( req_ack_dm        ),  // request acknowledge data memory
+        .req_ack_i      ( req_ack_i         ),  // request acknowledge instruction
+        .rf_src_imem    ( rf_src_imem       ),  // register source from memory stage
+        .lsu_busy       ( lsu_busy          ),  // load store unit busy
         // control wires
-        .stall_if       ( stall_if      ),  // stall fetch stage
-        .stall_id       ( stall_id      ),  // stall decode stage
-        .stall_iexe     ( stall_iexe    ),  // stall execution stage
-        .stall_imem     ( stall_imem    ),  // stall memory stage
-        .stall_iwb      ( stall_iwb     ),  // stall write back stage
-        .flush_iexe     ( flush_iexe    )   // flush execution stage
+        .stall_if       ( stall_if          ),  // stall fetch stage
+        .stall_id       ( stall_id          ),  // stall decode stage
+        .stall_iexe     ( stall_iexe        ),  // stall execution stage
+        .stall_imem     ( stall_imem        ),  // stall memory stage
+        .stall_iwb      ( stall_iwb         ),  // stall write back stage
+        .flush_iexe     ( flush_iexe        )   // flush execution stage
     );
     // creating bypass unit (hazard)
     nf_hz_bypass_unit 
     nf_hz_bypass_unit_0
     (
         // scan wires
-        .wa3_imem       ( wa3_imem      ),  // write address from mem stage
-        .we_rf_imem     ( we_rf_imem    ),  // write enable register from mem stage
-        .wa3_iwb        ( wa3_iwb       ),  // write address from write back stage
-        .we_rf_iwb      ( we_rf_iwb     ),  // write enable register from write back stage
-        .ra1_id         ( ra1_id        ),  // read address 1 from decode stage
-        .ra2_id         ( ra2_id        ),  // read address 2 from decode stage
-        .ra1_iexe       ( ra1_iexe      ),  // read address 1 from execution stage
-        .ra2_iexe       ( ra2_iexe      ),  // read address 2 from execution stage
+        .wa3_imem       ( wa3_imem          ),  // write address from mem stage
+        .we_rf_imem     ( we_rf_imem        ),  // write enable register from mem stage
+        .wa3_iwb        ( wa3_iwb           ),  // write address from write back stage
+        .we_rf_iwb      ( we_rf_iwb         ),  // write enable register from write back stage
+        .ra1_id         ( ra1_id            ),  // read address 1 from decode stage
+        .ra2_id         ( ra2_id            ),  // read address 2 from decode stage
+        .ra1_iexe       ( ra1_iexe          ),  // read address 1 from execution stage
+        .ra2_iexe       ( ra2_iexe          ),  // read address 2 from execution stage
         // bypass inputs
-        .rd1_iexe       ( rd1_iexe      ),  // read data 1 from execution stage
-        .rd2_iexe       ( rd2_iexe      ),  // read data 2 from execution stage
-        .result_imem    ( result_imem   ),  // ALU result from mem stage
-        .wd_iwb         ( wd_iwb        ),  // write data from iwb stage
-        .rd1_id         ( rd1_id        ),  // read data 1 from decode stage
-        .rd2_id         ( rd2_id        ),  // read data 2 from decode stage
+        .rd1_iexe       ( rd1_iexe          ),  // read data 1 from execution stage
+        .rd2_iexe       ( rd2_iexe          ),  // read data 2 from execution stage
+        .result_imem    ( result_imem       ),  // ALU result from mem stage
+        .wd_iwb         ( wd_iwb            ),  // write data from iwb stage
+        .rd1_id         ( rd1_id            ),  // read data 1 from decode stage
+        .rd2_id         ( rd2_id            ),  // read data 2 from decode stage
         // bypass outputs
-        .rd1_i_exu      ( rd1_i_exu     ),  // bypass data 1 for execution stage
-        .rd2_i_exu      ( rd2_i_exu     ),  // bypass data 2 for execution stage
-        .cmp_d1         ( cmp_d1        ),  // bypass data 1 for decode stage (branch)
-        .cmp_d2         ( cmp_d2        )   // bypass data 2 for decode stage (branch)
+        .rd1_i_exu      ( rd1_i_exu         ),  // bypass data 1 for execution stage
+        .rd2_i_exu      ( rd2_i_exu         ),  // bypass data 2 for execution stage
+        .cmp_d1         ( cmp_d1            ),  // bypass data 1 for decode stage (branch)
+        .cmp_d2         ( cmp_d2            )   // bypass data 2 for decode stage (branch)
     );
 
     // synthesis translate_off

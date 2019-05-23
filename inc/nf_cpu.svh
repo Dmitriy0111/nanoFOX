@@ -285,10 +285,11 @@ typedef enum logic [1 : 0]
 `ifndef RES_TYPES
 `define RES_TYPES
 //result select constants
-typedef enum logic [0 : 0]
+typedef enum logic [1 : 0]
 {
-    RES_ALU     =   1'b0,
-    RES_UB      =   1'b1
+    RES_ALU     =   2'b00,
+    RES_UB      =   2'b01,
+    SRCB_12     =   2'b10
 } res_types;
 `endif
 

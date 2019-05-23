@@ -78,7 +78,7 @@ module nf_alu
             ALU_OR,
             ALU_XOR,
             ALU_AND     : result = logic_res;
-            ALU_SLT     : result = sign ^ sof;          //result = ($signed(srcA) < $signed(srcB));
+            ALU_SLT     : result = '0 | ( sign ^ sof ); //result = ($signed(srcA) < $signed(srcB));
             ALU_SLTU    : result = '0 | carry;          // ($unsigned(srcA) < $unsigned(srcB));
             default     : result = add_sub[31 : 0];
         endcase

@@ -13,7 +13,7 @@ module nf_i_du
 (
     input   logic   [31 : 0]    instr,      // Instruction input
     output  logic   [31 : 0]    ext_data,   // decoded extended data
-    output  logic   [0  : 0]    srcB_sel,   // decoded source B selection for ALU
+    output  logic   [1  : 0]    srcB_sel,   // decoded source B selection for ALU
     output  logic   [1  : 0]    srcA_sel,   // decoded source A selection for ALU
     output  logic   [1  : 0]    shift_sel,  // for selecting shift input
     output  logic   [0  : 0]    res_sel,    // for selecting result
