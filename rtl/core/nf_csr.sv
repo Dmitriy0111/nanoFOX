@@ -43,6 +43,7 @@ module nf_csr
     logic   [31 : 0]    u_out;      // user output
     logic   [31 : 0]    sepc;       // supervisor exception program counter
     logic   [31 : 0]    scause;     // supervisor cause register
+    logic   [31 : 0]    mscratch;
     
     assign csr_rd = csr_rd_i;
 
@@ -79,6 +80,7 @@ module nf_csr
                     `USTATUS_A  :   ustatus <= csr_wd_i;
                     `UIE_A      :   uie     <= csr_wd_i;
                     `UTVEC_A    :   utvec   <= csr_wd_i;
+                    `MSCRATCH_A :   mscratch <= csr_wd_i;
                     default     :   ;
                 endcase
             end
@@ -157,6 +159,7 @@ module nf_csr
             `SEPC_A,
             `SCAUSE_A       :   csr_rd_i = s_out;
             `MISA_A         :   csr_rd_i = `MISA_V; // read only
+            `MSCRATCH_A     :   csr_rd_i = mscratch;
             default         :   ;
         endcase
     end

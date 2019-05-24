@@ -17,12 +17,15 @@ module nf_tb();
     timeprecision       1ns;
     timeunit            1ns;
     // simulation constants
-    parameter           T = 20,                     // 50 MHz (clock period)
-                        resetn_delay = 7,           // delay for reset signal (posedge clk)
-                        repeat_cycles = 200,        // number of repeat cycles before stop
-                        work_freq  = 50_000_000,    // core work frequency
-                        uart_speed = 115200,        // setting uart speed
-                        uart_rec_example = 0;       // for working with uart receive example
+    parameter           T = 20,                                 // 50 MHz (clock period)
+                        resetn_delay = 7,                       // delay for reset signal (posedge clk)
+                        repeat_cycles = 200,                    // number of repeat cycles before stop
+                        work_freq  = 50_000_000,                // core work frequency
+                        uart_speed = 115200,                    // setting uart speed
+                        uart_rec_example = 0,                   // for working with uart receive example
+                        stop_loop = 1,                          // stop with loop 0000_006f
+                        stop_cycle = 0,                         // stop with cycle variable
+                        path2file = "../program_file/program";  // path to program file
     
     // clock and reset
     bit     [0  : 0]    clk;            // clock
@@ -36,6 +39,7 @@ module nf_tb();
     logic   [0  : 0]    uart_rx;        // UART rx wire
     // help variables
     bit     [31 : 0]    cycle_counter;  // variable for cpu cycle
+    bit     [31 : 0]    loop_c;         
     // instructions
     string  instruction_if_stage;       // instruction fetch stage string
     string  instruction_id_stage;       // instruction decode stage string
@@ -79,7 +83,7 @@ module nf_tb();
     );
     */
     // overload path to program file
-    defparam nf_top_0.nf_ram_i_d_0.path2file = "../program_file/program";
+    defparam nf_top_0.nf_ram_i_d_0.path2file = path2file;
     initial
     begin
         uart_rx = '1;
@@ -165,7 +169,11 @@ module nf_tb();
                 end
                 // increment cycle counter
                 cycle_counter++;
-                if( cycle_counter == repeat_cycles )
+                if( ( nf_top_0.nf_cpu_0.instr_id == 32'h0000006f ) && stop_loop )
+                    loop_c++;
+                if( loop_c == 3 )
+                    $stop;
+                if( ( cycle_counter == repeat_cycles ) && stop_cycle )
                     $stop;
             end
         end

@@ -10,9 +10,9 @@
 // enable debug instruction messages
 `define debug_lev0  0
 // enable term logging
-`define log_term    1
+`define log_term    0
 // enable txt logging
-`define log_txt     0
+`define log_txt     1
 // enable html logging
 `define log_html    0
 // enable logging

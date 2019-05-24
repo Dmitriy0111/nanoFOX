@@ -24,9 +24,9 @@ module nf_reg_file
     logic   [31 : 0]    reg_file    [31 : 0];   // register file
 
     assign rd1 = ( ra1 == '0 ) ? '0 : 
-                 ( ( ra1 == wa3) ? wd3 : reg_file[ra1] );
+                 ( ( ( ra1 == wa3) && we3 ) ? wd3 : reg_file[ra1] );
     assign rd2 = ( ra2 == '0 ) ? '0 : 
-                 ( ( ra2 == wa3) ? wd3 : reg_file[ra2] );
+                 ( ( ( ra2 == wa3) && we3 ) ? wd3 : reg_file[ra2] );
     
     always @(posedge clk)
         if( we3 && ( | wa3 ) )      // write enable without zero

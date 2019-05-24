@@ -33,6 +33,7 @@
 `define PMPADDR15_A 12'h3BF
 `define SEPC_A      12'h141
 `define SCAUSE_A    12'h142
+`define MSCRATCH_A  12'h340
 `define MISA_A      12'h301
                     // MXL_WIRI_Extensions
 `define MISA_V      32'b01_0000_00000000000000000100000000  // RV32I

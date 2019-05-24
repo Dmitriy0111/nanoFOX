@@ -45,7 +45,7 @@ module nf_hz_stall_unit
                                     ( rf_src_iexe || rf_src_imem );
 
 
-    assign branch_exe_id_stall  =   ( ! ( ( branch_type[0 +: 3] == B_NONE[0 +: 3] ) || ( branch_type[3] ) ) ) && 
+    assign branch_exe_id_stall  =   ( ! ( ( branch_type == B_NONE ) ) ) && 
                                     we_rf_iexe && 
                                     ( ( wa3_iexe == ra1_id ) || ( wa3_iexe == ra2_id ) ) && 
                                     ( ( | ra1_id ) || ( | ra2_id ) );
