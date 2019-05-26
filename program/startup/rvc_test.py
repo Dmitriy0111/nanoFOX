@@ -11,7 +11,7 @@ import sys
 
 print(sys.argv[1])
 
-pars_file = open("program_file/mem.hex" , "r")
+pars_file = open("program_file/"+sys.argv[1]+"/mem.hex" , "r")
 
 reference_file = open("program/riscv-compliance/riscv-test-suite/rv32i/references/"+sys.argv[1]+".reference_output" , "r")
 
@@ -48,8 +48,17 @@ for i in range(0,len(pars_str)):
         sub_comp = sub_comp + pars_str[i]
 
 j=0
-sub_comp=""
-ref_comp=""
+sub_comp = ""
+ref_comp = ""
+out_str = ""
+
+out_str = str( "| Status  | comp str   | ref str    |\n" )
+log_file.write( out_str )
+print( out_str )
+out_str = str( "| ------- | ---------- | ---------- |\n" )
+log_file.write( out_str )
+print( out_str )
+
 for i in range(0,len(ref_str)):
     j += 1
     if(j != 9):
@@ -57,14 +66,11 @@ for i in range(0,len(ref_str)):
         ref_comp += ref_str[i]
     elif(j == 9):
         j=0
-        print(sub_comp)
-        print(ref_comp)
-        log_file.write(str("[{:s}] 0x{:s} | 0x{:s}\n".format( ( "Pass " if (sub_comp == ref_comp) else "Error") , sub_comp, ref_comp ) ) )
-        if(sub_comp == ref_comp):
-            print("Pass")
-        else:
-            print("Error")
+        out_str = str("| [{:s}] | 0x{:s} | 0x{:s} |\n".format( ( "Pass " if (sub_comp == ref_comp) else "Error") , sub_comp, ref_comp ) )
+        log_file.write( out_str )
+        if(sub_comp != ref_comp):
             error += 1
+        print( out_str )
         sub_comp = ""
         ref_comp = ""
 

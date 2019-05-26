@@ -1,11 +1,10 @@
 
 vlib work
 
-#set test "core test"
+set test "core test"
 #set test "alu test"
 #set test "ahb test"
 #set test "uart test"
-set test "rvc test"
 
 set i0 +incdir+../rtl/common
 set i1 +incdir+../rtl/core
@@ -66,31 +65,9 @@ if {$test == "core test"} {
     vsim -novopt work.nf_alu_tb
     add wave -position insertpoint sim:/nf_alu_tb/*
     add wave -position insertpoint sim:/nf_alu_tb/nf_alu_0/*
-} elseif {$test == "rvc test"} {
-    vsim -novopt work.nf_tb
-    add wave -divider  "pipeline stages"
-    add wave -position insertpoint sim:/nf_tb/instruction_if_stage
-    add wave -position insertpoint sim:/nf_tb/instruction_id_stage
-    add wave -position insertpoint sim:/nf_tb/instruction_iexe_stage
-    add wave -position insertpoint sim:/nf_tb/instruction_imem_stage
-    add wave -position insertpoint sim:/nf_tb/instruction_iwb_stage
-    add wave -divider  "core singals"
-    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/*
-    add wave -divider  "hasard stall & flush singals"
-    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_hz_stall_unit_0/*
-    add wave -divider  "cc unit singals"
-    add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_cc_0/*
-    add wave -divider  "testbench signals"
-    add wave -position insertpoint sim:/nf_tb/*
-
 }
 
 run -all
-
-if {$test == "rvc test"} {
-    mem save -o ../program_file/mem.hex -f hex -noaddress -startaddress 12288 -endaddress 12479 /nf_tb/nf_top_0/nf_ram_i_d_0/ram
-    quit
-}
 
 wave zoom full
 
