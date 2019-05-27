@@ -32,17 +32,7 @@ module nf_cpu
     output  logic   [0  : 0]    we_dm,      // write enable data memory signal
     output  logic   [1  : 0]    size_dm,    // size for load/store instructions
     output  logic   [0  : 0]    req_dm,     // request data memory signal
-    input   logic   [0  : 0]    req_ack_dm, // request acknowledge data memory signal
-    // csr
-    output  logic   [11 : 0]    csr_addr,   // csr address
-    input   logic   [31 : 0]    csr_rd,     // csr read data
-    output  logic   [31 : 0]    csr_wd,     // csr write data
-    output  logic   [1  : 0]    csr_cmd,    // csr command
-    output  logic   [0  : 0]    csr_wreq,   // csr write request
-    output  logic   [0  : 0]    csr_rreq,   // csr read request
-    //
-    input   logic   [0  : 0]    exc,        // exception
-    output  logic   [31 : 0]    ex_pc       // 
+    input   logic   [0  : 0]    req_ack_dm  // request acknowledge data memory signal
 );
 
     // program counter wires
@@ -66,11 +56,21 @@ module nf_cpu
 
     logic   [31 : 0]    rd1_i_exu;          // data for execution stage ( bypass unit )
     logic   [31 : 0]    rd2_i_exu;          // data for execution stage ( bypass unit )
+
+    // csr
+    logic   [11 : 0]    csr_addr;           // csr address
+    logic   [31 : 0]    csr_rd;             // csr read data
+    logic   [31 : 0]    csr_wd;             // csr write data
+    logic   [1  : 0]    csr_cmd;            // csr command
+    logic   [0  : 0]    csr_wreq;           // csr write request
+    logic   [0  : 0]    csr_rreq;           // csr read request
+
+    logic   [31 : 0]    mtvec_v;            // value of mtvec
     
     /*********************************************
     **         Instruction Fetch  stage         **
     *********************************************/
-    logic   [31 : 0]    instr_if;               // instruction fetch
+    logic   [31 : 0]    instr_if;           // instruction fetch
     /*********************************************
     **         Instruction Decode stage         **
     *********************************************/
@@ -157,7 +157,7 @@ module nf_cpu
     logic   [0  : 0]    lsu_busy;           // load store unit busy
 
     // next program counter value for branch command
-    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) : cmp_d1 + ( ext_data_id << 1 ) + 4;
+    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) : (cmp_d1 + ext_data_id) & 32'hffff_fffe;
     assign ex_pc  = pc_iwb;
     assign wa3    = wa3_iwb;
     assign wd3    = wd_iwb;
@@ -174,8 +174,8 @@ module nf_cpu
     begin
         wd_iwb = result_iwb;
         case( rf_src_iwb )
-            1'b0   :   wd_iwb = result_iwb;
-            1'b1   :   wd_iwb = rd_dm_iwb;
+            1'b0    :   wd_iwb = result_iwb;
+            1'b1    :   wd_iwb = rd_dm_iwb;
             default :   ;
         endcase
     end
@@ -185,7 +185,7 @@ module nf_cpu
         result_iexe_e = result_iexe;
         case( { csr_rreq_iexe , res_sel_iexe } )
             2'b00   :   result_iexe_e = result_iexe;    // RES_ALU
-            2'b01   :   result_iexe_e = pc_iexe;        // RES_UB
+            2'b01   :   result_iexe_e = pc_iexe + 4;    // RES_UB
             2'b10   :   result_iexe_e = csr_rd;         // RES_CSR
             default :   ;
         endcase
@@ -193,7 +193,7 @@ module nf_cpu
 
     // if2id
     nf_register_we      #( 32 ) instr_if_id         ( clk , resetn , ~ stall_id   ,              instr_if      , instr_id       );
-    nf_register_we      #( 32 ) pc_if_id            ( clk , resetn , ~ stall_id   ,              last_pc        , pc_id          );
+    nf_register_we      #( 32 ) pc_if_id            ( clk , resetn , ~ stall_id   ,              last_pc       , pc_id          );
     // id2iexe
     nf_register_we_clr  #(  5 ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , wa3_id        , wa3_iexe       );
     nf_register_we_clr  #(  5 ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra1_id        , ra1_iexe       );
@@ -251,13 +251,12 @@ module nf_cpu
         .clk            ( clk               ),  // clock
         .resetn         ( resetn            ),  // reset
         // program counter inputs
-        .exc            ( exc               ),  // exception
         .pc_branch      ( pc_branch         ),  // program counter branch value from decode stage
         .pc_src         ( pc_src            ),  // next program counter source
-        .branch_type    ( branch_type       ),  // branch type
         .stall_if       ( stall_if          ),  // stalling instruction fetch stage
         .instr_if       ( instr_if          ),  // instruction fetch
         .last_pc        ( last_pc           ),
+        .mtvec_v        ( mtvec_v           ),
         // memory inputs/outputs
         .addr_i         ( addr_i            ),  // address instruction memory
         .rd_i           ( rd_i              ),  // read instruction memory
@@ -403,6 +402,23 @@ module nf_cpu
         .rd2_i_exu      ( rd2_i_exu         ),  // bypass data 2 for execution stage
         .cmp_d1         ( cmp_d1            ),  // bypass data 1 for decode stage (branch)
         .cmp_d2         ( cmp_d2            )   // bypass data 2 for decode stage (branch)
+    );
+    // creating one nf_csr unit
+    nf_csr
+    nf_csr_0
+    (
+        // clock and reset
+        .clk            ( clk           ),      // clk  
+        .resetn         ( resetn        ),      // resetn
+        // csr
+        .csr_addr       ( csr_addr      ),      // csr address
+        .csr_rd         ( csr_rd        ),      // csr read data
+        .csr_wd         ( csr_wd        ),      // csr write data
+        .csr_cmd        ( csr_cmd       ),      // csr command
+        .csr_wreq       ( csr_wreq      ),      // csr write request
+        .csr_rreq       ( csr_rreq      ),      // csr read request
+        // 
+        .mtvec_v        ( mtvec_v       )
     );
 
     // synthesis translate_off

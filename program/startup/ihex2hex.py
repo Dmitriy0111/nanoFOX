@@ -9,14 +9,22 @@
 
 import sys
 
-print(sys.argv[1])
+if( len(sys.argv) == 1):
+    pars_file  = open("program_file/program.ihex" , "r")
 
-pars_file  = open("program_file/"+sys.argv[1]+"/program.ihex" , "r")
+    out_file_0 = open("program_file/program_0.hex", "w")    # bank_0
+    out_file_1 = open("program_file/program_1.hex", "w")    # bank_1
+    out_file_2 = open("program_file/program_2.hex", "w")    # bank_2
+    out_file_3 = open("program_file/program_3.hex", "w")    # bank_3
+else:
+    print(sys.argv[1])
 
-out_file_0 = open("program_file/"+sys.argv[1]+"/program_0.hex", "w")    # bank_0
-out_file_1 = open("program_file/"+sys.argv[1]+"/program_1.hex", "w")    # bank_1
-out_file_2 = open("program_file/"+sys.argv[1]+"/program_2.hex", "w")    # bank_2
-out_file_3 = open("program_file/"+sys.argv[1]+"/program_3.hex", "w")    # bank_3
+    pars_file  = open("program_file/"+sys.argv[1]+"/program.ihex" , "r")
+
+    out_file_0 = open("program_file/"+sys.argv[1]+"/program_0.hex", "w")    # bank_0
+    out_file_1 = open("program_file/"+sys.argv[1]+"/program_1.hex", "w")    # bank_1
+    out_file_2 = open("program_file/"+sys.argv[1]+"/program_2.hex", "w")    # bank_2
+    out_file_3 = open("program_file/"+sys.argv[1]+"/program_3.hex", "w")    # bank_3
 
 hi_addr = 0
 

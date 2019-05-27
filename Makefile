@@ -127,15 +127,15 @@ prog_clean:
 ########################################################
 # riscv-compliance test
 
-RVC_LIST ?= I-ADD-01 I-ADDI-01 I-AND-01 I-ANDI-01 I-AUIPC-01 I-BEQ-01 I-BGE-01 I-BGEU-01 I-BLT-01 I-BLTU-01 I-BNE-01 I-CSRRC-01 I-CSRRCI-01 I-CSRRS-01 I-CSRRSI-01 I-CSRRW-01 I-CSRRWI-01 I-DELAY_SLOTS-01 I-EBREAK-01 I-ECALL-01 I-ENDIANESS-01 I-FENCE.I-01 I-IO.S JAL-01 I-JALR-01 I-LB-01 I-LBU-01 I-LH-01 I-LHU-01 I-LUI-01 I-LW-01 I-MISALIGN_JMP-01 I-MISALIGN_LDST-01 I-NOP-01 I-OR-01 I-ORI-01 I-RF_size-01 I-RF_width-01 I-RF_x0-01 I-SB-01 I-SH-01 I-SLL-01 I-SLLI-01 I-SLT-01 I-SLTI-01 I-SLTIU-01 I-SLTU-01 I-SRA-01 I-SRAI-01 I-SRL-01 I-SRLI-01 I-SUB-01 I-SW-01 I-XOR-01 I-XORI-01
+RVC_LIST      ?= I-ADD-01 I-ADDI-01 I-AND-01 I-ANDI-01 I-AUIPC-01 I-BEQ-01 I-BGE-01 I-BGEU-01 I-BLT-01 I-BLTU-01 I-BNE-01 I-CSRRC-01 I-CSRRCI-01 I-CSRRS-01 I-CSRRSI-01 I-CSRRW-01 I-CSRRWI-01 I-DELAY_SLOTS-01 I-EBREAK-01 I-ECALL-01 I-ENDIANESS-01 I-FENCE.I-01 I-IO I-JAL-01 I-JALR-01 I-LB-01 I-LBU-01 I-LH-01 I-LHU-01 I-LUI-01 I-LW-01 I-MISALIGN_JMP-01 I-MISALIGN_LDST-01 I-NOP-01 I-OR-01 I-ORI-01 I-RF_size-01 I-RF_width-01 I-RF_x0-01 I-SB-01 I-SH-01 I-SLL-01 I-SLLI-01 I-SLT-01 I-SLTI-01 I-SLTIU-01 I-SLTU-01 I-SRA-01 I-SRAI-01 I-SRL-01 I-SRLI-01 I-SUB-01 I-SW-01 I-XOR-01 I-XORI-01
 
-RVC_LIST_TEST ?= I-ADD-01 I-ADDI-01 I-AND-01 I-ANDI-01 I-AUIPC-01 I-BEQ-01 I-BGE-01 I-BGEU-01 I-BLT-01 I-BLTU-01 I-BNE-01 I-CSRRC-01 I-CSRRCI-01 I-CSRRS-01 I-CSRRSI-01 I-CSRRW-01 I-CSRRWI-01 I-LB-01 I-LBU-01 I-LH-01 I-LHU-01 I-LUI-01 I-LW-01 I-NOP-01 I-OR-01 I-ORI-01 I-SB-01 I-SH-01 I-SLL-01 I-SLLI-01 I-SLT-01 I-SLTI-01 I-SLTIU-01 I-SLTU-01 I-SRA-01 I-SRAI-01 I-SRL-01 I-SRLI-01 I-SUB-01 I-SW-01 I-XOR-01 I-XORI-01
+RVC_LIST_TEST ?= I-ADD-01 I-ADDI-01 I-AND-01 I-ANDI-01 I-AUIPC-01 I-BEQ-01 I-BGE-01 I-BGEU-01 I-BLT-01 I-BLTU-01 I-BNE-01 I-CSRRC-01 I-CSRRCI-01 I-CSRRS-01 I-CSRRSI-01 I-CSRRW-01 I-CSRRWI-01 I-DELAY_SLOTS-01                        I-ENDIANESS-01              I-IO I-JAL-01 I-JALR-01 I-LB-01 I-LBU-01 I-LH-01 I-LHU-01 I-LUI-01 I-LW-01                                      I-NOP-01 I-OR-01 I-ORI-01 I-RF_size-01 I-RF_width-01 I-RF_x0-01 I-SB-01 I-SH-01 I-SLL-01 I-SLLI-01 I-SLT-01 I-SLTI-01 I-SLTIU-01 I-SLTU-01 I-SRA-01 I-SRAI-01 I-SRL-01 I-SRLI-01 I-SUB-01 I-SW-01 I-XOR-01 I-XORI-01
 
-RVC_PASS ?= I-ADD-01 I-ADDI-01 I-AND-01 I-ANDI-01 I-AUIPC-01 I-BEQ-01 I-BGE-01 I-BGEU-01 I-BLT-01 I-BLTU-01 I-BNE-01 I-CSRRC-01 I-CSRRCI-01 I-CSRRS-01 I-CSRRSI-01 I-CSRRW-01 I-CSRRWI-01 I-LB-01 I-LBU-01 I-LH-01 I-LHU-01 I-LUI-01 I-LW-01 I-NOP-01 I-OR-01 I-ORI-01 I-SB-01 I-SH-01 I-SLL-01 I-SLLI-01 I-SLT-01 I-SLTI-01 I-SLTIU-01 I-SLTU-01 I-SRA-01 I-SRAI-01 I-SRL-01 I-SRLI-01 I-SUB-01 I-SW-01 I-XOR-01 I-XORI-01 I-RF_size-01 I-RF_width-01
+RVC_PASS      ?= I-ADD-01 I-ADDI-01 I-AND-01 I-ANDI-01 I-AUIPC-01 I-BEQ-01 I-BGE-01 I-BGEU-01 I-BLT-01 I-BLTU-01 I-BNE-01 I-CSRRC-01 I-CSRRCI-01 I-CSRRS-01 I-CSRRSI-01 I-CSRRW-01 I-CSRRWI-01 I-DELAY_SLOTS-01                        I-ENDIANESS-01              I-IO I-JAL-01 I-JALR-01 I-LB-01 I-LBU-01 I-LH-01 I-LHU-01 I-LUI-01 I-LW-01                                      I-NOP-01 I-OR-01 I-ORI-01 I-RF_size-01 I-RF_width-01 I-RF_x0-01 I-SB-01 I-SH-01 I-SLL-01 I-SLLI-01 I-SLT-01 I-SLTI-01 I-SLTIU-01 I-SLTU-01 I-SRA-01 I-SRAI-01 I-SRL-01 I-SRLI-01 I-SUB-01 I-SW-01 I-XOR-01 I-XORI-01
 
-RVC_ERR  ?= I-RF_x0-01 I-JALR-01 I-JAL-01
+RVC_ERR       ?=                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
-RVC_TEST ?= I-JAL-01
+RVC_TEST      ?= I-MISALIGN_JMP-01
 
 FORMAL_VER_INSTR = $@
 
@@ -143,7 +143,12 @@ sim_rvc: sim_dir
 	python program\startup\run_rvc_gen.py $(RVC_TEST)
 	$(VSIM_BIN) -do $(RUN_DIR)/rvc_run_$(RVC_TEST).tcl -onfinish final -c -onfinish exit
 
+sim_rvc_gui: sim_dir
+	python program\startup\run_rvc_gen.py $(RVC_TEST)
+	$(VSIM_BIN) -do $(RUN_DIR)/rvc_run_$(RVC_TEST).tcl -gui -onfinish stop
+
 rvc_test:
+	mkdir -p rvc_log
 	python program\startup\rvc_test.py $(RVC_TEST)
 
 prog_comp_rvc_sifive_formal:
@@ -167,23 +172,26 @@ formal_ver: \
 formal_ver_all: $(RVC_LIST_TEST)
 
 $(RVC_LIST_TEST):
-	mkdir -p program_file
+	mkdir -p program_file/$(FORMAL_VER_INSTR)
 	riscv-none-embed-gcc \
 	program/riscv-compliance/riscv-test-suite/rv32i/src/$(FORMAL_VER_INSTR).S \
 	-Iprogram/riscv-compliance/riscv-target/sifive-formal/formalspec-env/p \
 	-Iprogram/riscv-compliance/riscv-target/sifive-formal/formalspec-env/ \
 	-Iprogram/riscv-compliance/riscv-target/sifive-formal/ -c \
-	-o program_file/main.o $(CCF)
-	riscv-none-embed-ld -o program_file/main.elf -Map program_file/main.map -T program/startup/rvc.ld program_file/main.o $(LDF)
-	riscv-none-embed-objdump -M no-aliases -S -w --disassemble-zeroes program_file/main.elf > program_file/main.lst
-	riscv-none-embed-objcopy program_file/main.elf program_file/program.$(CPF)
-	python program/startup/ihex2hex.py
-	$(VSIM_BIN) $(VSIM_OPT_COMMON) $(VSIM_OPT_CMD)
+	-o program_file/$(FORMAL_VER_INSTR)/main.o $(CCF)
+	riscv-none-embed-ld -o program_file/$(FORMAL_VER_INSTR)/main.elf -Map program_file/$(FORMAL_VER_INSTR)/main.map -T program/startup/rvc.ld program_file/$(FORMAL_VER_INSTR)/main.o $(LDF)
+	riscv-none-embed-objdump -M no-aliases -S -w --disassemble-zeroes program_file/$(FORMAL_VER_INSTR)/main.elf > program_file/$(FORMAL_VER_INSTR)/main.lst
+	riscv-none-embed-objcopy program_file/$(FORMAL_VER_INSTR)/main.elf program_file/$(FORMAL_VER_INSTR)/program.$(CPF)
+	python program/startup/ihex2hex.py $(FORMAL_VER_INSTR)
+	python program\startup\run_rvc_gen.py $(FORMAL_VER_INSTR)
+	$(VSIM_BIN) -do $(RUN_DIR)/rvc_run_$(FORMAL_VER_INSTR).tcl -onfinish final -c -onfinish exit
+	mkdir -p rvc_log
 	python program\startup\rvc_test.py $(FORMAL_VER_INSTR)
 
 clean_rvc:
 	rm -rfd $(PWD)/program/riscv-compliance
 	rm -rfd $(PWD)/run/rvc*
+	rm -rfd $(PWD)/rvc_log/*
 
 copy_rvc:
 	git clone https://github.com/riscv/riscv-compliance program/riscv-compliance

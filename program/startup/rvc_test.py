@@ -16,7 +16,7 @@ pars_file = open("program_file/"+sys.argv[1]+"/mem.hex" , "r")
 reference_file = open("program/riscv-compliance/riscv-test-suite/rv32i/references/"+sys.argv[1]+".reference_output" , "r")
 
 #out_file = open("program_file/refhex.hex", "w") # reference
-log_file = open("log/"+sys.argv[1]+".log", "w") # reference
+log_file = open("rvc_log/"+sys.argv[1]+".log", "w") # reference
 
 pars_file.readline()    # delete first three lines
 pars_file.readline()    # delete first three lines
@@ -75,5 +75,5 @@ for i in range(0,len(ref_str)):
         ref_comp = ""
 
 #out_file.write(comp_str)
-
+log_file.write( str("Comparing test complete with {:d} errors\n".format( error ) ) )
 print(str("Comparing test complete with {:d} errors\n".format( error ) ) )

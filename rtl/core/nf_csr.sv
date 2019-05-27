@@ -22,82 +22,40 @@ module nf_csr
     input   logic   [1  : 0]    csr_cmd,    // csr command
     input   logic   [0  : 0]    csr_wreq,   // csr write request
     input   logic   [0  : 0]    csr_rreq,   // csr read request
-    // pmp
-    output  logic   [11 : 0]    pmp_addr,   // csr address
-    input   logic   [31 : 0]    pmp_rd,     // csr read data
-    output  logic   [31 : 0]    pmp_wd,     // csr write data
-    output  logic   [0  : 0]    pmp_wreq,   // csr write request
-    output  logic   [0  : 0]    pmp_rreq,   // csr read request
-    // scan wires
-    input   logic   [0  : 0]    pmp_err,    // pmp_error
-    input   logic   [31 : 0]    scan_addr   // address for scan
+    //
+    output  logic   [31 : 0]    mtvec_v     // value of mtvec
 );
 
-    logic   [31 : 0]    ustatus;    // user status
-    logic   [31 : 0]    uie;        // user interrupt-enable register
-    logic   [31 : 0]    utvec;      // user trap handler base address
-    logic   [31 : 0]    mcycle;     // Machine cycle counter
     logic   [31 : 0]    csr_rd_i;   // csr_rd internal
     logic   [31 : 0]    csr_wd_i;   // csr_wd internal
-    logic   [31 : 0]    s_out;      // supervisor output
-    logic   [31 : 0]    u_out;      // user output
-    logic   [31 : 0]    sepc;       // supervisor exception program counter
-    logic   [31 : 0]    scause;     // supervisor cause register
-    logic   [31 : 0]    mscratch;
+    logic   [31 : 0]    mcycle;     // Machine cycle counter
+    logic   [31 : 0]    mtvec;      // Machine trap-handler base address
+    logic   [31 : 0]    mscratch;   // Scratch register for machine trap handlers
+    logic   [31 : 0]    mepc;       // Machine exception program counter
+    logic   [31 : 0]    mcause;     // Machine trap cause
+    logic   [31 : 0]    mtval;      // Machine bad address or instruction
+
+    logic   [31 : 0]    m_out0;     // Machine out
+    logic   [31 : 0]    m_out1;     // Machine out
+
+    assign mtvec_v = mtvec;         // value of mtvec
     
     assign csr_rd = csr_rd_i;
 
-    assign pmp_addr = csr_addr;
-    assign pmp_wd   = csr_wd_i;
-    assign pmp_wreq = csr_wreq;
-    assign pmp_rreq = csr_rreq;
-    // loading data in supervisor cause register
+    // write mscratch data
     always_ff @(posedge clk, negedge resetn)
-        if( !resetn )
-            scause <= '0;
-        else if( pmp_err )
-            scause <= 32'h00000005;
-    // loading data in supervisor exception program counter
-    always_ff @(posedge clk, negedge resetn)
-        if( !resetn )
-            sepc <= '0;
-        else if( pmp_err )
-            sepc <= scan_addr;
-    // write csr data
-    always_ff @(posedge clk, negedge resetn)
-    begin
         if( ! resetn )
-        begin
-            ustatus <= '0;
-            uie     <= '0;
-            utvec   <= '0;
-        end
-        else
-        begin
-            if( csr_wreq )
-            begin
-                case( csr_addr )
-                    `USTATUS_A  :   ustatus <= csr_wd_i;
-                    `UIE_A      :   uie     <= csr_wd_i;
-                    `UTVEC_A    :   utvec   <= csr_wd_i;
-                    `MSCRATCH_A :   mscratch <= csr_wd_i;
-                    default     :   ;
-                endcase
-            end
-        end
-    end
-    // finding csr write data with command
-    always_comb
-    begin
-        csr_wd_i = csr_wd;
-        case( csr_cmd )
-            CSR_NONE    :   csr_wd_i =   csr_wd;
-            CSR_WR      :   csr_wd_i =   csr_wd;
-            CSR_SET     :   csr_wd_i =   csr_wd | csr_rd_i;
-            CSR_CLR     :   csr_wd_i = ~ csr_wd & csr_rd_i;
-            default     :   ;
-        endcase
-    end
+            mscratch <= '0;
+        else 
+            if( csr_wreq && ( csr_addr == `MSCRATCH_A ) )
+                mscratch <= csr_wd_i;
+    // write mtvec data
+    always_ff @(posedge clk, negedge resetn)
+        if( ! resetn )
+            mtvec <= '0;
+        else 
+            if( csr_wreq && ( csr_addr == `MTVEC_A ) )
+                mtvec <= csr_wd_i;
     // edit mcycle register
     always_ff @(posedge clk, negedge resetn)
     begin
@@ -106,24 +64,38 @@ module nf_csr
         else
             mcycle <= csr_wreq && ( csr_addr == `MCYCLE_A ) ? csr_wd_i : mcycle + 1'b1;
     end
-    // find s_out read data
+    // finding csr write data with command
     always_comb
     begin
-        s_out = '0;
+        csr_wd_i = '0;
+        case( csr_cmd )
+            CSR_NONE    :   csr_wd_i =   csr_wd;
+            CSR_WR      :   csr_wd_i =   csr_wd;
+            CSR_SET     :   csr_wd_i =   csr_wd | csr_rd_i;
+            CSR_CLR     :   csr_wd_i = ~ csr_wd & csr_rd_i;
+            default     :   ;
+        endcase
+    end
+    // find csr read data
+    always_comb
+    begin
+        m_out0 = '0;
         case( csr_addr )
-            `SEPC_A         :   s_out = sepc;
-            `SCAUSE_A       :   s_out = scause;
+            `MCYCLE_A       :   m_out0 = mcycle;
+            `MISA_A         :   m_out0 = `MISA_V; // read only
+            `MSCRATCH_A     :   m_out0 = mscratch;
+            `MTVEC_A        :   m_out0 = mtvec_v;
             default         :   ;
         endcase
     end
-    // find u_out read data
+    // find csr read data
     always_comb
     begin
-        u_out = '0;
+        m_out1 = '0;
         case( csr_addr )
-            `USTATUS_A      :   u_out = ustatus;
-            `UIE_A          :   u_out = uie;
-            `UTVEC_A        :   u_out = utvec;
+            `MEPC_A         :   m_out1 = mepc;
+            `MCAUSE_A       :   m_out1 = mcause;
+            `MTVAL_A        :   m_out1 = mtval;
             default         :   ;
         endcase
     end
@@ -132,34 +104,13 @@ module nf_csr
     begin
         csr_rd_i = '0;
         case( csr_addr )
-            `USTATUS_A,
-            `UIE_A,
-            `UTVEC_A        :   csr_rd_i = u_out;
-            `MCYCLE_A       :   csr_rd_i = mcycle;
-            `PMPCFG0_A,
-            `PMPCFG1_A,
-            `PMPCFG2_A,
-            `PMPCFG3_A,
-            `PMPADDR0_A,
-            `PMPADDR1_A,
-            `PMPADDR2_A,
-            `PMPADDR3_A,
-            `PMPADDR4_A,
-            `PMPADDR5_A,
-            `PMPADDR6_A,
-            `PMPADDR7_A,
-            `PMPADDR8_A,
-            `PMPADDR9_A, 
-            `PMPADDR10_A,
-            `PMPADDR11_A,
-            `PMPADDR12_A,
-            `PMPADDR13_A,
-            `PMPADDR14_A,
-            `PMPADDR15_A    :   csr_rd_i = pmp_rd;
-            `SEPC_A,
-            `SCAUSE_A       :   csr_rd_i = s_out;
-            `MISA_A         :   csr_rd_i = `MISA_V; // read only
-            `MSCRATCH_A     :   csr_rd_i = mscratch;
+            `MCYCLE_A,
+            `MISA_A,
+            `MSCRATCH_A,
+            `MTVEC_A        :   csr_rd_i = m_out0;
+            `MEPC_A,
+            `MCAUSE_A,
+            `MTVAL_A        :   csr_rd_i = m_out1;
             default         :   ;
         endcase
     end

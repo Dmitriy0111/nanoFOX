@@ -27,10 +27,10 @@ int main ()
     int cycle_s=0;
     int cycle_e=0;
     cycle_s = read_csr_v(mcycle);
-    write_csr_v(ustatus, 0x01234567);
-    NF_GPIO_GPO = read_csr_v(ustatus);
-    write_csr_v(uie, 0x5);
-    NF_GPIO_GPO = read_csr_v(uie);
+    write_csr_v(mtvec, 0x01234567);
+    NF_GPIO_GPO = read_csr_v(mtvec);
+    write_csr_v(mtvec, 0x5);
+    NF_GPIO_GPO = read_csr_v(mtvec);
 
     delay(400);
 

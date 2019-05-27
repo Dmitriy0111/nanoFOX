@@ -15,13 +15,12 @@ module nf_i_fu
     input   logic   [0  : 0]    clk,            // clock
     input   logic   [0  : 0]    resetn,         // reset
     // program counter inputs   
-    input   logic   [0  : 0]    exc,            // exception
     input   logic   [31 : 0]    pc_branch,      // program counter branch value from decode stage
     input   logic   [0  : 0]    pc_src,         // next program counter source
-    input   logic   [3  : 0]    branch_type,    // branch type
     input   logic   [0  : 0]    stall_if,       // stalling instruction fetch stage
     output  logic   [31 : 0]    instr_if,       // instruction fetch
     output  logic   [31 : 0]    last_pc,        // last program_counter
+    input   logic   [31 : 0]    mtvec_v,        // value of mtvec
     // memory inputs/outputs
     output  logic   [31 : 0]    addr_i,         // address instruction memory
     input   logic   [31 : 0]    rd_i,           // read instruction memory
@@ -33,7 +32,6 @@ module nf_i_fu
 );
 
     logic   [0  : 0]    flush_id;               // for flushing instruction decode stage
-    logic   [0  : 0]    exc_stalled;            //
     // instruction fetch stage
     logic   [0  : 0]    sel_if_instr;           // selected instruction 
     logic   [0  : 0]    we_if_stalled;          // write enable for stall ( fetch stage )
@@ -41,14 +39,13 @@ module nf_i_fu
     // program counters values
     logic   [31 : 0]    pc_i;                   // program counter value
     logic   [31 : 0]    pc_not_branch;          // program counter not branch value
-    logic   [3  : 0]    branch_type_delayed;    // branch type delayed
     // flush instruction decode 
     logic   [0  : 0]    flush_id_branch;        // flush id stage ( branch operation )
     logic   [0  : 0]    flush_id_branch_;       // flush id stage after branch and reset
     logic   [0  : 0]    flush_id_sw_instr;      // flush id stage ( store data instruction )
     // working with instruction fetch instruction (stalled and not stalled)
     assign instr_if      = flush_id ? '0 : ( sel_if_instr ? instr_if_stalled : rd_i );  // from fetch stage
-    assign we_if_stalled = stall_if  && ( ~ sel_if_instr ) && ( ~ branch_type_delayed[3] );  // for sw and branch stalls
+    assign we_if_stalled = stall_if  && ( ~ sel_if_instr );  // for sw and branch stalls
     // finding pc not branch value
     assign pc_not_branch = addr_i + 4;
     // finding flush instruction decode signals
@@ -72,10 +69,9 @@ module nf_i_fu
     always_comb
     begin
         pc_i = pc_not_branch;
-        casex( { exc || exc_stalled , pc_src } )
-            2'b00   :   pc_i = pc_not_branch;
-            2'b01   :   pc_i = pc_branch;
-            2'b1?   :   pc_i = 32'h4;
+        casex( pc_src )
+            1'b0    :   pc_i = pc_not_branch;   // pc_i = | pc_not_branch[1:0] ? mtvec_v : pc_not_branch;
+            1'b1    :   pc_i = pc_branch;       // pc_i = | pc_branch[1:0] ? mtvec_v : pc_branch;
         endcase
     end
     //
@@ -88,23 +84,10 @@ module nf_i_fu
             if( flush_id_branch )
                 flush_id_branch_ <= '1; // set if branch and stall instruction fetch
         end
-    // finding stalled exception
-    always_ff @(posedge clk, negedge resetn)
-        if( !resetn ) 
-            exc_stalled <= '0;
-        else
-        begin
-            if( ( stall_if && exc ) || exc )
-                exc_stalled <= '1;
-            else if( !stall_if )    
-                exc_stalled <= '0;
-        end
     // selecting instruction fetch stage instruction
-    nf_register         #( 1  ) sel_id_ff               ( clk, resetn, stall_if && ( ~ branch_type_delayed[3] ), sel_if_instr );
+    nf_register         #( 1  ) sel_id_ff               ( clk , resetn ,                 stall_if , sel_if_instr     );
     // stalled instruction fetch instruction
-    nf_register_we      #( 32 ) instr_if_stall          ( clk, resetn, we_if_stalled, rd_i, instr_if_stalled );
-    // flush instruction decode signals
-    nf_register         #( 4  ) branch_type_delayed_ff  ( clk, resetn, branch_type, branch_type_delayed );
+    nf_register_we      #( 32 ) instr_if_stall          ( clk , resetn , we_if_stalled , rd_i     , instr_if_stalled );
     // creating program counter
     nf_register_we_r    
     #( 
