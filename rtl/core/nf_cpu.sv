@@ -52,7 +52,10 @@ module nf_cpu
     logic   [0  : 0]    stall_iexe;         // stall execution stage
     logic   [0  : 0]    stall_imem;         // stall memory stage
     logic   [0  : 0]    stall_iwb;          // stall write back stage
+    logic   [0  : 0]    flush_id;           // flush decode stage
     logic   [0  : 0]    flush_iexe;         // flush execution stage
+    logic   [0  : 0]    flush_imem;         // flush memory stage
+
 
     logic   [31 : 0]    rd1_i_exu;          // data for execution stage ( bypass unit )
     logic   [31 : 0]    rd2_i_exu;          // data for execution stage ( bypass unit )
@@ -66,6 +69,10 @@ module nf_cpu
     logic   [0  : 0]    csr_rreq;           // csr read request
 
     logic   [31 : 0]    mtvec_v;            // value of mtvec
+    logic   [31 : 0]    m_ret_pc;           // m return pc value
+    logic   [0  : 0]    addr_misalign;
+    logic   [0  : 0]    l_misaligned;
+    logic   [0  : 0]    s_misaligned;
     
     /*********************************************
     **         Instruction Fetch  stage         **
@@ -99,6 +106,7 @@ module nf_cpu
     logic   [0  : 0]    csr_rreq_id;        // read request to csr ( decode stage )
     logic   [0  : 0]    csr_wreq_id;        // write request to csr ( decode stage )
     logic   [0  : 0]    csr_sel_id;         // csr select ( zimm or rd1 ) ( decode stage )
+    logic   [0  : 0]    m_ret_id;           // m return
     /*********************************************
     **       Instruction execution stage        **
     *********************************************/
@@ -155,6 +163,7 @@ module nf_cpu
     logic   [31 : 0]    rd_dm_iwb;          // read data from data memory ( write back stage )
     logic   [31 : 0]    pc_iwb;             // program counter value ( write back stage )
     logic   [0  : 0]    lsu_busy;           // load store unit busy
+    logic   [0  : 0]    lsu_err;
 
     // next program counter value for branch command
     assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) : (cmp_d1 + ext_data_id) & 32'hffff_fffe;
@@ -192,8 +201,8 @@ module nf_cpu
     end
 
     // if2id
-    nf_register_we      #( 32 ) instr_if_id         ( clk , resetn , ~ stall_id   ,              instr_if      , instr_id       );
-    nf_register_we      #( 32 ) pc_if_id            ( clk , resetn , ~ stall_id   ,              last_pc       , pc_id          );
+    nf_register_we_clr  #( 32 ) instr_if_id         ( clk , resetn , ~ stall_id   , flush_id   , instr_if      , instr_id       );
+    nf_register_we_clr  #( 32 ) pc_if_id            ( clk , resetn , ~ stall_id   , flush_id   , last_pc       , pc_id          );
     // id2iexe
     nf_register_we_clr  #(  5 ) wa3_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , wa3_id        , wa3_iexe       );
     nf_register_we_clr  #(  5 ) ra1_id_iexe         ( clk , resetn , ~ stall_iexe , flush_iexe , ra1_id        , ra1_iexe       );
@@ -219,16 +228,16 @@ module nf_cpu
     nf_register_we_clr  #(  1 ) csr_wreq_id_iexe    ( clk , resetn , ~ stall_iexe , flush_iexe , csr_wreq_id   , csr_wreq_iexe  );
     nf_register_we_clr  #(  1 ) csr_sel_id_iexe     ( clk , resetn , ~ stall_iexe , flush_iexe , csr_sel_id    , csr_sel_iexe   );
     // iexe2imem
-    nf_register_we      #(  1 ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem ,              we_dm_iexe    , we_dm_imem     );
-    nf_register_we      #(  1 ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem ,              we_rf_iexe    , we_rf_imem     );
-    nf_register_we      #(  1 ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem ,              rf_src_iexe   , rf_src_imem    );
-    nf_register_we      #(  1 ) sign_dm_iexe_imem   ( clk , resetn , ~ stall_imem ,              sign_dm_iexe  , sign_dm_imem   );
-    nf_register_we      #(  2 ) size_dm_iexe_imem   ( clk , resetn , ~ stall_imem ,              size_dm_iexe  , size_dm_imem   );
-    nf_register_we      #(  5 ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem ,              wa3_iexe      , wa3_imem       );
-    nf_register_we      #( 32 ) rd1_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd1_i_exu     , rd1_imem       );
-    nf_register_we      #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem ,              rd2_i_exu     , rd2_imem       );
-    nf_register_we      #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem ,              result_iexe_e , result_imem    );
-    nf_register_we      #( 32 ) pc_iexe_imem        ( clk , resetn , ~ stall_imem ,              pc_iexe       , pc_imem        );
+    nf_register_we_clr  #(  1 ) we_dm_iexe_imem     ( clk , resetn , ~ stall_imem , flush_imem , we_dm_iexe    , we_dm_imem     );
+    nf_register_we_clr  #(  1 ) we_rf_iexe_imem     ( clk , resetn , ~ stall_imem , flush_imem , we_rf_iexe    , we_rf_imem     );
+    nf_register_we_clr  #(  1 ) rf_src_iexe_imem    ( clk , resetn , ~ stall_imem , flush_imem , rf_src_iexe   , rf_src_imem    );
+    nf_register_we_clr  #(  1 ) sign_dm_iexe_imem   ( clk , resetn , ~ stall_imem , flush_imem , sign_dm_iexe  , sign_dm_imem   );
+    nf_register_we_clr  #(  2 ) size_dm_iexe_imem   ( clk , resetn , ~ stall_imem , flush_imem , size_dm_iexe  , size_dm_imem   );
+    nf_register_we_clr  #(  5 ) wa3_iexe_imem       ( clk , resetn , ~ stall_imem , flush_imem , wa3_iexe      , wa3_imem       );
+    nf_register_we_clr  #( 32 ) rd1_i_exu_imem      ( clk , resetn , ~ stall_imem , flush_imem , rd1_i_exu     , rd1_imem       );
+    nf_register_we_clr  #( 32 ) rd2_i_exu_imem      ( clk , resetn , ~ stall_imem , flush_imem , rd2_i_exu     , rd2_imem       );
+    nf_register_we_clr  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , flush_imem , result_iexe_e , result_imem    );
+    nf_register_we_clr  #( 32 ) pc_iexe_imem        ( clk , resetn , ~ stall_imem , flush_imem , pc_iexe       , pc_imem        );
     // imem2iwb
     nf_register_we      #(  1 ) we_rf_imem_iwb      ( clk , resetn , ~ stall_iwb  ,              we_rf_imem    , we_rf_iwb      );
     nf_register_we      #(  1 ) rf_src_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              rf_src_imem   , rf_src_iwb     );
@@ -257,6 +266,10 @@ module nf_cpu
         .instr_if       ( instr_if          ),  // instruction fetch
         .last_pc        ( last_pc           ),
         .mtvec_v        ( mtvec_v           ),
+        .m_ret          ( m_ret_id          ),
+        .m_ret_pc       ( m_ret_pc          ),
+        .addr_misalign  ( addr_misalign     ),
+        .lsu_err        ( lsu_err           ),
         // memory inputs/outputs
         .addr_i         ( addr_i            ),  // address instruction memory
         .rd_i           ( rd_i              ),  // read instruction memory
@@ -301,6 +314,7 @@ module nf_cpu
         .csr_rreq       ( csr_rreq_id       ),  // read request to csr
         .csr_wreq       ( csr_wreq_id       ),  // write request to csr
         .csr_sel        ( csr_sel_id        ),  // csr select ( zimm or rd1 )
+        .m_ret          ( m_ret_id          ),  // m return
         .pc_src         ( pc_src            ),  // decoded next program counter value enable
         .we_rf          ( we_rf_id          ),  // decoded write register file
         .we_dm_en       ( we_dm_id          ),  // decoded write data memory
@@ -339,9 +353,13 @@ module nf_cpu
         .we_dm_imem     ( we_dm_imem        ),  // write enable data memory from imem stage
         .rf_src_imem    ( rf_src_imem       ),  // register file source enable from imem stage
         .size_dm_imem   ( size_dm_imem      ),  // size data memory from imem stage
-        .sign_dm_imem   ( sign_dm_imem      ),  
+        .sign_dm_imem   ( sign_dm_imem      ),  // sign for data memory
         .rd_dm_iwb      ( rd_dm_iwb         ),  // read data for write back stage
         .lsu_busy       ( lsu_busy          ),  // load store unit busy
+        .lsu_err        ( lsu_err           ),
+        .s_misaligned   ( s_misaligned      ),  // store misaligned
+        .l_misaligned   ( l_misaligned      ),  // load misaligned
+        .stall_if       ( stall_if          ),
         // data memory and other's
         .addr_dm        ( addr_dm           ),  // address data memory
         .rd_dm          ( rd_dm             ),  // read data memory
@@ -369,13 +387,16 @@ module nf_cpu
         .req_ack_i      ( req_ack_i         ),  // request acknowledge instruction
         .rf_src_imem    ( rf_src_imem       ),  // register source from memory stage
         .lsu_busy       ( lsu_busy          ),  // load store unit busy
+        .lsu_err        ( lsu_err           ),
         // control wires
         .stall_if       ( stall_if          ),  // stall fetch stage
         .stall_id       ( stall_id          ),  // stall decode stage
         .stall_iexe     ( stall_iexe        ),  // stall execution stage
         .stall_imem     ( stall_imem        ),  // stall memory stage
         .stall_iwb      ( stall_iwb         ),  // stall write back stage
-        .flush_iexe     ( flush_iexe        )   // flush execution stage
+        .flush_iexe     ( flush_iexe        ),  // flush execution stage
+        .flush_id       ( flush_id          ),
+        .flush_imem     ( flush_imem        )
     );
     // creating bypass unit (hazard)
     nf_hz_bypass_unit 
@@ -408,17 +429,23 @@ module nf_cpu
     nf_csr_0
     (
         // clock and reset
-        .clk            ( clk           ),      // clk  
-        .resetn         ( resetn        ),      // resetn
+        .clk            ( clk               ),  // clk  
+        .resetn         ( resetn            ),  // resetn
         // csr
-        .csr_addr       ( csr_addr      ),      // csr address
-        .csr_rd         ( csr_rd        ),      // csr read data
-        .csr_wd         ( csr_wd        ),      // csr write data
-        .csr_cmd        ( csr_cmd       ),      // csr command
-        .csr_wreq       ( csr_wreq      ),      // csr write request
-        .csr_rreq       ( csr_rreq      ),      // csr read request
+        .csr_addr       ( csr_addr          ),  // csr address
+        .csr_rd         ( csr_rd            ),  // csr read data
+        .csr_wd         ( csr_wd            ),  // csr write data
+        .csr_cmd        ( csr_cmd           ),  // csr command
+        .csr_wreq       ( csr_wreq          ),  // csr write request
+        .csr_rreq       ( csr_rreq          ),  // csr read request
         // 
-        .mtvec_v        ( mtvec_v       )
+        .mtvec_v        ( mtvec_v           ),
+        .m_ret_pc       ( m_ret_pc          ),
+        .addr_mis       ( addr_i            ),
+        .addr_misalign  ( addr_misalign     ),
+        .s_misaligned   ( s_misaligned      ),
+        .l_misaligned   ( l_misaligned      ),
+        .ls_mis         ( pc_imem           )
     );
 
     // synthesis translate_off

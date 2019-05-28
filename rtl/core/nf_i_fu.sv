@@ -21,6 +21,10 @@ module nf_i_fu
     output  logic   [31 : 0]    instr_if,       // instruction fetch
     output  logic   [31 : 0]    last_pc,        // last program_counter
     input   logic   [31 : 0]    mtvec_v,        // value of mtvec
+    input   logic   [0  : 0]    m_ret,          // m return
+    input   logic   [31 : 0]    m_ret_pc,       // m return pc value
+    output  logic   [0  : 0]    addr_misalign,
+    input   logic   [0  : 0]    lsu_err,
     // memory inputs/outputs
     output  logic   [31 : 0]    addr_i,         // address instruction memory
     input   logic   [31 : 0]    rd_i,           // read instruction memory
@@ -51,12 +55,14 @@ module nf_i_fu
     // finding flush instruction decode signals
     assign flush_id_sw_instr = ~ req_ack_i;
     assign flush_id_branch = pc_src && ( ~ stall_if );
-    assign flush_id = flush_id_branch_ || flush_id_branch || flush_id_sw_instr;
+    assign flush_id = flush_id_branch_ || flush_id_branch || flush_id_sw_instr || addr_misalign;
     // setting instruction interface signals
     assign req_i  = '1;
     assign we_i   = '0;
     assign wd_i   = '0;
     assign size_i = 2'b10;  // word
+    
+    assign addr_misalign = addr_i[1 : 0] != '0;
 
     always_ff @(posedge clk, negedge resetn)
     begin
@@ -69,9 +75,11 @@ module nf_i_fu
     always_comb
     begin
         pc_i = pc_not_branch;
-        casex( pc_src )
-            1'b0    :   pc_i = pc_not_branch;   // pc_i = | pc_not_branch[1:0] ? mtvec_v : pc_not_branch;
-            1'b1    :   pc_i = pc_branch;       // pc_i = | pc_branch[1:0] ? mtvec_v : pc_branch;
+        casex( {m_ret, addr_misalign || lsu_err , pc_src} )
+            3'b000   :   pc_i = pc_not_branch;   // pc_i = | pc_not_branch[1:0] ? mtvec_v : pc_not_branch;
+            3'b001   :   pc_i = pc_branch;       // pc_i = | pc_branch[1:0] ? mtvec_v : pc_branch;
+            3'b01?   :   pc_i = mtvec_v;
+            3'b1??   :   pc_i = m_ret_pc;
         endcase
     end
     //
@@ -81,7 +89,7 @@ module nf_i_fu
         else
         begin
             flush_id_branch_ <= '0;
-            if( flush_id_branch )
+            if( flush_id_branch || addr_misalign || lsu_err )
                 flush_id_branch_ <= '1; // set if branch and stall instruction fetch
         end
     // selecting instruction fetch stage instruction

@@ -145,7 +145,8 @@ class nf_pars_instr extends nf_bt_class;
                             CSRRC,
                             CSRRWI,
                             CSRRSI,
-                            CSRRCI
+                            CSRRCI,
+                            MRET
                         };
     // constructor
     function new();

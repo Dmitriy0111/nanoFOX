@@ -23,7 +23,13 @@ module nf_csr
     input   logic   [0  : 0]    csr_wreq,   // csr write request
     input   logic   [0  : 0]    csr_rreq,   // csr read request
     //
-    output  logic   [31 : 0]    mtvec_v     // value of mtvec
+    output  logic   [31 : 0]    mtvec_v,    // value of mtvec
+    input   logic   [0  : 0]    addr_misalign,
+    input   logic   [0  : 0]    s_misaligned,   // store misaligned
+    input   logic   [0  : 0]    l_misaligned,   // load misaligned
+    input   logic   [31 : 0]    addr_mis,
+    input   logic   [31 : 0]    ls_mis,
+    output  logic   [31 : 0]    m_ret_pc        // m return value
 );
 
     logic   [31 : 0]    csr_rd_i;   // csr_rd internal
@@ -42,6 +48,32 @@ module nf_csr
     
     assign csr_rd = csr_rd_i;
 
+    assign m_ret_pc = mepc;
+
+    // write mtval data
+    always_ff @(posedge clk, negedge resetn)
+        if( ! resetn )
+            mtval <= '0;
+        else
+        begin
+            if( addr_misalign )
+                mtval <= addr_mis;
+            if( s_misaligned || l_misaligned )
+                mtval <= ls_mis;
+        end
+    // write mcause data
+    always_ff @(posedge clk, negedge resetn)
+        if( ! resetn )
+            mcause <= '0;
+        else 
+        begin
+            if( addr_misalign )
+                mcause <= 32'h0;
+            if( s_misaligned )
+                mcause <= 32'h6;
+            if( l_misaligned )
+                mcause <= 32'h4;
+        end
     // write mscratch data
     always_ff @(posedge clk, negedge resetn)
         if( ! resetn )
@@ -56,6 +88,19 @@ module nf_csr
         else 
             if( csr_wreq && ( csr_addr == `MTVEC_A ) )
                 mtvec <= csr_wd_i;
+    // write mtvec data
+    always_ff @(posedge clk, negedge resetn)
+        if( ! resetn )
+            mepc <= '0;
+        else 
+        begin
+            if( csr_wreq && ( csr_addr == `MEPC_A ) )
+                mepc <= csr_wd_i;
+            if( addr_misalign )
+                mepc <= addr_mis;
+            if( s_misaligned || l_misaligned )
+                mepc <= ls_mis;
+        end
     // edit mcycle register
     always_ff @(posedge clk, negedge resetn)
     begin

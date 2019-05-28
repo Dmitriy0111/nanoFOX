@@ -29,6 +29,7 @@ module nf_i_du
     output  logic   [0  : 0]    csr_rreq,   // read request to csr
     output  logic   [0  : 0]    csr_wreq,   // write request to csr
     output  logic   [0  : 0]    csr_sel,    // csr select ( zimm or rd1 )
+    output  logic   [0  : 0]    m_ret,      // m return
     output  logic   [0  : 0]    pc_src,     // decoded next program counter value enable
     output  logic   [0  : 0]    we_rf,      // decoded write register file
     output  logic   [0  : 0]    we_dm_en,   // decoded write data memory
@@ -50,6 +51,7 @@ module nf_i_du
     logic   [4  : 0]    opcode;         // instruction operation code
     logic   [2  : 0]    funct3;         // instruction function 3 field
     logic   [6  : 0]    funct7;         // instruction function 7 field
+    logic   [11 : 0]    funct12;        // instruction function 12 field
     logic   [0  : 0]    branch_hf;      // branch help field
     logic   [4  : 0]    imm_src;        // immediate source selecting
     // immediate data in instruction
@@ -67,10 +69,11 @@ module nf_i_du
     // findind csr address
     assign csr_addr = instr[20 +: 12];
     // operation code, funct3 and funct7 field's in instruction
-    assign instr_type = instr[0   +: 2];
-    assign opcode     = instr[2   +: 5];
-    assign funct3     = instr[12  +: 3];
-    assign funct7     = instr[25  +: 7];
+    assign instr_type = instr[0  +:  2];
+    assign opcode     = instr[2  +:  5];
+    assign funct3     = instr[12 +:  3];
+    assign funct7     = instr[25 +:  7];
+    assign funct12    = instr[20 +: 12];
     // creating control unit for cpu
     nf_control_unit 
     nf_control_unit_0
@@ -79,6 +82,7 @@ module nf_i_du
         .opcode         ( opcode        ),  // operation code field in instruction code
         .funct3         ( funct3        ),  // funct 3 field in instruction code
         .funct7         ( funct7        ),  // funct 7 field in instruction code
+        .funct12        ( funct12       ),  // funct 12 field in instruction code
         .wa3            ( wa3           ),  // wa3 field
         .srcB_sel       ( srcB_sel      ),  // for selecting srcB ALU
         .srcA_sel       ( srcA_sel      ),  // decoded source A selection for ALU
@@ -97,6 +101,7 @@ module nf_i_du
         .csr_rreq       ( csr_rreq      ),  // read request to csr
         .csr_wreq       ( csr_wreq      ),  // write request to csr
         .csr_sel        ( csr_sel       ),  // csr select ( zimm or rd1 )
+        .m_ret          ( m_ret         ),  // m return
         .ALU_Code       ( ALU_Code      )   // output code for ALU unit
     );
     // creating sign extending unit

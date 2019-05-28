@@ -26,13 +26,16 @@ module nf_hz_stall_unit
     input   logic   [0 : 0]     req_ack_i,      // request acknowledge instruction
     input   logic   [0 : 0]     rf_src_imem,    // register source from memory stage
     input   logic   [0 : 0]     lsu_busy,       // load store unit busy
+    input   logic   [0 : 0]     lsu_err,        // load store error
     // control wires
     output  logic   [0 : 0]     stall_if,       // stall fetch stage
     output  logic   [0 : 0]     stall_id,       // stall decode stage
     output  logic   [0 : 0]     stall_iexe,     // stall execution stage
     output  logic   [0 : 0]     stall_imem,     // stall memory stage
     output  logic   [0 : 0]     stall_iwb,      // stall write back stage
-    output  logic   [0 : 0]     flush_iexe      // flush execution stage
+    output  logic   [0 : 0]     flush_iexe,     // flush execution stage
+    output  logic   [0 : 0]     flush_imem,
+    output  logic   [0 : 0]     flush_id
 );
 
     logic   lw_stall_id_iexe;       // stall pipe if load data instructions ( id and exe stages )
@@ -56,9 +59,12 @@ module nf_hz_stall_unit
 
     assign stall_if   = lw_stall_id_iexe  || sw_lw_data_stall || branch_exe_id_stall || lw_instr_stall;
     assign stall_id   = lw_stall_id_iexe  || sw_lw_data_stall || branch_exe_id_stall || lw_instr_stall;
-    assign flush_iexe = lw_stall_id_iexe  ||                     branch_exe_id_stall || lw_instr_stall;
     assign stall_iexe =                      sw_lw_data_stall;
     assign stall_imem =                      sw_lw_data_stall;
     assign stall_iwb  =                      sw_lw_data_stall;
+
+    assign flush_iexe = lw_stall_id_iexe  ||                     branch_exe_id_stall || lw_instr_stall || lsu_err;
+    assign flush_id   = lsu_err;
+    assign flush_imem = lsu_err;
     
 endmodule : nf_hz_stall_unit

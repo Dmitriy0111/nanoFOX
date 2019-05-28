@@ -184,6 +184,8 @@ parameter instr_cf FENCEI   = { "FENCEI",`RVI , 5'b00011 , 3'b001 , 7'b??????? ,
 // CSR instructions
 // WFI      -    Wait for interrupt
 parameter instr_cf WFI      = { "   WFI",`RVI , 5'b11100 , 3'b000 , 7'b??????? , 12'b000100000101 };
+// MRET     -    M return
+parameter instr_cf MRET     = { "  MRET",`RVI , 5'b11100 , 3'b000 , 7'b??????? , 12'b001100000010 };
 // ECALL    -    ECALL
 parameter instr_cf ECALL    = { " ECALL",`RVI , 5'b11100 , 3'b000 , 7'b??????? , 12'b000000000000 };
 // EBREAK   -    EBREAK

@@ -11,37 +11,40 @@
 
 module nf_control_unit
 (
-    input   logic   [1 : 0]     instr_type,     // instruction type
-    input   logic   [4 : 0]     opcode,         // operation code field in instruction code
-    input   logic   [2 : 0]     funct3,         // funct 3 field in instruction code
-    input   logic   [6 : 0]     funct7,         // funct 7 field in instruction code
-    input   logic   [4 : 0]     wa3,            // write address field
-    output  logic   [4 : 0]     imm_src,        // for enable immediate data
-    output  logic   [1 : 0]     srcB_sel,       // for selecting srcB ALU
-    output  logic   [1 : 0]     srcA_sel,       // for selecting srcA ALU
-    output  logic   [1 : 0]     shift_sel,      // for selecting shift input
-    output  logic   [0 : 0]     res_sel,        // for selecting result
-    output  logic   [3 : 0]     branch_type,    // for executing branch instructions
-    output  logic   [0 : 0]     branch_hf,      // branch help field
-    output  logic   [0 : 0]     branch_src,     // for selecting branch source (JALR)
-    output  logic   [0 : 0]     we_rf,          // write enable signal for register file
-    output  logic   [0 : 0]     we_dm,          // write enable signal for data memory and others
-    output  logic   [0 : 0]     rf_src,         // write data select for register file
-    output  logic   [1 : 0]     size_dm,        // size for load/store instructions
-    output  logic   [0 : 0]     sign_dm,        // sign extended data memory for load instructions
-    output  logic   [1 : 0]     csr_cmd,        // csr command
-    output  logic   [0 : 0]     csr_rreq,       // read request to csr
-    output  logic   [0 : 0]     csr_wreq,       // write request to csr
-    output  logic   [0 : 0]     csr_sel,        // csr select ( zimm or rd1 )
-    output  logic   [3 : 0]     ALU_Code        // output code for ALU unit
+    input   logic   [1  : 0]    instr_type,     // instruction type
+    input   logic   [4  : 0]    opcode,         // operation code field in instruction code
+    input   logic   [2  : 0]    funct3,         // funct 3 field in instruction code
+    input   logic   [6  : 0]    funct7,         // funct 7 field in instruction code
+    input   logic   [11 : 0]    funct12,        // funct 12 field in instruction code
+    input   logic   [4  : 0]    wa3,            // write address field
+    output  logic   [4  : 0]    imm_src,        // for enable immediate data
+    output  logic   [1  : 0]    srcB_sel,       // for selecting srcB ALU
+    output  logic   [1  : 0]    srcA_sel,       // for selecting srcA ALU
+    output  logic   [1  : 0]    shift_sel,      // for selecting shift input
+    output  logic   [0  : 0]    res_sel,        // for selecting result
+    output  logic   [3  : 0]    branch_type,    // for executing branch instructions
+    output  logic   [0  : 0]    branch_hf,      // branch help field
+    output  logic   [0  : 0]    branch_src,     // for selecting branch source (JALR)
+    output  logic   [0  : 0]    we_rf,          // write enable signal for register file
+    output  logic   [0  : 0]    we_dm,          // write enable signal for data memory and others
+    output  logic   [0  : 0]    rf_src,         // write data select for register file
+    output  logic   [1  : 0]    size_dm,        // size for load/store instructions
+    output  logic   [0  : 0]    sign_dm,        // sign extended data memory for load instructions
+    output  logic   [1  : 0]    csr_cmd,        // csr command
+    output  logic   [0  : 0]    csr_rreq,       // read request to csr
+    output  logic   [0  : 0]    csr_wreq,       // write request to csr
+    output  logic   [0  : 0]    csr_sel,        // csr select ( zimm or rd1 )
+    output  logic   [0  : 0]    m_ret,          // m return
+    output  logic   [3  : 0]    ALU_Code        // output code for ALU unit
 );
 
     instr_cf    instr_cf_0;
 
-    assign instr_cf_0.IT = instr_type,
-           instr_cf_0.OP = opcode,
-           instr_cf_0.F3 = funct3,
-           instr_cf_0.F7 = funct7;
+    assign instr_cf_0.IT  = instr_type,
+           instr_cf_0.OP  = opcode,
+           instr_cf_0.F3  = funct3,
+           instr_cf_0.F7  = funct7,
+           instr_cf_0.F12 = funct12;
 
     assign branch_hf  = ~ instr_cf_0.F3[0];
     assign branch_src = instr_cf_0.OP == JALR.OP;
@@ -52,6 +55,9 @@ module nf_control_unit
     assign csr_rreq = ( instr_cf_0.OP == CSR_OP ) && ( | instr_cf_0.F3 ) && ( | wa3 );
     assign csr_wreq = ( instr_cf_0.OP == CSR_OP ) && ( | instr_cf_0.F3 );
     assign csr_sel  = ( instr_cf_0.F3[2] == '1 );
+
+    assign m_ret = ( instr_cf_0.OP == CSR_OP ) && ( ~ ( | instr_cf_0.F3 ) ) && ( instr_cf_0.F12 == MRET.F12 );
+
 
     // csr command select
     always_comb

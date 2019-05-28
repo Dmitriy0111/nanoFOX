@@ -24,6 +24,10 @@ module nf_i_lsu
     input   logic   [1  : 0]    size_dm_imem,   // size data memory from imem stage
     output  logic   [31 : 0]    rd_dm_iwb,      // read data for write back stage
     output  logic   [0  : 0]    lsu_busy,       // load store unit busy
+    output  logic   [0  : 0]    lsu_err,        // load store error
+    output  logic   [0  : 0]    s_misaligned,   // store misaligned
+    output  logic   [0  : 0]    l_misaligned,   // load misaligned
+    input   logic   [0  : 0]    stall_if,
     // data memory and other's
     output  logic   [31 : 0]    addr_dm,        // address data memory
     input   logic   [31 : 0]    rd_dm,          // read data memory
@@ -46,12 +50,31 @@ module nf_i_lsu
     logic   [7  : 0]    s_data_1;   // store data 1
     logic   [7  : 0]    s_data_0;   // store data 0
     logic   [31 : 0]    s_data_f;   // full store data
+    logic   [0  : 0]    lsu_err_;
+    logic   [0  : 0]    lsu_err_i;
 
     logic   [0  : 0]    sign_dm;    // unsigned load data memory?
+    logic   [0  : 0]    misaligned; 
 
+    assign misaligned = ( ( ( size_dm_imem == 2'b10 ) && ( result_imem[1 : 0] != '0 ) ) || ( ( size_dm_imem == 2'b01 ) && ( result_imem[0 : 0] != '0 ) ) );
+    assign s_misaligned = misaligned && we_dm_imem;
+    assign l_misaligned = misaligned && rf_src_imem;
+    assign lsu_err_i = s_misaligned || l_misaligned;
+    assign lsu_err = lsu_err_i || lsu_err_;
     assign req_dm = lsu_busy;
     assign l_data_f = { l_data_3 , l_data_2 , l_data_1 , l_data_0 };
     assign s_data_f = { s_data_3 , s_data_2 , s_data_1 , s_data_0 };
+
+    always_ff @(posedge clk, negedge resetn)
+        if( !resetn )
+            lsu_err_ <= '0;
+        else
+        begin
+            if( lsu_err_i )
+                lsu_err_ <= '1;
+            if( !stall_if )
+                lsu_err_ <= '0;
+        end
 
     always_ff @(posedge clk, negedge resetn)
     begin
@@ -59,7 +82,7 @@ module nf_i_lsu
             lsu_busy <= '0;
         else 
         begin
-            if( we_dm_imem || rf_src_imem )
+            if( ( we_dm_imem || rf_src_imem ) && !lsu_err_i )
                 lsu_busy <= '1;
             if( req_ack_dm )
                 lsu_busy <= '0;
