@@ -13,23 +13,24 @@
 module nf_csr
 (
     // clock and reset
-    input   logic   [0  : 0]    clk,        // clk  
-    input   logic   [0  : 0]    resetn,     // resetn
-    // csr
-    input   logic   [11 : 0]    csr_addr,   // csr address
-    output  logic   [31 : 0]    csr_rd,     // csr read data
-    input   logic   [31 : 0]    csr_wd,     // csr write data
-    input   logic   [1  : 0]    csr_cmd,    // csr command
-    input   logic   [0  : 0]    csr_wreq,   // csr write request
-    input   logic   [0  : 0]    csr_rreq,   // csr read request
-    //
-    output  logic   [31 : 0]    mtvec_v,    // value of mtvec
-    input   logic   [0  : 0]    addr_misalign,
-    input   logic   [0  : 0]    s_misaligned,   // store misaligned
-    input   logic   [0  : 0]    l_misaligned,   // load misaligned
-    input   logic   [31 : 0]    addr_mis,
-    input   logic   [31 : 0]    ls_mis,
-    output  logic   [31 : 0]    m_ret_pc        // m return value
+    input   logic   [0  : 0]    clk,            // clk  
+    input   logic   [0  : 0]    resetn,         // resetn
+    // csr interface
+    input   logic   [11 : 0]    csr_addr,       // csr address
+    output  logic   [31 : 0]    csr_rd,         // csr read data
+    input   logic   [31 : 0]    csr_wd,         // csr write data
+    input   logic   [1  : 0]    csr_cmd,        // csr command
+    input   logic   [0  : 0]    csr_wreq,       // csr write request
+    input   logic   [0  : 0]    csr_rreq,       // csr read request
+    // scan and control wires
+    output  logic   [31 : 0]    mtvec_v,        // machine trap-handler base address
+    output  logic   [31 : 0]    m_ret_pc,       // m return pc value
+    input   logic   [31 : 0]    addr_mis,       // address misaligned value
+    input   logic   [0  : 0]    addr_misalign,  // address misaligned signal
+    input   logic   [0  : 0]    s_misaligned,   // store misaligned signal
+    input   logic   [0  : 0]    l_misaligned,   // load misaligned signal
+    input   logic   [31 : 0]    ls_mis,         // load slore misaligned value
+    input   logic   [31 : 0]    m_ret_ls        // m return pc value for load/store misaligned
 );
 
     logic   [31 : 0]    csr_rd_i;   // csr_rd internal
@@ -99,7 +100,7 @@ module nf_csr
             if( addr_misalign )
                 mepc <= addr_mis;
             if( s_misaligned || l_misaligned )
-                mepc <= ls_mis;
+                mepc <= m_ret_ls;
         end
     // edit mcycle register
     always_ff @(posedge clk, negedge resetn)

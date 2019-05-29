@@ -20,11 +20,11 @@ module nf_i_fu
     input   logic   [0  : 0]    stall_if,       // stalling instruction fetch stage
     output  logic   [31 : 0]    instr_if,       // instruction fetch
     output  logic   [31 : 0]    last_pc,        // last program_counter
-    input   logic   [31 : 0]    mtvec_v,        // value of mtvec
+    input   logic   [31 : 0]    mtvec_v,        // machine trap-handler base address
     input   logic   [0  : 0]    m_ret,          // m return
     input   logic   [31 : 0]    m_ret_pc,       // m return pc value
-    output  logic   [0  : 0]    addr_misalign,
-    input   logic   [0  : 0]    lsu_err,
+    output  logic   [0  : 0]    addr_misalign,  // address misaligned
+    input   logic   [0  : 0]    lsu_err,        // load store unit error
     // memory inputs/outputs
     output  logic   [31 : 0]    addr_i,         // address instruction memory
     input   logic   [31 : 0]    rd_i,           // read instruction memory
@@ -45,7 +45,7 @@ module nf_i_fu
     logic   [31 : 0]    pc_not_branch;          // program counter not branch value
     // flush instruction decode 
     logic   [0  : 0]    flush_id_branch;        // flush id stage ( branch operation )
-    logic   [0  : 0]    flush_id_branch_;       // flush id stage after branch and reset
+    logic   [0  : 0]    flush_id_ff;            // flush id stage after branch, reset, lsu error and address misaligned
     logic   [0  : 0]    flush_id_sw_instr;      // flush id stage ( store data instruction )
     // working with instruction fetch instruction (stalled and not stalled)
     assign instr_if      = flush_id ? '0 : ( sel_if_instr ? instr_if_stalled : rd_i );  // from fetch stage
@@ -54,8 +54,8 @@ module nf_i_fu
     assign pc_not_branch = addr_i + 4;
     // finding flush instruction decode signals
     assign flush_id_sw_instr = ~ req_ack_i;
-    assign flush_id_branch = pc_src && ( ~ stall_if );
-    assign flush_id = flush_id_branch_ || flush_id_branch || flush_id_sw_instr || addr_misalign;
+    assign flush_id_branch = ( pc_src && ( ~ stall_if ) ) || m_ret;
+    assign flush_id = flush_id_ff || flush_id_branch || flush_id_sw_instr || addr_misalign;
     // setting instruction interface signals
     assign req_i  = '1;
     assign we_i   = '0;
@@ -76,8 +76,8 @@ module nf_i_fu
     begin
         pc_i = pc_not_branch;
         casex( {m_ret, addr_misalign || lsu_err , pc_src} )
-            3'b000   :   pc_i = pc_not_branch;   // pc_i = | pc_not_branch[1:0] ? mtvec_v : pc_not_branch;
-            3'b001   :   pc_i = pc_branch;       // pc_i = | pc_branch[1:0] ? mtvec_v : pc_branch;
+            3'b000   :   pc_i = pc_not_branch;
+            3'b001   :   pc_i = pc_branch;
             3'b01?   :   pc_i = mtvec_v;
             3'b1??   :   pc_i = m_ret_pc;
         endcase
@@ -85,12 +85,12 @@ module nf_i_fu
     //
     always_ff @(posedge clk, negedge resetn)
         if( !resetn )
-            flush_id_branch_ <= '1; // flushing if-id after reset
+            flush_id_ff <= '1; // flushing if-id after reset
         else
         begin
-            flush_id_branch_ <= '0;
+            flush_id_ff <= '0;
             if( flush_id_branch || addr_misalign || lsu_err )
-                flush_id_branch_ <= '1; // set if branch and stall instruction fetch
+                flush_id_ff <= '1; // set if branch and stall instruction fetch
         end
     // selecting instruction fetch stage instruction
     nf_register         #( 1  ) sel_id_ff               ( clk , resetn ,                 stall_if , sel_if_instr     );

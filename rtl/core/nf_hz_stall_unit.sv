@@ -33,9 +33,10 @@ module nf_hz_stall_unit
     output  logic   [0 : 0]     stall_iexe,     // stall execution stage
     output  logic   [0 : 0]     stall_imem,     // stall memory stage
     output  logic   [0 : 0]     stall_iwb,      // stall write back stage
+    output  logic   [0 : 0]     flush_id,       // flsuh decode stage
     output  logic   [0 : 0]     flush_iexe,     // flush execution stage
-    output  logic   [0 : 0]     flush_imem,
-    output  logic   [0 : 0]     flush_id
+    output  logic   [0 : 0]     flush_imem,     // flush memory stage
+    output  logic   [0 : 0]     flush_iwb       // flush write back stage
 );
 
     logic   lw_stall_id_iexe;       // stall pipe if load data instructions ( id and exe stages )
@@ -59,12 +60,13 @@ module nf_hz_stall_unit
 
     assign stall_if   = lw_stall_id_iexe  || sw_lw_data_stall || branch_exe_id_stall || lw_instr_stall;
     assign stall_id   = lw_stall_id_iexe  || sw_lw_data_stall || branch_exe_id_stall || lw_instr_stall;
-    assign stall_iexe =                      sw_lw_data_stall;
-    assign stall_imem =                      sw_lw_data_stall;
-    assign stall_iwb  =                      sw_lw_data_stall;
+    assign stall_iexe =                      sw_lw_data_stall                                         ;
+    assign stall_imem =                      sw_lw_data_stall                                         ;
+    assign stall_iwb  =                      sw_lw_data_stall                                         ;
 
-    assign flush_iexe = lw_stall_id_iexe  ||                     branch_exe_id_stall || lw_instr_stall || lsu_err;
-    assign flush_id   = lsu_err;
-    assign flush_imem = lsu_err;
+    assign flush_iexe = lsu_err || lw_stall_id_iexe  || branch_exe_id_stall || lw_instr_stall;
+    assign flush_id   = lsu_err                                                              ;
+    assign flush_imem = lsu_err                                                              ;
+    assign flush_iwb  = lsu_err                                                              ;
     
 endmodule : nf_hz_stall_unit

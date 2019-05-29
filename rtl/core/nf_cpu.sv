@@ -37,7 +37,7 @@ module nf_cpu
 
     // program counter wires
     logic   [31 : 0]    pc_branch;          // program counter branch value
-    logic   [31 : 0]    last_pc;
+    logic   [31 : 0]    last_pc;            // last program counter
     logic   [0  : 0]    pc_src;             // program counter source
     logic   [3  : 0]    branch_type;        // branch type
     // register file wires
@@ -55,12 +55,13 @@ module nf_cpu
     logic   [0  : 0]    flush_id;           // flush decode stage
     logic   [0  : 0]    flush_iexe;         // flush execution stage
     logic   [0  : 0]    flush_imem;         // flush memory stage
+    logic   [0  : 0]    flush_iwb;          // flush write back stage
 
 
     logic   [31 : 0]    rd1_i_exu;          // data for execution stage ( bypass unit )
     logic   [31 : 0]    rd2_i_exu;          // data for execution stage ( bypass unit )
 
-    // csr
+    // csr interface
     logic   [11 : 0]    csr_addr;           // csr address
     logic   [31 : 0]    csr_rd;             // csr read data
     logic   [31 : 0]    csr_wd;             // csr write data
@@ -68,19 +69,19 @@ module nf_cpu
     logic   [0  : 0]    csr_wreq;           // csr write request
     logic   [0  : 0]    csr_rreq;           // csr read request
 
-    logic   [31 : 0]    mtvec_v;            // value of mtvec
+    logic   [31 : 0]    mtvec_v;            // machine trap-handler base address
     logic   [31 : 0]    m_ret_pc;           // m return pc value
-    logic   [0  : 0]    addr_misalign;
-    logic   [0  : 0]    l_misaligned;
-    logic   [0  : 0]    s_misaligned;
+    logic   [0  : 0]    addr_misalign;      // address misaligned signal
+    logic   [0  : 0]    l_misaligned;       // load misaligned signal
+    logic   [0  : 0]    s_misaligned;       // store misaligned signal
     
-    /*********************************************
-    **         Instruction Fetch  stage         **
-    *********************************************/
+    /***************************************************************************************************
+    **                                    Instruction Fetch  stage                                    **
+    ***************************************************************************************************/
     logic   [31 : 0]    instr_if;           // instruction fetch
-    /*********************************************
-    **         Instruction Decode stage         **
-    *********************************************/
+    /***************************************************************************************************
+    **                                    Instruction Decode stage                                    **
+    ***************************************************************************************************/
     logic   [31 : 0]    instr_id;           // instruction ( decode stage )
     logic   [31 : 0]    pc_id;              // program counter ( decode stage )
     logic   [4  : 0]    wa3_id;             // write address for register file ( decode stage )
@@ -107,9 +108,9 @@ module nf_cpu
     logic   [0  : 0]    csr_wreq_id;        // write request to csr ( decode stage )
     logic   [0  : 0]    csr_sel_id;         // csr select ( zimm or rd1 ) ( decode stage )
     logic   [0  : 0]    m_ret_id;           // m return
-    /*********************************************
-    **       Instruction execution stage        **
-    *********************************************/
+    /***************************************************************************************************
+    **                                  Instruction execution stage                                   **
+    ***************************************************************************************************/
     logic   [31 : 0]    instr_iexe;         // instruction ( execution stage )
     logic   [4  : 0]    wa3_iexe;           // write address for register file ( execution stage )
     logic   [4  : 0]    ra1_iexe;           // read address 1 from register file ( execution stage )
@@ -137,9 +138,9 @@ module nf_cpu
     logic   [0  : 0]    csr_wreq_iexe;      // write request to csr ( execution stage )
     logic   [0  : 0]    csr_sel_iexe;       // csr select ( zimm or rd1 ) ( execution stage )
     logic   [4  : 0]    csr_zimm;           // csr zero immediate data ( execution stage )
-    /*********************************************
-    **       Instruction memory stage           **
-    *********************************************/
+    /***************************************************************************************************
+    **                                    Instruction memory stage                                    **
+    ***************************************************************************************************/
     logic   [31 : 0]    instr_imem;         // instruction ( memory stage )
     logic   [31 : 0]    result_imem;        // result operation ( memory stage )
     logic   [0  : 0]    we_dm_imem;         // write enable data memory ( memory stage )
@@ -151,9 +152,9 @@ module nf_cpu
     logic   [1  : 0]    size_dm_imem;       // size for load/store instructions ( memory stage )
     logic   [0  : 0]    sign_dm_imem;       // sign extended data memory for load instructions ( memory stage )
     logic   [31 : 0]    pc_imem;            // program counter value ( memory stage )
-    /*********************************************
-    **       Instruction write back stage       **
-    *********************************************/
+    /***************************************************************************************************
+    **                                  Instruction write back stage                                  **
+    ***************************************************************************************************/
     logic   [31 : 0]    instr_iwb;          // instruction ( write back stage )
     logic   [4  : 0]    wa3_iwb;            // write address for register file ( write back stage )
     logic   [0  : 0]    we_rf_iwb;          // write enable for register file ( write back stage )
@@ -239,11 +240,11 @@ module nf_cpu
     nf_register_we_clr  #( 32 ) result_iexe_imem    ( clk , resetn , ~ stall_imem , flush_imem , result_iexe_e , result_imem    );
     nf_register_we_clr  #( 32 ) pc_iexe_imem        ( clk , resetn , ~ stall_imem , flush_imem , pc_iexe       , pc_imem        );
     // imem2iwb
-    nf_register_we      #(  1 ) we_rf_imem_iwb      ( clk , resetn , ~ stall_iwb  ,              we_rf_imem    , we_rf_iwb      );
-    nf_register_we      #(  1 ) rf_src_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              rf_src_imem   , rf_src_iwb     );
-    nf_register_we      #(  5 ) wa3_imem_iwb        ( clk , resetn , ~ stall_iwb  ,              wa3_imem      , wa3_iwb        );
-    nf_register_we      #( 32 ) result_imem_iwb     ( clk , resetn , ~ stall_iwb  ,              result_imem   , result_iwb     );
-    nf_register_we      #( 32 ) pc_imem_iwb         ( clk , resetn , ~ stall_iwb  ,              pc_imem       , pc_iwb         );
+    nf_register_we_clr  #(  1 ) we_rf_imem_iwb      ( clk , resetn , ~ stall_iwb  , flush_iwb  , we_rf_imem    , we_rf_iwb      );
+    nf_register_we_clr  #(  1 ) rf_src_imem_iwb     ( clk , resetn , ~ stall_iwb  , flush_iwb  , rf_src_imem   , rf_src_iwb     );
+    nf_register_we_clr  #(  5 ) wa3_imem_iwb        ( clk , resetn , ~ stall_iwb  , flush_iwb  , wa3_imem      , wa3_iwb        );
+    nf_register_we_clr  #( 32 ) result_imem_iwb     ( clk , resetn , ~ stall_iwb  , flush_iwb  , result_imem   , result_iwb     );
+    nf_register_we_clr  #( 32 ) pc_imem_iwb         ( clk , resetn , ~ stall_iwb  , flush_iwb  , pc_imem       , pc_iwb         );
     
     // for verification
     // synthesis translate_off
@@ -264,12 +265,12 @@ module nf_cpu
         .pc_src         ( pc_src            ),  // next program counter source
         .stall_if       ( stall_if          ),  // stalling instruction fetch stage
         .instr_if       ( instr_if          ),  // instruction fetch
-        .last_pc        ( last_pc           ),
-        .mtvec_v        ( mtvec_v           ),
-        .m_ret          ( m_ret_id          ),
-        .m_ret_pc       ( m_ret_pc          ),
-        .addr_misalign  ( addr_misalign     ),
-        .lsu_err        ( lsu_err           ),
+        .last_pc        ( last_pc           ),  // last program_counter
+        .mtvec_v        ( mtvec_v           ),  // machine trap-handler base address
+        .m_ret          ( m_ret_id          ),  // m return
+        .m_ret_pc       ( m_ret_pc          ),  // m return pc value
+        .addr_misalign  ( addr_misalign     ),  // address misaligned
+        .lsu_err        ( lsu_err           ),  // load store unit error
         // memory inputs/outputs
         .addr_i         ( addr_i            ),  // address instruction memory
         .rd_i           ( rd_i              ),  // read instruction memory
@@ -352,14 +353,14 @@ module nf_cpu
         .rd2_imem       ( rd2_imem          ),  // read data 2 from imem stage
         .we_dm_imem     ( we_dm_imem        ),  // write enable data memory from imem stage
         .rf_src_imem    ( rf_src_imem       ),  // register file source enable from imem stage
-        .size_dm_imem   ( size_dm_imem      ),  // size data memory from imem stage
         .sign_dm_imem   ( sign_dm_imem      ),  // sign for data memory
+        .size_dm_imem   ( size_dm_imem      ),  // size data memory from imem stage
         .rd_dm_iwb      ( rd_dm_iwb         ),  // read data for write back stage
         .lsu_busy       ( lsu_busy          ),  // load store unit busy
-        .lsu_err        ( lsu_err           ),
+        .lsu_err        ( lsu_err           ),  // load store error
         .s_misaligned   ( s_misaligned      ),  // store misaligned
         .l_misaligned   ( l_misaligned      ),  // load misaligned
-        .stall_if       ( stall_if          ),
+        .stall_if       ( stall_if          ),  // stall instruction fetch
         // data memory and other's
         .addr_dm        ( addr_dm           ),  // address data memory
         .rd_dm          ( rd_dm             ),  // read data memory
@@ -376,7 +377,7 @@ module nf_cpu
         // scan wires
         .we_rf_imem     ( we_rf_imem        ),  // write enable register from memory stage
         .wa3_iexe       ( wa3_iexe          ),  // write address from execution stage
-        .wa3_imem       ( wa3_imem          ),  
+        .wa3_imem       ( wa3_imem          ),  // write address form memory stage
         .we_rf_iexe     ( we_rf_iexe        ),  // write enable register from memory stage
         .rf_src_iexe    ( rf_src_iexe       ),  // register source from execution stage
         .ra1_id         ( ra1_id            ),  // read address 1 from decode stage
@@ -387,16 +388,17 @@ module nf_cpu
         .req_ack_i      ( req_ack_i         ),  // request acknowledge instruction
         .rf_src_imem    ( rf_src_imem       ),  // register source from memory stage
         .lsu_busy       ( lsu_busy          ),  // load store unit busy
-        .lsu_err        ( lsu_err           ),
+        .lsu_err        ( lsu_err           ),  // load store unit error
         // control wires
         .stall_if       ( stall_if          ),  // stall fetch stage
         .stall_id       ( stall_id          ),  // stall decode stage
         .stall_iexe     ( stall_iexe        ),  // stall execution stage
         .stall_imem     ( stall_imem        ),  // stall memory stage
         .stall_iwb      ( stall_iwb         ),  // stall write back stage
+        .flush_id       ( flush_id          ),  // flush decode stage
         .flush_iexe     ( flush_iexe        ),  // flush execution stage
-        .flush_id       ( flush_id          ),
-        .flush_imem     ( flush_imem        )
+        .flush_imem     ( flush_imem        ),  // flush memory stage
+        .flush_iwb      ( flush_iwb         )   // flush write back stage
     );
     // creating bypass unit (hazard)
     nf_hz_bypass_unit 
@@ -431,21 +433,22 @@ module nf_cpu
         // clock and reset
         .clk            ( clk               ),  // clk  
         .resetn         ( resetn            ),  // resetn
-        // csr
+        // csr interface
         .csr_addr       ( csr_addr          ),  // csr address
         .csr_rd         ( csr_rd            ),  // csr read data
         .csr_wd         ( csr_wd            ),  // csr write data
         .csr_cmd        ( csr_cmd           ),  // csr command
         .csr_wreq       ( csr_wreq          ),  // csr write request
         .csr_rreq       ( csr_rreq          ),  // csr read request
-        // 
-        .mtvec_v        ( mtvec_v           ),
-        .m_ret_pc       ( m_ret_pc          ),
-        .addr_mis       ( addr_i            ),
-        .addr_misalign  ( addr_misalign     ),
-        .s_misaligned   ( s_misaligned      ),
-        .l_misaligned   ( l_misaligned      ),
-        .ls_mis         ( pc_imem           )
+        // scan and control wires
+        .mtvec_v        ( mtvec_v           ),  // machine trap-handler base address
+        .m_ret_pc       ( m_ret_pc          ),  // m return pc value
+        .addr_mis       ( addr_i            ),  // address misaligned value
+        .addr_misalign  ( addr_misalign     ),  // address misaligned signal
+        .s_misaligned   ( s_misaligned      ),  // store misaligned signal
+        .l_misaligned   ( l_misaligned      ),  // load misaligned signal
+        .ls_mis         ( result_imem       ),  // load slore misaligned value
+        .m_ret_ls       ( pc_imem           )   // m return pc value for load/store misaligned
     );
 
     // synthesis translate_off
