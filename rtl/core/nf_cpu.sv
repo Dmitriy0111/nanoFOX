@@ -127,7 +127,7 @@ module nf_cpu
     logic   [0  : 0]    lsu_busy;           // load store unit busy
 
     // next program counter value for branch command
-    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : rd1_id + ( ext_data_id << 1 );
+    assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) - 4 : cmp_d1 + ext_data_id;
     assign result_iexe_e = res_sel_iexe  == RES_ALU  ? result_iexe : pc_iexe;
     assign wa3    = wa3_iwb;
     assign wd3    = wd_iwb;
