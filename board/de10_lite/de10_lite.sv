@@ -27,7 +27,7 @@ module de10_lite
     inout   [35 : 0]    gpio
 );
 
-    localparam              debug_type  = "hex";
+    localparam              debug_type  = "vga";
     localparam              cpu         = "nanoFOX";
     localparam              sub_path    = "../../brd_rtl/DebugScreenCore/";
 

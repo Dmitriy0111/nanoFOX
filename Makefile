@@ -24,7 +24,7 @@ RTL_DIR  = $(PWD)/rtl
 TB_DIR   = $(PWD)/tb
 
 BOARDS_SUPPORTED ?= de10_lite rz_easyFPGA_A2_1 Storm_IV_E6_V2
-BOARD            ?= Storm_IV_E6_V2
+BOARD            ?= rz_easyFPGA_A2_1
 
 ########################################################
 # common make targets

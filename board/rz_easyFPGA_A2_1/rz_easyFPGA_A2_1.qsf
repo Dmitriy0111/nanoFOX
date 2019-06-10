@@ -42,11 +42,11 @@ set_global_assignment -name TOP_LEVEL_ENTITY rz_easyFPGA_A2_1
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 17.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:28:51  DECEMBER 02, 2018"
 set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_signal.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_pix_symbol.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_ds_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/symbol_mem.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/display_mem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/vga_signal.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/vga_pix_symbol.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/vga_ds_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/symbol_mem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/display_mem.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_branch_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_sign_ex.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_registers.sv

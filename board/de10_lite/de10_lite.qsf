@@ -324,11 +324,11 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to G[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to hsync
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to vsync
 
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_signal.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_pix_symbol.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/vga_ds_top.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/symbol_mem.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/display_mem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/vga_signal.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/vga_pix_symbol.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/vga_ds_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/symbol_mem.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../brd_rtl/DebugScreenCore/rtl/sv/display_mem.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_branch_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_sign_ex.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/nf_registers.sv
