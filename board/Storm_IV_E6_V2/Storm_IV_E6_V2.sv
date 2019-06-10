@@ -12,7 +12,7 @@ module Storm_IV_E6_V2
     output  logic   [0 : 0]     vsync
 );
 
-    localparam          debug_type  = "hex";
+    localparam          debug_type  = "vga";
     localparam          cpu         = "nanoFOX";
     localparam          sub_path    = "../../brd_rtl/DebugScreenCore/";
 
