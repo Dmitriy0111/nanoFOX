@@ -208,7 +208,7 @@ parameter instr_cf VER   = { "  VER",`RVI , 5'b????? , 3'b??? , 7'b??????? , 12'
 
 `ifndef ALU_TYPES
 `define ALU_TYPES
-//ALU commands
+// ALU commands
 typedef enum logic [3 : 0]
 {
     ALU_ADD,
@@ -226,7 +226,7 @@ typedef enum logic [3 : 0]
 
 `ifndef IMM_SEL_TYPES
 `define IMM_SEL_TYPES
-//branch type constants
+// branch type constants
 typedef enum logic [4 : 0]  // one hot
 {
     //sign imm select
@@ -241,7 +241,7 @@ typedef enum logic [4 : 0]  // one hot
 
 `ifndef BRANCH_TYPES
 `define BRANCH_TYPES
-//branch type constants
+// branch type constants
 typedef enum logic [3 : 0]  // one hot
 {
     B_NONE      =   4'h0,
@@ -254,17 +254,18 @@ typedef enum logic [3 : 0]  // one hot
 
 `ifndef SRCB_TYPES
 `define SRCB_TYPES
-//srcB select constants
-typedef enum logic [0 : 0]
+// srcB select constants
+typedef enum logic [1 : 0]
 {
-    SRCB_IMM    =   1'b0,
-    SRCB_RD2    =   1'b1
+    SRCB_IMM    =   2'b00,
+    SRCB_RD2    =   2'b01,
+    SRCB_12     =   2'b10
 } srcb_types;
 `endif
 
 `ifndef SRCA_TYPES
 `define SRCA_TYPES
-//srcA select constants
+// srcA select constants
 typedef enum logic [1 : 0]
 {
     SRCA_IMM    =   2'b00,
@@ -275,7 +276,7 @@ typedef enum logic [1 : 0]
 
 `ifndef SRCS_TYPES
 `define SRCS_TYPES
-//shift select constants
+// shift select constants
 typedef enum logic [1 : 0]
 {
     SRCS_SHAMT  =   2'b00,
@@ -286,18 +287,18 @@ typedef enum logic [1 : 0]
 
 `ifndef RES_TYPES
 `define RES_TYPES
-//result select constants
+// result select constants
 typedef enum logic [1 : 0]
 {
     RES_ALU     =   2'b00,
     RES_UB      =   2'b01,
-    SRCB_12     =   2'b10
+    RES_CSR     =   2'b10
 } res_types;
 `endif
 
 `ifndef RF_SRC_TYPES
 `define RF_SRC_TYPES
-//srcB select constants
+// srcB select constants
 typedef enum logic [0 : 0]
 {
     RF_ALUR     =   1'b0,   // RF write data is ALU result
@@ -307,7 +308,7 @@ typedef enum logic [0 : 0]
 
 `ifndef CSR_CMD_TYPES
 `define CSR_CMD_TYPES
-//CSR command constants
+// CSR command constants
 typedef enum logic [1 : 0]
 {
     CSR_NONE    =   2'b00,  // none edit csr value

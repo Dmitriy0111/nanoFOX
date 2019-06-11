@@ -164,11 +164,10 @@ module nf_cpu
     logic   [31 : 0]    rd_dm_iwb;          // read data from data memory ( write back stage )
     logic   [31 : 0]    pc_iwb;             // program counter value ( write back stage )
     logic   [0  : 0]    lsu_busy;           // load store unit busy
-    logic   [0  : 0]    lsu_err;
+    logic   [0  : 0]    lsu_err;            // load store unit error
 
     // next program counter value for branch command
     assign pc_branch  = ~ branch_src ? pc_id + ( ext_data_id << 1 ) : (cmp_d1 + ext_data_id) & 32'hffff_fffe;
-    assign ex_pc  = pc_iwb;
     assign wa3    = wa3_iwb;
     assign wd3    = wd_iwb;
     assign we_rf  = we_rf_iwb;
@@ -194,9 +193,9 @@ module nf_cpu
     begin
         result_iexe_e = result_iexe;
         case( { csr_rreq_iexe , res_sel_iexe } )
-            2'b00   :   result_iexe_e = result_iexe;    // RES_ALU
-            2'b01   :   result_iexe_e = pc_iexe + 4;    // RES_UB
-            2'b10   :   result_iexe_e = csr_rd;         // RES_CSR
+            RES_ALU :   result_iexe_e = result_iexe;    // RES_ALU
+            RES_UB  :   result_iexe_e = pc_iexe + 4;    // RES_UB
+            RES_CSR :   result_iexe_e = csr_rd;         // RES_CSR
             default :   ;
         endcase
     end

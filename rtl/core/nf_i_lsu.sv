@@ -115,14 +115,14 @@ module nf_i_lsu
         l_data_2 = rd_dm[16 +: 8];
         l_data_1 = rd_dm[8  +: 8];
         l_data_0 = rd_dm[0  +: 8];
-        case( addr_dm[0 +: 2])
+        case( addr_dm[0 +: 2] )
             2'b00   : l_data_0 = rd_dm[0  +: 8];
             2'b01   : l_data_0 = rd_dm[8  +: 8];
             2'b10   : l_data_0 = rd_dm[16 +: 8];
             2'b11   : l_data_0 = rd_dm[24 +: 8];
             default : ;
         endcase
-        case( addr_dm[0 +: 2])
+        case( addr_dm[0 +: 2] )
             2'b00   : l_data_1 = rd_dm[8  +: 8];
             2'b01   : l_data_1 = rd_dm[8  +: 8];
             2'b10   : l_data_1 = rd_dm[24 +: 8];
@@ -137,17 +137,17 @@ module nf_i_lsu
         s_data_2 = rd2_imem[16 +: 8];
         s_data_1 = rd2_imem[8  +: 8];
         s_data_0 = rd2_imem[0  +: 8];
-        case( result_imem[0 +: 2])
+        case( result_imem[0 +: 2] )
             2'b00   : s_data_1 = rd2_imem[8  +: 8];
             2'b01   : s_data_1 = rd2_imem[0  +: 8];
             default : ;
         endcase
-        case( result_imem[0 +: 2])
+        case( result_imem[0 +: 2] )
             2'b00   : s_data_2 = rd2_imem[16 +: 8];
             2'b10   : s_data_2 = rd2_imem[0  +: 8];
             default : ;
         endcase
-        case( result_imem[0 +: 2])
+        case( result_imem[0 +: 2] )
             2'b00   : s_data_3 = rd2_imem[24 +: 8];
             2'b10   : s_data_3 = rd2_imem[8  +: 8];
             2'b11   : s_data_3 = rd2_imem[0  +: 8];

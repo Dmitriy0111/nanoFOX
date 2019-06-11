@@ -89,7 +89,7 @@ module nf_csr
         else 
             if( csr_wreq && ( csr_addr == `MTVEC_A ) )
                 mtvec <= csr_wd_i;
-    // write mtvec data
+    // write mepc data
     always_ff @(posedge clk, negedge resetn)
         if( ! resetn )
             mepc <= '0;

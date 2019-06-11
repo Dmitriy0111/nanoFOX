@@ -63,14 +63,6 @@ module nf_i_fu
     assign size_i = 2'b10;  // word
     
     assign addr_misalign = addr_i[1 : 0] != '0;
-
-    always_ff @(posedge clk, negedge resetn)
-    begin
-        if( !resetn )
-            last_pc <= '0;
-        else if( !stall_if )
-            last_pc <= addr_i;
-    end
     // finding next program counter value
     always_comb
     begin
@@ -96,7 +88,8 @@ module nf_i_fu
     nf_register         #( 1  ) sel_id_ff               ( clk , resetn ,                 stall_if , sel_if_instr     );
     // stalled instruction fetch instruction
     nf_register_we      #( 32 ) instr_if_stall          ( clk , resetn , we_if_stalled , rd_i     , instr_if_stalled );
-    // creating program counter
+    // creating program counter and last pc
+    nf_register_we      #( 32 ) last_pc_ff              ( clk , resetn , ~ stall_if    , addr_i   , last_pc          );
     nf_register_we_r    
     #( 
         .width      ( 32            ), 
