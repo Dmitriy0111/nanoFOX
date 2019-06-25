@@ -415,9 +415,13 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_sign_ex.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/common/nf_registers.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_reg_file.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_ram.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/pwm/nf_pwm.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/gpio/nf_gpio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cpu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cpu_cc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_control_unit.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cache.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_cache_controller.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_alu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_fu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_lsu.sv
@@ -425,8 +429,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_exu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_i_du.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hz_stall_unit.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_hz_bypass_unit.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/pwm/nf_pwm.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/gpio/nf_gpio.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/bus/ahb/nf_ahb2core.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/bus/ahb/nf_ahb_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/bus/ahb/nf_ahb_router.sv
@@ -439,6 +441,7 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/bus/ahb/nf_ahb_dec.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/uart/nf_uart_transmitter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/uart/nf_uart_receiver.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/uart/nf_uart_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_param_mem.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_cdc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_csr.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_pmp.sv
