@@ -11,7 +11,8 @@ module nf_param_mem
 #(
     parameter                       addr_w = 6,             // actual address memory width
                                     data_w = 32,            // actual data width
-                                    depth  = 2 ** addr_w    // depth of memory array
+                                    depth  = 2 ** addr_w,   // depth of memory array
+                                    init_z = 0              // init memory with '0
 )(
     input   logic   [0        : 0]  clk,                    // clock
     input   logic   [addr_w-1 : 0]  waddr,                  // write address
@@ -28,5 +29,15 @@ module nf_param_mem
     always @(posedge clk)
         if( we )
             mem[waddr] <= wd;
+
+    initial
+    begin
+        if( init_z )
+        begin
+            integer i;
+            for(i = 0; i<depth; i++)
+                mem[i] = '0;
+        end
+    end
 
 endmodule : nf_param_mem

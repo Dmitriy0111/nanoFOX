@@ -48,10 +48,12 @@ add wave -position insertpoint sim:/nf_tb/instruction_id_stage
 add wave -position insertpoint sim:/nf_tb/instruction_iexe_stage
 add wave -position insertpoint sim:/nf_tb/instruction_imem_stage
 add wave -position insertpoint sim:/nf_tb/instruction_iwb_stage
-add wave -divider  "load store unit"
-add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_i_lsu_0/*
 add wave -divider  "core singals"
 add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/*
+add wave -divider  "cache controller singals"
+add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_i_lsu_0/nf_cache_D_controller/*
+add wave -divider  "load store unit"
+add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_i_lsu_0/*
 add wave -divider  "hasard stall & flush singals"
 add wave -position insertpoint sim:/nf_tb/nf_top_0/nf_cpu_0/nf_hz_stall_unit_0/*
 add wave -divider  "cc unit singals"

@@ -44,6 +44,7 @@ module nf_i_lsu
     logic   [7  : 0]    l_data_1;   // load data 1
     logic   [7  : 0]    l_data_0;   // load data 0
     logic   [31 : 0]    l_data_f;   // full load data
+    logic   [31 : 0]    l_data_pre;
     // store data wires
     logic   [7  : 0]    s_data_3;   // store data 3
     logic   [7  : 0]    s_data_2;   // store data 2
@@ -56,6 +57,17 @@ module nf_i_lsu
     logic   [0  : 0]    sign_dm;    // unsigned load data memory?
     logic   [0  : 0]    misaligned; // load or store address misaligned
 
+    logic   [31 : 0]    rd_dm_iwb_i;
+    logic   [31 : 0]    addr_dm_i;      // address data memory (internal)
+    logic   [1  : 0]    size_dm_i;      // size for load/store instructions (internal)
+    logic   [31 : 0]    wd_dm_i;        // write data (internal)
+    logic   [0  : 0]    we_dm_i;        // write enable (internal)
+
+    logic   [0  : 0]    hit;        // cache hit
+    logic   [31 : 0]    cache_rd;   // cache read data
+    logic   [1  : 0]    addr_pre;   
+    logic   [1  : 0]    size_pre;
+
     assign misaligned = ( ( ( size_dm_imem == 2'b10 ) && ( result_imem[1 : 0] != '0 ) ) || ( ( size_dm_imem == 2'b01 ) && ( result_imem[0 : 0] != '0 ) ) );
     assign s_misaligned = misaligned && we_dm_imem;
     assign l_misaligned = misaligned && rf_src_imem;
@@ -64,6 +76,14 @@ module nf_i_lsu
     assign req_dm = lsu_busy;
     assign l_data_f = { l_data_3 , l_data_2 , l_data_1 , l_data_0 };
     assign s_data_f = { s_data_3 , s_data_2 , s_data_1 , s_data_0 };
+    assign addr_dm  = addr_dm_i;
+    assign size_dm  = size_dm_i;
+    assign wd_dm    = wd_dm_i;
+    assign we_dm    = we_dm_i;
+
+    assign l_data_pre = ( hit && ( !lsu_busy ) ) ? cache_rd : rd_dm;
+    assign addr_pre   = ( hit && ( !lsu_busy ) ) ? result_imem[1 : 0] : addr_dm_i[1 : 0];
+    assign size_pre   = ( hit && ( !lsu_busy ) ) ? size_dm_imem : size_dm_i;
 
     always_ff @(posedge clk, negedge resetn)
         if( !resetn )
@@ -82,7 +102,7 @@ module nf_i_lsu
             lsu_busy <= '0;
         else 
         begin
-            if( ( we_dm_imem || rf_src_imem ) && !lsu_err_c )
+            if( ( we_dm_imem || ( rf_src_imem && ( !hit ) ) ) && !lsu_err_c )
                 lsu_busy <= '1;
             if( req_ack_dm )
                 lsu_busy <= '0;
@@ -93,40 +113,40 @@ module nf_i_lsu
     begin
         if( !resetn )
         begin
-            addr_dm <= '0;
-            wd_dm   <= '0;
-            we_dm   <= '0;
-            size_dm <= '0;
-            sign_dm <= '0;
+            addr_dm_i <= '0;
+            wd_dm_i   <= '0;
+            we_dm_i   <= '0;
+            size_dm_i <= '0;
+            sign_dm   <= '0;
         end
         else if( ( we_dm_imem || rf_src_imem ) && !lsu_busy )
         begin
-            addr_dm <= result_imem;
-            wd_dm   <= s_data_f;
-            we_dm   <= we_dm_imem;
-            size_dm <= size_dm_imem;
-            sign_dm <= sign_dm_imem;
+            addr_dm_i <= result_imem;
+            wd_dm_i   <= s_data_f;
+            we_dm_i   <= we_dm_imem;
+            size_dm_i <= size_dm_imem;
+            sign_dm   <= sign_dm_imem;
         end
     end
     // form load data value
     always_comb
     begin
-        l_data_3 = rd_dm[24 +: 8];
-        l_data_2 = rd_dm[16 +: 8];
-        l_data_1 = rd_dm[8  +: 8];
-        l_data_0 = rd_dm[0  +: 8];
-        case( addr_dm[0 +: 2] )
-            2'b00   : l_data_0 = rd_dm[0  +: 8];
-            2'b01   : l_data_0 = rd_dm[8  +: 8];
-            2'b10   : l_data_0 = rd_dm[16 +: 8];
-            2'b11   : l_data_0 = rd_dm[24 +: 8];
+        l_data_3 = l_data_pre[24 +: 8];
+        l_data_2 = l_data_pre[16 +: 8];
+        l_data_1 = l_data_pre[8  +: 8];
+        l_data_0 = l_data_pre[0  +: 8];
+        case( addr_pre )
+            2'b00   : l_data_0 = l_data_pre[0  +: 8];
+            2'b01   : l_data_0 = l_data_pre[8  +: 8];
+            2'b10   : l_data_0 = l_data_pre[16 +: 8];
+            2'b11   : l_data_0 = l_data_pre[24 +: 8];
             default : ;
         endcase
-        case( addr_dm[0 +: 2] )
-            2'b00   : l_data_1 = rd_dm[8  +: 8];
-            2'b01   : l_data_1 = rd_dm[8  +: 8];
-            2'b10   : l_data_1 = rd_dm[24 +: 8];
-            2'b11   : l_data_1 = rd_dm[24 +: 8];
+        case( addr_pre )
+            2'b00   : l_data_1 = l_data_pre[8  +: 8];
+            2'b01   : l_data_1 = l_data_pre[8  +: 8];
+            2'b10   : l_data_1 = l_data_pre[24 +: 8];
+            2'b11   : l_data_1 = l_data_pre[24 +: 8];
             default : ;
         endcase
     end
@@ -154,18 +174,47 @@ module nf_i_lsu
             default : ;
         endcase
     end
-    
+
     always_ff @(posedge clk, negedge resetn)
     begin
         if( !resetn )
             rd_dm_iwb <= '0;
-        else if( req_ack_dm )
-            case( size_dm )
-                2'b00   : rd_dm_iwb <= { { 24 { l_data_f[ 7] && sign_dm } } , l_data_f[7  : 0] };
-                2'b01   : rd_dm_iwb <= { { 16 { l_data_f[15] && sign_dm } } , l_data_f[15 : 0] };
-                2'b10   : rd_dm_iwb <= l_data_f[31 : 0];
-                default : rd_dm_iwb <= l_data_f[31 : 0];
-            endcase
+        else if( req_ack_dm || hit )
+            rd_dm_iwb <= rd_dm_iwb_i;
     end
+    
+    always_comb
+    begin
+        rd_dm_iwb_i <= '0;
+        case( size_pre )
+            2'b00   : rd_dm_iwb_i <= { { 24 { l_data_f[ 7] && sign_dm } } , l_data_f[7  : 0] };
+            2'b01   : rd_dm_iwb_i <= { { 16 { l_data_f[15] && sign_dm } } , l_data_f[15 : 0] };
+            2'b10   : rd_dm_iwb_i <= l_data_f[31 : 0];
+            default : rd_dm_iwb_i <= l_data_f[31 : 0];
+        endcase
+    end
+
+    // creating one cache data memory controller
+    nf_cache_controller
+    #(
+        .addr_w     ( 6             ),  // actual address memory width
+        .depth      ( 2 ** 6        ),  // depth of memory array
+        .tag_w      ( 6             )   // tag width field
+    )
+    nf_cache_D_controller
+    (
+        .clk        ( clk           ),  // clock
+        .raddr      ( result_imem   ),  // read address
+        .waddr      ( addr_dm_i     ),  // write address
+        .swe        ( we_dm_i       ),  // store write enable
+        .lwe        ( req_ack_dm    ),  // load write enable
+        .req_l      ( lsu_busy      ),  // requets load
+        .size_d     ( size_dm_i     ),  // data size
+        .size_r     ( size_dm_imem  ),  // read data size
+        .sd         ( wd_dm_i       ),  // store data
+        .ld         ( rd_dm         ),  // load data
+        .rd         ( cache_rd      ),  // read data
+        .hit        ( hit           )   // cache hit
+    );
 
 endmodule : nf_i_lsu

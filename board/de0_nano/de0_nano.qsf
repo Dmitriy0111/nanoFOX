@@ -444,6 +444,5 @@ set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/uart/nf_uart_
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_param_mem.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/periphery/nf_cdc.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_csr.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/core/nf_pmp.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ../../rtl/top/nf_top_ahb.sv
 set_global_assignment -name SYSTEMVERILOG_FILE de0_nano.sv

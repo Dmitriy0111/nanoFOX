@@ -11,8 +11,8 @@ module nf_cache
 #
 (
     parameter                       addr_w = 6,             // actual address memory width
-                                    depth  = 2 ** addr_w,   // depth of memory array
-                                    tag_w  = 6              // tag width
+                                    depth  = 2 ** addr_w,   // depth of cache memory
+                                    tag_w  = 6              // tag width field
 )(
     input   logic   [0       : 0]   clk,                    // clock
     input   logic   [31      : 0]   raddr,                  // read address
@@ -44,7 +44,7 @@ module nf_cache
     assign cache_v     = cache_tv_r[tag_w+4-1 : tag_w];     // finding cache valid field
     assign cache_tv_w  = { vld , wtag };                    // finding value write data for tag and valid cache fields
 
-    assign addr_eq = ( cache_tag == addr_tag ); // finding address equality
+    assign addr_eq = ( { { 31-(tag_w+addr_w+2)+1 {1'b0} } , cache_tag } == addr_tag );  // finding address equality
 
     assign hit[0] = ( cache_v[0] && addr_eq );  // finding hit value for bank 0
     assign hit[1] = ( cache_v[1] && addr_eq );  // finding hit value for bank 1
@@ -61,7 +61,8 @@ module nf_cache
     #(
         .addr_w     ( addr_w            ),      // actual address memory width
         .data_w     ( 8                 ),      // actual data width
-        .depth      ( depth             )       // depth of memory array
+        .depth      ( depth             ),      // depth of memory array
+        .init_z     ( 1                 )       // init memory with '0
     )
     cache_b0
     (
@@ -77,7 +78,8 @@ module nf_cache
     #(
         .addr_w     ( addr_w            ),      // actual address memory width
         .data_w     ( 8                 ),      // actual data width
-        .depth      ( depth             )       // depth of memory array
+        .depth      ( depth             ),      // depth of memory array
+        .init_z     ( 1                 )       // init memory with '0
     )
     cache_b1
     (
@@ -93,7 +95,8 @@ module nf_cache
     #(
         .addr_w     ( addr_w            ),      // actual address memory width
         .data_w     ( 8                 ),      // actual data width
-        .depth      ( depth             )       // depth of memory array
+        .depth      ( depth             ),      // depth of memory array
+        .init_z     ( 1                 )       // init memory with '0
     )
     cache_b2
     (
@@ -109,7 +112,8 @@ module nf_cache
     #(
         .addr_w     ( addr_w            ),      // actual address memory width
         .data_w     ( 8                 ),      // actual data width
-        .depth      ( depth             )       // depth of memory array
+        .depth      ( depth             ),      // depth of memory array
+        .init_z     ( 1                 )       // init memory with '0
     )
     cache_b3
     (
@@ -125,7 +129,8 @@ module nf_cache
     #(
         .addr_w     ( addr_w            ),      // actual address memory width
         .data_w     ( tag_w+4           ),      // actual data width
-        .depth      ( depth             )       // depth of memory array
+        .depth      ( depth             ),      // depth of memory array
+        .init_z     ( 1                 )       // init memory with '0
     )
     cache_tag_valid
     (
@@ -145,13 +150,13 @@ module nf_cache
     always @(posedge clk)
     begin
         if( we_cb[3] )
-            cache_f( { waddr_cache , 2'b00 } + 3 ) <= wd[24 +: 8];
+            cache_f[ { waddr_cache , 2'b00 } + 3 ] <= wd[24 +: 8];
         if( we_cb[2] )
-            cache_f( { waddr_cache , 2'b00 } + 2 ) <= wd[16 +: 8];
+            cache_f[ { waddr_cache , 2'b00 } + 2 ] <= wd[16 +: 8];
         if( we_cb[1] )
-            cache_f( { waddr_cache , 2'b00 } + 1 ) <= wd[8  +: 8];
+            cache_f[ { waddr_cache , 2'b00 } + 1 ] <= wd[8  +: 8];
         if( we_cb[0] )
-            cache_f( { waddr_cache , 2'b00 } + 0 ) <= wd[0  +: 8];
+            cache_f[ { waddr_cache , 2'b00 } + 0 ] <= wd[0  +: 8];
     end
 
     // synthesis translate_on
