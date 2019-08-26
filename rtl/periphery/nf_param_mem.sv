@@ -35,7 +35,7 @@ module nf_param_mem
         if( init_z )
         begin
             integer i;
-            for(i = 0; i<depth; i++)
+            for( i = 0 ; i < depth ; i++ )
                 mem[i] = '0;
         end
     end

@@ -1,5 +1,5 @@
 # **nanoFOX**
-    A small RISC-V CPU core. This is a pipeline version of CPU with AHB (full command list RV32I (without fence, fence.i, ecall, ebreak)).
+    A small RISC-V CPU core. This is a pipeline version of CPU with AHB and cache (full command list RV32I (without fence, fence.i, ecall, ebreak)).
     
 ## Supported instructions:
 *   lui
@@ -51,9 +51,9 @@ For loading project with git program:
 
     $ git clone https://github.com/Dmitriy0111/nanoFOX.git 
     $ cd nanoFOX 
-    $ git checkout 03_pipe_risc_v_cpu_fc
+    $ git checkout 04_pipe_risc_v_cpu_fc_cache
 
-Or download project from GitHub site <a href="https://github.com/Dmitriy0111/nanoFOX">03_pipe_risc_v_cpu_fc</a>
+Or download project from GitHub site <a href="https://github.com/Dmitriy0111/nanoFOX">04_pipe_risc_v_cpu_fc_cache</a>
 
 For working with project install:
 *   make
@@ -74,6 +74,8 @@ For working with project install:
 *   **make sim_clean** is used for cleaning simulation result;
 *   **make sim_cmd** is used for starting simulation in command line (CMD) mode;
 *   **make sim_gui** is used for starting simulation in graphical user interface (GUI) mode.
+*   **make formal_ver** is used for starting simulation process with one riscv-compliance test (which is determined by RVC_TEST variable in makefile);
+*   **make formal_ver_all** is used for starting simulation process with all riscv-compliance tests (which is determined by RVC_LIST_TEST variable in makefile).
 
 If log_txt or log_html set as '1 and log_en set as '1 (tb/nf_tb.svh) then you can see simulation results in log folder (log/log.log or log/log.html).
 
@@ -83,9 +85,6 @@ If log_txt or log_html set as '1 and log_en set as '1 (tb/nf_tb.svh) then you ca
 *   **make synth_build_q** is used for building project in Quartus;
 *   **make synth_gui_q** is used for open project in Quartus;
 *   **make synth_load_q** is used for loading bitstream in CPLD/FPGA with Quartus.
-
-## Core diagram:
-![cpu_system](doc/cpu_system.jpg)
 
 ## Boards support:
 simple cpu nanoFOX currently works on these FPGA boards:

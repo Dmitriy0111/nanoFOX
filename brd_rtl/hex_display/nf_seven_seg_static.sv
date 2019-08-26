@@ -19,7 +19,7 @@ module nf_seven_seg_static
     genvar hn_i;
 
     generate
-        for ( hn_i = 0; hn_i<hn; hn_i++) 
+        for( hn_i = 0 ; hn_i < hn ; hn_i++ ) 
         begin : gen_seven_seg_convertors
             nf_seven_seg nf_seven_seg_
             (

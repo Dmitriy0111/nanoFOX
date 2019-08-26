@@ -19,7 +19,7 @@ module nf_ahb_dec
 
     genvar  gen_ahb_dec;
     generate
-        for(gen_ahb_dec = 0 ; gen_ahb_dec < slave_c ; gen_ahb_dec++)
+        for( gen_ahb_dec = 0 ; gen_ahb_dec < slave_c ; gen_ahb_dec++ )
         begin : generate_hsel
             always_comb
             begin

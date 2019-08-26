@@ -22,7 +22,7 @@ void __attribute__((noreturn)) vector_1(void)
                 );  // reset stack pointer to 0xf00
     int i = 0;
     char value;
-    for( i = 0 ; i < 8 ; i ++ )
+    for( i = 0 ; i < 8 ; i++ )
     {
         value = exception & 0xf;
         exp_message[19 + 7 - i] = ( value < 10 ) ? value + 0x30 : value + 0x37;

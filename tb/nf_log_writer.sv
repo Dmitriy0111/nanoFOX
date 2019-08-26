@@ -27,7 +27,7 @@ class nf_log_writer extends nf_bt_class;
     // task for building logger
     task build(string out_file);
 
-        for(integer i = 0; i < 32; i++)
+        for( integer i = 0 ; i < 32 ; i++ )
         begin
             reg_file_l[i]   = '0;
             table_c[i]  = '0;

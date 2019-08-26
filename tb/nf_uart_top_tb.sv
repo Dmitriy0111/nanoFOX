@@ -79,7 +79,7 @@ module nf_uart_top_tb ();
     endtask : write_cr
     // task for creating transaction for uart sender
     task send_message( string message );
-        for( int i=0; i<message.len(); i++ )
+        for( int i = 0 ; i < message.len() ; i++ )
         begin
             write_tr(message[i]);
             write_cr( ( 1'b1 << `tr_en ) | ( 1'b1 << `rec_en ) );
@@ -105,7 +105,7 @@ module nf_uart_top_tb ();
     endtask : send_uart_symbol
     // task for sending message over uart to receive module
     task send_uart_message( string message );
-        for( int i=0; i<message.len(); i++ )
+        for( int i = 0 ; i < message.len() ; i++ )
             send_uart_symbol(message[i]);
     endtask : send_uart_message
 

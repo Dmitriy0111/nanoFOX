@@ -185,7 +185,7 @@ module nf_tb();
         uart_rx = '0;
         repeat( work_freq / uart_speed ) @(posedge clk);
         // generate transaction
-        for( integer i = 0 ; i < 8 ; i ++ )
+        for( integer i = 0 ; i < 8 ; i++ )
         begin
             uart_rx = symbol[i];
             repeat( work_freq / uart_speed ) @(posedge clk);
@@ -196,7 +196,7 @@ module nf_tb();
     endtask : send_uart_symbol
     // task for sending message over uart to receive module
     task send_uart_message( string message , integer delay_v);
-        for( int i=0; i<message.len(); i++ )
+        for( int i = 0 ; i < message.len() ; i++ )
         begin
             send_uart_symbol(message[i]);
             #delay_v;

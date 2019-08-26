@@ -1,3 +1,11 @@
+#
+# File          :   script_modelsim.tcl
+# Autor         :   Vlasov D.V.
+# Data          :   2019.04.19
+# Language      :   tcl
+# Description   :   This is script for running simulation process
+# Copyright(c)  :   2019 Vlasov D.V.
+#
 
 vlib work
 
